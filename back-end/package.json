@@ -3,15 +3,15 @@
   "version": "1.0.0",
   "description": "Ενδεικτικά περιεχόμενα:",
   "main": "index.js",
-"scripts": {
-  "dev": "tsx watch src/index.ts",
-  "build": "tsc",
-  "lint": "echo \"(add ESLint later)\"",
-  "test": "echo \"(add Jest later)\" && exit 0",
-  "prisma:migrate": "prisma migrate dev",
-  "prisma:studio": "prisma studio",
-  "prisma:seed": "tsx prisma/seed.ts"
-},
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "lint": "echo \"(add ESLint later)\"",
+    "test": "echo \"(add Jest later)\" && exit 0",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "prisma:seed": "tsx prisma/seed.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -33,9 +33,7 @@
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
   },
-  
-    "prisma": {
-      "seed": "tsx prisma/seed.ts"
-    }
-  
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
 }
