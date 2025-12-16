@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
-import prisma from "../prisma/client.ts";
+import prisma from "../../prisma/client.ts";
 import { z } from "zod";
 
 // ---- Temporary mock auth middleware ----

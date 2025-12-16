@@ -168,4 +168,56 @@ router.get("/", async (req, res) => {
   }
 });
 
+// --- NEW: GET one charger by id ---
+router.get("/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({
+        call: req.originalUrl,
+        timeref: new Date().toISOString(),
+        originator: req.ip,
+        return_code: 400,
+        error: "Invalid charger ID",
+        debuginfo: "",
+      });
+    }
+
+    const charger = await prisma.charger.findUnique({
+      where: { id },
+      include: { pricingProfile: true },
+    });
+
+    if (!charger) {
+      // 204 per your API spec (no content)
+      return res.status(204).send();
+    }
+
+    // Convert lat/lng from Prisma Decimal to numbers
+    const data = {
+      id: charger.id,
+      name: charger.name,
+      address: charger.address,
+      lat: Number(charger.lat),
+      lng: Number(charger.lng),
+      connectorType: charger.connectorType,
+      maxKW: charger.maxKW,
+      status: charger.status,
+      pricingProfileId: charger.pricingProfileId ?? null,
+    };
+
+    res.json(data);
+  } catch (err) {
+    console.error("GET /chargers/:id error:", err);
+    res.status(500).json({
+      call: req.originalUrl,
+      timeref: new Date().toISOString(),
+      originator: req.ip,
+      return_code: 500,
+      error: "Internal server error",
+      debuginfo: "",
+    });
+  }
+});
+
 export default router;

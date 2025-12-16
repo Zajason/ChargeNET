@@ -1,6 +1,6 @@
 import { Router } from "express";
-import prisma from "../prisma/client.ts";
-import { requireAdmin } from "../middleware/mockAuth.ts";
+import prisma from "../../prisma/client.ts";
+import { requireAdmin } from "../../middleware/mockAuth.ts";
 import { z } from "zod";
 
 const router = Router();
