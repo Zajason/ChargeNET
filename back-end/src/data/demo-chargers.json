@@ -1,0 +1,202 @@
+[
+  {
+    "name": "Syntagma Square Fast Charger",
+    "address": "Syntagma Square Parking",
+    "lat": 37.9755,
+    "lng": 23.7348,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Omonia Central Charger",
+    "address": "Omonia Square Underground Parking",
+    "lat": 37.9842,
+    "lng": 23.7285,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Monastiraki Hub",
+    "address": "Monastiraki Parking Area",
+    "lat": 37.9763,
+    "lng": 23.7258,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "EKO Charge"
+  },
+  {
+    "name": "Plaka Street Charger",
+    "address": "Plaka Municipal Parking",
+    "lat": 37.9731,
+    "lng": 23.7331,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "EKO Charge"
+  },
+  {
+    "name": "Kolonaki Square Charger",
+    "address": "Kolonaki Square Parking",
+    "lat": 37.9794,
+    "lng": 23.7425,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Blink Greece"
+  },
+  {
+    "name": "Exarchia Fast Charger",
+    "address": "Exarchia Square Parking",
+    "lat": 37.9871,
+    "lng": 23.7337,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "Blink Greece"
+  },
+  {
+    "name": "Metaxourgeio City Charger",
+    "address": "Metaxourgeio Public Parking",
+    "lat": 37.9865,
+    "lng": 23.7219,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "OUTAGE",
+    "providerName": "NRG Charge"
+  },
+  {
+    "name": "Kerameikos Fast Charger",
+    "address": "Kerameikos Metro Parking",
+    "lat": 37.9789,
+    "lng": 23.7116,
+    "connectorType": "CCS",
+    "maxKW": 180.0,
+    "status": "AVAILABLE",
+    "providerName": "NRG Charge"
+  },
+  {
+    "name": "Thissio Seaside Charger",
+    "address": "Thissio Parking Area",
+    "lat": 37.9768,
+    "lng": 23.7186,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Koukaki Neighborhood Charger",
+    "address": "Koukaki Municipal Parking",
+    "lat": 37.9649,
+    "lng": 23.7289,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Acropolis View Fast Charger",
+    "address": "Acropolis Museum Parking",
+    "lat": 37.9681,
+    "lng": 23.7286,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "EKO Charge"
+  },
+  {
+    "name": "Ilisia City Charger",
+    "address": "Ilisia Public Parking",
+    "lat": 37.9776,
+    "lng": 23.7511,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Blink Greece"
+  },
+  {
+    "name": "Panepistimiou Fast Charger",
+    "address": "Panepistimiou Street Parking",
+    "lat": 37.9804,
+    "lng": 23.7323,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "Blink Greece"
+  },
+  {
+    "name": "Lycabettus Base Charger",
+    "address": "Lycabettus Hill Parking",
+    "lat": 37.9848,
+    "lng": 23.7439,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "NRG Charge"
+  },
+  {
+    "name": "Victoria Square Charger",
+    "address": "Victoria Square Parking",
+    "lat": 37.9931,
+    "lng": 23.7306,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "OUTAGE",
+    "providerName": "NRG Charge"
+  },
+  {
+    "name": "Evangelismos Fast Charger",
+    "address": "Evangelismos Hospital Parking",
+    "lat": 37.9761,
+    "lng": 23.7487,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Hilton Athens Charger",
+    "address": "Hilton Athens Parking",
+    "lat": 37.9746,
+    "lng": 23.7482,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Neos Kosmos Charger",
+    "address": "Neos Kosmos Metro Parking",
+    "lat": 37.9557,
+    "lng": 23.7281,
+    "connectorType": "CCS",
+    "maxKW": 90.0,
+    "status": "AVAILABLE",
+    "providerName": "EKO Charge"
+  },
+  {
+    "name": "Petralona City Charger",
+    "address": "Petralona Square Parking",
+    "lat": 37.9689,
+    "lng": 23.7097,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Blink Greece"
+  },
+  {
+    "name": "Fix Area Fast Charger",
+    "address": "Fix Metro Parking",
+    "lat": 37.9643,
+    "lng": 23.7265,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "NRG Charge"
+  }
+]

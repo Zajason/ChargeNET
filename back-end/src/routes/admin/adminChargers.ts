@@ -15,6 +15,7 @@ function requireAdmin(req: Request, res: Response, next: NextFunction) {
 const chargerSchema = z.object({
   name: z.string().min(2),
   address: z.string().optional(),
+  providerName: z.string().min(2),
   lat: z.number(),
   lng: z.number(),
   connectorType: z.enum(["CCS", "CHADEMO", "TYPE2"]),

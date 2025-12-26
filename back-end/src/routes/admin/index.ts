@@ -1,8 +1,10 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import adminUsersRouter from "./adminUsers.ts";
 import adminChargersRouter from "./adminChargers.ts";
+import resetPointsRouter from "./resetPoints.ts";
 import prisma from "../../prisma/client.ts";
-import { makeErrorLog } from "../../middleware/errorHandler.js";
+import { makeErrorLog } from "../../middleware/errorHandler.ts";
+import addPointsRouter from "./addPoints.ts";
 
 const router = express.Router();
 
@@ -12,8 +14,14 @@ router.use("/users", adminUsersRouter);
 // --- Admin Chargers ---
 router.use("/chargers", adminChargersRouter);
 
+// --- Admin Reset Points ---
+router.use("/", resetPointsRouter);  // mounts /resetpoints
+
+// --- Admin Add Points ---
+router.use("/", addPointsRouter);
+
 // --- Admin Health Check ---
-router.get("/healthcheck", async (req, res) => {
+router.get("/healthcheck", async (req: Request, res: Response) => {
   try {
     const chargers = await prisma.charger.findMany({ select: { status: true } });
 
