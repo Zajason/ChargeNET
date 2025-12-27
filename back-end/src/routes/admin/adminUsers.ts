@@ -1,6 +1,6 @@
 import { Router } from "express";
 import prisma from "../../prisma/client.ts";
-import { requireAdmin } from "../../middleware/mockAuth.ts";
+import { verifyToken, requireAdmin } from "../../middleware/verifyToken.ts";
 import { z } from "zod";
 
 const router = Router();
@@ -26,9 +26,8 @@ const Query = z.object({
  *  - hasSessions (true|false)
  *  - page, pageSize (default 1,20; max 100)
  *  - sort (createdAt|email), order (asc|desc)
- * Auth: requireAdmin (temporary)
  */
-router.get("/", requireAdmin, async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const parsed = Query.safeParse(req.query);
     if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
@@ -94,7 +93,7 @@ router.get("/", requireAdmin, async (req, res) => {
  * (Optional) GET /api/v1/admin/users/:id
  * Detailed view for a single user (no password), with simple stats.
  */
-router.get("/:id", requireAdmin, async (req, res) => {
+router.get("/:id", verifyToken, requireAdmin, async (req, res) => {
   try {
     const id = Number(req.params.id);
     if (!Number.isFinite(id)) return res.status(400).json({ error: "Invalid user id" });

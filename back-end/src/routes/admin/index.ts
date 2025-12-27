@@ -5,8 +5,12 @@ import resetPointsRouter from "./resetPoints.ts";
 import prisma from "../../prisma/client.ts";
 import { makeErrorLog } from "../../middleware/errorHandler.ts";
 import addPointsRouter from "./addPoints.ts";
+import { verifyToken, requireAdmin } from "../../middleware/verifyToken.ts";
 
 const router = express.Router();
+
+// Protect all routes in this file
+router.use(verifyToken, requireAdmin);
 
 // --- Admin Users ---
 router.use("/users", adminUsersRouter);
