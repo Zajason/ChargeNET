@@ -1,52 +1,39 @@
-import { Router } from "express";
-import prisma from "../prisma/client.ts";
-import { requireUser } from "../middleware/mockAuth.ts";
+import { Router } from 'express';
+import { verifyToken } from '../middleware/verifyToken.ts';
+import {
+  getProfile,
+  updateProfile,
+  changePassword,
+  addVehicle,
+  listVehicles,
+  getVehicle,
+  updateVehicle,
+  deleteVehicle,
+  addPaymentMethod,
+  listPaymentMethods,
+  deletePaymentMethod
+} from '../controllers/meController.ts';
 
 const router = Router();
 
-/**
- * GET /api/v1/me
- * Returns the current user's profile (no password) and a few quick stats.
- * Auth: requireUser (temporary mock)
- */
-router.get("/", requireUser, async (req, res) => {
-  try {
-    const userId = (req as any).userId as number;
+// All routes in this file are for the authenticated user
+router.use(verifyToken);
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-        // add more if you want (e.g., default payment method), never return password
-      },
-    });
+// Profile
+router.get('/', getProfile);
+router.patch('/', updateProfile);
+router.post('/change-password', changePassword);
 
-    if (!user) return res.status(404).json({ error: "User not found" });
+// Vehicles
+router.get('/vehicles', listVehicles);
+router.post('/vehicles', addVehicle);
+router.get('/vehicles/:id', getVehicle);
+router.patch('/vehicles/:id', updateVehicle);
+router.delete('/vehicles/:id', deleteVehicle);
 
-    // Optional lightweight stats the profile screen might show
-    const [sessionCount, totalKWh] = await Promise.all([
-      prisma.session.count({ where: { userId } }),
-      prisma.session.aggregate({
-        _sum: { kWh: true },
-        where: { userId },
-      }),
-    ]);
-
-    res.json({
-      user,
-      stats: {
-        sessions: sessionCount,
-        totalKWh: totalKWh._sum.kWh ?? 0,
-      },
-    });
-  } catch (e) {
-    console.error("GET /me error:", e);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+// Payment Methods
+router.get('/payment-methods', listPaymentMethods);
+router.post('/payment-methods', addPaymentMethod);
+router.delete('/payment-methods/:id', deletePaymentMethod);
 
 export default router;

@@ -2,9 +2,13 @@ import express from "express";
 import adminUsersRouter from "./adminUsers.ts";
 import adminChargersRouter from "./adminChargers.ts";
 import prisma from "../../prisma/client.ts";
-import { makeErrorLog } from "../../middleware/errorHandler.js";
+import { makeErrorLog } from "../../middleware/errorHandler.ts";
+import { verifyToken, requireAdmin } from "../../middleware/verifyToken.ts";
 
 const router = express.Router();
+
+// Protect all routes in this file
+router.use(verifyToken, requireAdmin);
 
 // --- Admin Users ---
 router.use("/users", adminUsersRouter);

@@ -2,12 +2,13 @@ import express from "express";
 import cors from "cors";
 import chargersRouter from "./routes/chargers.ts";
 import meRouter from "./routes/me.ts";
+import authRouter from "./routes/auth.ts";
 import adminRouter from "./routes/admin/index.ts";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/me", meRouter);
 app.use("/api/v1/chargers", chargersRouter);
 

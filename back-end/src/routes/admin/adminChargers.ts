@@ -1,15 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 import prisma from "../../prisma/client.ts";
 import { z } from "zod";
-
-// ---- Temporary mock auth middleware ----
-function requireAdmin(req: Request, res: Response, next: NextFunction) {
-  const role = req.header("x-mock-role"); // simulate auth
-  if (role !== "ADMIN") {
-    return res.status(403).json({ error: "Forbidden: admin role required" });
-  }
-  next();
-}
+import { verifyToken, requireAdmin } from "../../middleware/verifyToken.ts";
 
 // ---- Validation schema ----
 const chargerSchema = z.object({
@@ -25,7 +17,7 @@ const chargerSchema = z.object({
 const router = Router();
 
 // ------------------- CREATE -------------------
-router.post("/", requireAdmin, async (req, res) => {
+router.post("/", verifyToken, requireAdmin, async (req, res) => {
   try {
     const parsed = chargerSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -44,7 +36,7 @@ router.post("/", requireAdmin, async (req, res) => {
 });
 
 // ------------------- UPDATE -------------------
-router.patch("/:id", requireAdmin, async (req, res) => {
+router.patch("/:id", verifyToken, requireAdmin, async (req, res) => {
   try {
     const id = Number(req.params.id);
     if (isNaN(id)) return res.status(400).json({ error: "Invalid charger ID" });
@@ -67,7 +59,7 @@ router.patch("/:id", requireAdmin, async (req, res) => {
 });
 
 // ------------------- DELETE -------------------
-router.delete("/:id", requireAdmin, async (req, res) => {
+router.delete("/:id", verifyToken, requireAdmin, async (req, res) => {
   try {
     const id = Number(req.params.id);
     if (isNaN(id)) return res.status(400).json({ error: "Invalid charger ID" });

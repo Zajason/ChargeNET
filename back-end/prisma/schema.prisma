@@ -51,6 +51,7 @@ model User {
   email     String   @unique
   password  String
   role      Role     @default(USER)
+  preferences Json?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
