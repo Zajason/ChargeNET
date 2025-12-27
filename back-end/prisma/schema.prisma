@@ -78,6 +78,7 @@ model Vehicle {
 // ---------- Catalog ----------
 model Charger {
   id               Int             @id @default(autoincrement())
+  providerName     String          @default("Unknown")
   name             String
   address          String?
   lat              Decimal         @db.Decimal(9, 6)
