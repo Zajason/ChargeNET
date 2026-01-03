@@ -8,6 +8,10 @@ import authRouter from "./routes/auth.ts";
 import adminRouter from "./routes/admin/index.ts";
 import pointsRouter from "./routes/points.ts";
 import reserveRouter from "./routes/reserve.ts";
+import updpointRouter from "./routes/updpoint.ts";
+import newsessionRouter from "./routes/newsession.ts";
+import sessionsRouter from "./routes/sessions.ts";
+import pointStatusRouter from "./routes/pointstatus.ts";
 
 const app = express();
 
@@ -21,6 +25,10 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/me", meRouter);
 app.use("/api/v1/chargers", chargersRouter);
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/updpoint", updpointRouter);
+app.use("/api/v1/newsession", newsessionRouter);
+app.use("/api/v1/sessions", sessionsRouter);
+app.use("/api/v1/pointstatus", pointStatusRouter);
 
 // simple generic system health
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
