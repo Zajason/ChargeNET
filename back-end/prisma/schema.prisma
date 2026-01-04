@@ -90,6 +90,7 @@ model Charger {
   pricingProfileId Int?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
+  kwhprice Float @default(0.25)
 
   reservations Reservation[]
   sessions     Session[]
