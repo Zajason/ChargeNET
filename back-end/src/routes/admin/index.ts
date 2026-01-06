@@ -6,6 +6,7 @@ import prisma from "../../prisma/client.ts";
 import { makeErrorLog } from "../../middleware/errorHandler.ts";
 import addPointsRouter from "./addPoints.ts";
 import { verifyToken, requireAdmin } from "../../middleware/verifyToken.ts";
+import pricingRouter from "./pricing.ts";
 
 const router = express.Router();
 
@@ -14,6 +15,9 @@ router.use(verifyToken, requireAdmin);
 
 // --- Admin Users ---
 router.use("/users", adminUsersRouter);
+
+// --- Admin Pricing ---
+router.use("/pricing" ,pricingRouter);
 
 // --- Admin Chargers ---
 router.use("/chargers", adminChargersRouter);

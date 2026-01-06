@@ -6,7 +6,7 @@ import { verifyToken } from "../middleware/verifyToken.ts";
 const router = express.Router();
 
 // Date format helper
-function formatDate(d: Date): string {
+function formatDate(d: Date | null | undefined): string {
   if (!d) return "";
   const pad = (n: number) => n.toString().padStart(2, '0');
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
@@ -52,8 +52,8 @@ const getSessions = async (req: Request, res: Response) => {
     const responseData = sessions.map(s => ({
         starttime: formatDate(s.startedAt),
         endtime: formatDate(s.endedAt),
-        startsoc: s.startSoc ?? 0,
-        endsoc: s.endSoc ?? 0,
+        startsoc: 0,
+        endsoc: 0,
         totalkwh: s.kWh,
         kwhprice: s.pricePerKWh,
         amount: s.costEur

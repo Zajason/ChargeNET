@@ -12,6 +12,7 @@ import updpointRouter from "./routes/updpoint.ts";
 import newsessionRouter from "./routes/newsession.ts";
 import sessionsRouter from "./routes/sessions.ts";
 import pointStatusRouter from "./routes/pointstatus.ts";
+import { schedulePricingUpdates } from "./pricing/scheduler.ts";
 
 const app = express();
 
@@ -36,6 +37,9 @@ app.get("/api/health", (_req, res) => res.json({ ok: true }));
 const port = Number(process.env.PORT ?? 3000);
 if (process.env.NODE_ENV !== "test") {
   app.listen(port, () => console.log(`API running on http://localhost:${port}`));
+}
+if (process.env.ENABLE_PRICING === "1") {
+  schedulePricingUpdates();
 }
 
 export default app;
