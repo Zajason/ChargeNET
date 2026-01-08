@@ -55,13 +55,16 @@ router.get("/", async (req: Request, res: Response) => {
     const result = chargers.map(c => ({
       pointid: c.id,
       providerName: c.providerName || "unknown",
+      name: c.name,
+      address: c.address ?? "",
+      connectorType: c.connectorType,   // "CCS" | "CHADEMO" | "TYPE2"
       lon: String(c.lng),
       lat: String(c.lat),
       status: getStatusString(c.status),
-      cap: c.maxKW
+      cap: c.maxKW,
+      kwhprice: c.kwhprice,
     }));
     return res.status(200).json({ points: result });
-
   } catch (err: any) {
     const errorLog = makeErrorLog(req, 500, "Internal server error", err.message);
     return res.status(500).json(errorLog);
