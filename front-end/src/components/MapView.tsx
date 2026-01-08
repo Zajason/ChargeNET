@@ -1,22 +1,92 @@
 "use client";
 
-import { useState } from "react";
-import { Map, Marker } from "pigeon-maps";
-import { ChargerDetails } from "./ChargerDetails";
-import type { Charger } from "../types/charger";
-import { useFetchChargers } from "../hooks/useFetchChargers";
+import { useEffect, useMemo, useState } from "react";
+import { Map, Marker, Overlay } from "pigeon-maps";
+import { Menu, Filter, LocateFixed } from "lucide-react";
 
+import { ChargerDetails } from "./ChargerDetails";
+import { UserLocationMarker } from "./UserLocationMarker";
+import { FilterMenu } from "./FilterMenu";
+import { MenuPanel } from "./MenuPanel";
+
+import { useUserLocation } from "../hooks/useUserLocation";
+import { useFetchChargers } from "../hooks/useFetchChargers";
+import type { Charger } from "../types/charger";
+
+// Custom grayscale map provider
 function grayscaleProvider(x: number, y: number, z: number) {
   return `https://tiles.stadiamaps.com/tiles/alidade_smooth/${z}/${x}/${y}.png`;
 }
 
+type Filters = {
+  status: Set<Charger["status"]>;
+  connectorType: Set<string>;
+  minPower: number | null;
+};
+
 export function MapView() {
+  // ✅ backend connection
   const { chargers, loading, error } = useFetchChargers();
+
   const [selectedCharger, setSelectedCharger] = useState<Charger | null>(null);
   const [reservedChargers, setReservedChargers] = useState<Set<string>>(new Set());
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const [filters, setFilters] = useState<Filters>({
+    status: new Set<Charger["status"]>(["available", "in_use", "outage"]),
+    connectorType: new Set<string>(),
+    minPower: null,
+  });
+
+  // ✅ LIVE user tracking (watchPosition inside hook)
+  const { location: userLocation, error: locationError } = useUserLocation();
+
+  // Fallback if user denies location or it hasn't loaded yet
+  const fallback = { lat: 37.7749, lng: -122.4194 };
+
+  // Controlled map center + follow mode
+  const [mapCenter, setMapCenter] = useState<[number, number]>([fallback.lat, fallback.lng]);
+  const [zoom, setZoom] = useState(13);
+  const [followUser, setFollowUser] = useState(true);
+
+  // When location updates, keep centering if follow is enabled
+  useEffect(() => {
+    if (!userLocation) return;
+    if (!followUser) return;
+    setMapCenter([userLocation.lat, userLocation.lng]);
+  }, [userLocation, followUser]);
+
+  // Normalize backend/mock field differences (connectorType / maxKW vs type / power)
+  const getConnectorType = (c: any): string => c.connectorType ?? c.type ?? "";
+  const getPowerKw = (c: any): number => {
+    if (typeof c.maxKW === "number") return c.maxKW;
+    if (typeof c.power === "number") return c.power;
+    if (typeof c.power === "string") {
+      const n = parseInt(c.power, 10);
+      return Number.isFinite(n) ? n : 0;
+    }
+    return 0;
+  };
+
+  const filteredChargers = useMemo(() => {
+    return chargers.filter((charger: any) => {
+      if (!filters.status.has(charger.status)) return false;
+
+      const ct = getConnectorType(charger);
+      if (filters.connectorType.size > 0 && !filters.connectorType.has(ct)) return false;
+
+      if (filters.minPower !== null) {
+        const kw = getPowerKw(charger);
+        if (kw < filters.minPower) return false;
+      }
+
+      return true;
+    });
+  }, [chargers, filters]);
 
   const handleReserve = (chargerId: string) => {
-    setReservedChargers(prev => new Set(prev).add(chargerId));
+    setReservedChargers((prev) => new Set(prev).add(chargerId));
     setTimeout(() => setSelectedCharger(null), 500);
   };
 
@@ -33,19 +103,76 @@ export function MapView() {
     }
   };
 
+  const recenter = () => {
+    const c = userLocation ?? fallback;
+    setMapCenter([c.lat, c.lng]);
+    setZoom(15); // feels nicer for “recenter”
+    setFollowUser(true);
+  };
+
   if (loading) return <div className="flex justify-center items-center h-full">Loading chargers...</div>;
   if (error) return <div className="flex justify-center items-center text-red-600 h-full">{error}</div>;
 
   return (
     <div className="relative w-full h-full">
+      {/* Menu button - Top Left */}
+      <button
+        onClick={() => setIsMenuOpen((v) => !v)}
+        className="absolute top-3 left-3 sm:top-4 sm:left-4 lg:top-6 lg:left-6 bg-white p-2.5 sm:p-3 rounded-lg shadow-lg z-[1000] hover:bg-gray-50 active:bg-gray-100 transition-colors"
+        aria-label="Menu"
+      >
+        <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
+      </button>
+
+      {/* Filter button - Top Right */}
+      <button
+        onClick={() => setIsFilterOpen((v) => !v)}
+        className="absolute top-3 right-3 sm:top-4 sm:right-4 lg:top-6 lg:right-6 bg-white p-2.5 sm:p-3 rounded-lg shadow-lg z-[1000] hover:bg-gray-50 active:bg-gray-100 transition-colors"
+        aria-label="Filter"
+      >
+        <Filter className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
+      </button>
+
+      {/* Recenter / Follow button - Bottom Left */}
+      <button
+        onClick={recenter}
+        className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 lg:bottom-6 lg:left-6 bg-white px-3 py-2 rounded-lg shadow-lg z-[1000] hover:bg-gray-50 active:bg-gray-100 transition-colors flex items-center gap-2 text-sm"
+        aria-label="Recenter"
+        title={followUser ? "Following your location" : "Recenter to your location"}
+      >
+        <LocateFixed className="w-4 h-4" />
+        {followUser ? "Following" : "Recenter"}
+      </button>
+
+      {/* Optional location error banner (permission denied etc.) */}
+      {locationError && (
+        <div className="absolute top-16 left-3 right-3 sm:top-20 sm:left-4 sm:right-4 lg:top-24 lg:left-6 lg:right-6 bg-white/95 border border-gray-200 rounded-lg shadow z-[1000] px-3 py-2 text-sm text-gray-700">
+          Location unavailable: {locationError}
+        </div>
+      )}
+
       <Map
-        defaultCenter={[37.7749, -122.4194]}
-        defaultZoom={13}
-        height={600}
+        center={mapCenter}
+        zoom={zoom}
+        height="100%"
         provider={grayscaleProvider}
         attribution={false}
+        onBoundsChanged={({ center, zoom }) => {
+          // User interacted with the map -> stop following
+          setMapCenter(center);
+          setZoom(zoom);
+          setFollowUser(false);
+        }}
       >
-        {chargers.map(charger => (
+        {/* User marker (only when real location exists) */}
+        {userLocation && (
+          <Overlay anchor={[userLocation.lat, userLocation.lng]} offset={[20, 20]}>
+            <UserLocationMarker />
+          </Overlay>
+        )}
+
+        {/* Charger markers */}
+        {filteredChargers.map((charger) => (
           <Marker
             key={charger.id}
             anchor={[charger.lat, charger.lng]}
@@ -63,6 +190,42 @@ export function MapView() {
           isReserved={reservedChargers.has(selectedCharger.id)}
         />
       )}
+
+      {/* Legend */}
+      <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 lg:bottom-6 lg:right-6 bg-white p-3 sm:p-4 rounded-lg shadow-lg z-[1000] hidden md:block max-w-[200px]">
+        <h3 className="mb-2 text-sm lg:text-base">Legend</h3>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <div className="relative flex items-center justify-center w-4 h-4">
+              <div className="w-2.5 h-2.5 lg:w-3 lg:h-3 rounded-full bg-blue-500 border border-white shadow-sm"></div>
+            </div>
+            <span className="text-xs lg:text-sm">Your Location</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-blue-500 flex-shrink-0"></div>
+            <span className="text-xs lg:text-sm">Available</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-orange-500 flex-shrink-0"></div>
+            <span className="text-xs lg:text-sm">In Use</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-red-500 flex-shrink-0"></div>
+            <span className="text-xs lg:text-sm">Outage</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Filter Menu */}
+      <FilterMenu
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+        filters={filters}
+        onFiltersChange={setFilters}
+      />
+
+      {/* Menu Panel */}
+      <MenuPanel isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
     </div>
   );
 }

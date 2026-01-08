@@ -1,15 +1,14 @@
-export interface Charger {
-    id: string;
-    name: string;
-    address: string;
-    lat: number;
-    lng: number;
-    connectorType: string;
-    maxKW: number;
-    status: "available" | "in_use" | "outage";
-    providerName: string;
-    power?: string;
-    type?: string;
-    pricePerKwh?: number;
-    timeRemaining?: number;
-  }
+export type Charger = {
+  id: string;
+  lat: number;
+  lng: number;
+  status: "available" | "in_use" | "outage";
+
+  name: string;
+  address: string;
+  providerName?: string;
+
+  connectorType: "CCS" | "CHADEMO" | "TYPE2";
+  maxKW: number;
+  kwhprice: number;
+};
