@@ -198,5 +198,1228 @@
     "maxKW": 120.0,
     "status": "AVAILABLE",
     "providerName": "NRG Charge"
+  },
+
+  {
+    "name": "Ampelokipoi Charger 001",
+    "address": "Ampelokipoi Public Parking 001",
+    "lat": 37.9876,
+    "lng": 23.7015,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "Volton eCharge"
+  },
+  {
+    "name": "Kallithea Charger 002",
+    "address": "Kallithea Public Parking 002",
+    "lat": 37.9607,
+    "lng": 23.6808,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Blink Greece"
+  },
+  {
+    "name": "Pagrati Charger 003",
+    "address": "Pagrati Public Parking 003",
+    "lat": 37.9708,
+    "lng": 23.7579,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "IN_USE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Peristeri Charger 004",
+    "address": "Peristeri Public Parking 004",
+    "lat": 37.9642,
+    "lng": 23.7094,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Glyfada Charger 005",
+    "address": "Glyfada Public Parking 005",
+    "lat": 37.9673,
+    "lng": 23.7502,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "EKO Charge"
+  },
+  {
+    "name": "Nea Ionia Charger 006",
+    "address": "Nea Ionia Public Parking 006",
+    "lat": 38.0331,
+    "lng": 23.7723,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "IN_USE",
+    "providerName": "EKO Charge"
+  },
+  {
+    "name": "Korydallos Charger 007",
+    "address": "Korydallos Public Parking 007",
+    "lat": 37.9631,
+    "lng": 23.6882,
+    "connectorType": "CCS",
+    "maxKW": 180.0,
+    "status": "AVAILABLE",
+    "providerName": "FosPower"
+  },
+  {
+    "name": "Alimos Charger 008",
+    "address": "Alimos Public Parking 008",
+    "lat": 37.8934,
+    "lng": 23.7613,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "NRG Charge"
+  },
+  {
+    "name": "Marousi Charger 009",
+    "address": "Marousi Public Parking 009",
+    "lat": 38.0154,
+    "lng": 23.7721,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Chalandri Charger 010",
+    "address": "Chalandri Public Parking 010",
+    "lat": 38.0178,
+    "lng": 23.7617,
+    "connectorType": "CHADEMO",
+    "maxKW": 75.0,
+    "status": "OUTAGE",
+    "providerName": "ElpeFuture Charge"
+  },
+
+  {
+    "name": "Zografou Charger 011",
+    "address": "Zografou Public Parking 011",
+    "lat": 37.961,
+    "lng": 23.7067,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Agia Paraskevi Charger 012",
+    "address": "Agia Paraskevi Public Parking 012",
+    "lat": 37.9867,
+    "lng": 23.7594,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Neo Psychiko Charger 013",
+    "address": "Neo Psychiko Public Parking 013",
+    "lat": 37.9927,
+    "lng": 23.7534,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "IN_USE",
+    "providerName": "Tesla Destination"
+  },
+  {
+    "name": "Paleo Faliro Charger 014",
+    "address": "Paleo Faliro Public Parking 014",
+    "lat": 37.8904,
+    "lng": 23.7429,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "EKO Charge"
+  },
+  {
+    "name": "Moschato Charger 015",
+    "address": "Moschato Public Parking 015",
+    "lat": 37.9655,
+    "lng": 23.7146,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Blink Greece"
+  },
+
+  {
+    "name": "Aigaleo Charger 016",
+    "address": "Aigaleo Public Parking 016",
+    "lat": 37.9586,
+    "lng": 23.6998,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "IN_USE",
+    "providerName": "NRG Charge"
+  },
+  {
+    "name": "Dafni Charger 017",
+    "address": "Dafni Public Parking 017",
+    "lat": 37.9482,
+    "lng": 23.748,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Vyronas Charger 018",
+    "address": "Vyronas Public Parking 018",
+    "lat": 37.9656,
+    "lng": 23.7603,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "OUTAGE",
+    "providerName": "Volton eCharge"
+  },
+  {
+    "name": "Galatsi Charger 019",
+    "address": "Galatsi Public Parking 019",
+    "lat": 38.0151,
+    "lng": 23.7143,
+    "connectorType": "CCS",
+    "maxKW": 180.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Nikaia Charger 020",
+    "address": "Nikaia Public Parking 020",
+    "lat": 37.9738,
+    "lng": 23.6837,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "FosPower"
+  },
+
+  {
+    "name": "Halandri Center Charger 021",
+    "address": "Halandri Center Public Parking 021",
+    "lat": 38.0349,
+    "lng": 23.7608,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Psychiko Charger 022",
+    "address": "Psychiko Public Parking 022",
+    "lat": 37.9616,
+    "lng": 23.7405,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "IN_USE",
+    "providerName": "Blink Greece"
+  },
+  {
+    "name": "Sepolia Charger 023",
+    "address": "Sepolia Public Parking 023",
+    "lat": 37.9503,
+    "lng": 23.6793,
+    "connectorType": "CCS",
+    "maxKW": 90.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Ilion Charger 024",
+    "address": "Ilion Public Parking 024",
+    "lat": 37.9663,
+    "lng": 23.7267,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "NRG Charge"
+  },
+  {
+    "name": "Iraklio Charger 025",
+    "address": "Iraklio Public Parking 025",
+    "lat": 38.0092,
+    "lng": 23.7721,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "OUTAGE",
+    "providerName": "ElpeFuture Charge"
+  },
+
+  {
+    "name": "Voula Charger 026",
+    "address": "Voula Public Parking 026",
+    "lat": 37.8927,
+    "lng": 23.7597,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Destination"
+  },
+  {
+    "name": "Vouliagmeni Charger 027",
+    "address": "Vouliagmeni Public Parking 027",
+    "lat": 37.9001,
+    "lng": 23.7341,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "IN_USE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Keratsini Charger 028",
+    "address": "Keratsini Public Parking 028",
+    "lat": 37.9769,
+    "lng": 23.7098,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Tavros Charger 029",
+    "address": "Tavros Public Parking 029",
+    "lat": 37.9871,
+    "lng": 23.7062,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Petroupoli Charger 030",
+    "address": "Petroupoli Public Parking 030",
+    "lat": 37.9759,
+    "lng": 23.742,
+    "connectorType": "CCS",
+    "maxKW": 180.0,
+    "status": "OUTAGE",
+    "providerName": "EKO Charge"
+  },
+
+  {
+    "name": "Kaisariani Charger 031",
+    "address": "Kaisariani Public Parking 031",
+    "lat": 37.9593,
+    "lng": 23.7352,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Blink Greece"
+  },
+  {
+    "name": "Pefki Charger 032",
+    "address": "Pefki Public Parking 032",
+    "lat": 38.021,
+    "lng": 23.7628,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "NRG Charge"
+  },
+  {
+    "name": "Metamorfosi Charger 033",
+    "address": "Metamorfosi Public Parking 033",
+    "lat": 38.0418,
+    "lng": 23.7464,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "FosPower"
+  },
+  {
+    "name": "Haidari Charger 034",
+    "address": "Haidari Public Parking 034",
+    "lat": 37.9847,
+    "lng": 23.7042,
+    "connectorType": "CHADEMO",
+    "maxKW": 100.0,
+    "status": "IN_USE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Elliniko Charger 035",
+    "address": "Elliniko Public Parking 035",
+    "lat": 37.8948,
+    "lng": 23.7384,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "OUTAGE",
+    "providerName": "Volton eCharge"
+  },
+
+  {
+    "name": "Kato Patissia Charger 036",
+    "address": "Kato Patissia Public Parking 036",
+    "lat": 38.0185,
+    "lng": 23.7363,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Ano Patissia Charger 037",
+    "address": "Ano Patissia Public Parking 037",
+    "lat": 37.9838,
+    "lng": 23.7404,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Piraeus Charger 038",
+    "address": "Piraeus Public Parking 038",
+    "lat": 37.8878,
+    "lng": 23.7451,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "IN_USE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Kifisia Charger 039",
+    "address": "Kifisia Public Parking 039",
+    "lat": 38.039,
+    "lng": 23.7747,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Destination"
+  },
+  {
+    "name": "Chalandri Charger 040",
+    "address": "Chalandri Public Parking 040",
+    "lat": 37.9892,
+    "lng": 23.7552,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "OUTAGE",
+    "providerName": "NRG Charge"
+  },
+
+  {
+    "name": "Pagrati Charger 041",
+    "address": "Pagrati Public Parking 041",
+    "lat": 37.9746,
+    "lng": 23.7327,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Blink Greece"
+  },
+  {
+    "name": "Peristeri Charger 042",
+    "address": "Peristeri Public Parking 042",
+    "lat": 38.0039,
+    "lng": 23.7408,
+    "connectorType": "CCS",
+    "maxKW": 180.0,
+    "status": "IN_USE",
+    "providerName": "EKO Charge"
+  },
+  {
+    "name": "Zografou Charger 043",
+    "address": "Zografou Public Parking 043",
+    "lat": 37.9571,
+    "lng": 23.7117,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Aigaleo Charger 044",
+    "address": "Aigaleo Public Parking 044",
+    "lat": 37.9785,
+    "lng": 23.714,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Moschato Charger 045",
+    "address": "Moschato Public Parking 045",
+    "lat": 37.9768,
+    "lng": 23.7426,
+    "connectorType": "CHADEMO",
+    "maxKW": 75.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+
+  {
+    "name": "Glyfada Charger 046",
+    "address": "Glyfada Public Parking 046",
+    "lat": 37.9067,
+    "lng": 23.7367,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "OUTAGE",
+    "providerName": "Volton eCharge"
+  },
+  {
+    "name": "Marousi Charger 047",
+    "address": "Marousi Public Parking 047",
+    "lat": 38.0377,
+    "lng": 23.7327,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "NRG Charge"
+  },
+  {
+    "name": "Kallithea Charger 048",
+    "address": "Kallithea Public Parking 048",
+    "lat": 37.9642,
+    "lng": 23.7277,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "IN_USE",
+    "providerName": "EKO Charge"
+  },
+  {
+    "name": "Piraeus Charger 049",
+    "address": "Piraeus Public Parking 049",
+    "lat": 37.9034,
+    "lng": 23.7467,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "FosPower"
+  },
+  {
+    "name": "Kifisia Charger 050",
+    "address": "Kifisia Public Parking 050",
+    "lat": 38.0174,
+    "lng": 23.7588,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Destination"
+  },
+
+  {
+    "name": "Ampelokipoi Charger 051",
+    "address": "Ampelokipoi Public Parking 051",
+    "lat": 37.9963,
+    "lng": 23.7569,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "IN_USE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Sepolia Charger 052",
+    "address": "Sepolia Public Parking 052",
+    "lat": 37.9512,
+    "lng": 23.708,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Blink Greece"
+  },
+  {
+    "name": "Nea Ionia Charger 053",
+    "address": "Nea Ionia Public Parking 053",
+    "lat": 38.0182,
+    "lng": 23.7753,
+    "connectorType": "CCS",
+    "maxKW": 180.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Iraklio Charger 054",
+    "address": "Iraklio Public Parking 054",
+    "lat": 37.9908,
+    "lng": 23.749,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "OUTAGE",
+    "providerName": "NRG Charge"
+  },
+  {
+    "name": "Haidari Charger 055",
+    "address": "Haidari Public Parking 055",
+    "lat": 37.9801,
+    "lng": 23.7164,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+
+  {
+    "name": "Elliniko Charger 056",
+    "address": "Elliniko Public Parking 056",
+    "lat": 37.8787,
+    "lng": 23.7601,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "IN_USE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Alimos Charger 057",
+    "address": "Alimos Public Parking 057",
+    "lat": 37.9014,
+    "lng": 23.7506,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Voula Charger 058",
+    "address": "Voula Public Parking 058",
+    "lat": 37.9041,
+    "lng": 23.7377,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "EKO Charge"
+  },
+  {
+    "name": "Vouliagmeni Charger 059",
+    "address": "Vouliagmeni Public Parking 059",
+    "lat": 37.9092,
+    "lng": 23.7281,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Destination"
+  },
+  {
+    "name": "Paleo Faliro Charger 060",
+    "address": "Paleo Faliro Public Parking 060",
+    "lat": 37.8864,
+    "lng": 23.7681,
+    "connectorType": "CCS",
+    "maxKW": 90.0,
+    "status": "OUTAGE",
+    "providerName": "Volton eCharge"
+  },
+
+  {
+    "name": "Tavros Charger 061",
+    "address": "Tavros Public Parking 061",
+    "lat": 37.9907,
+    "lng": 23.7083,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Blink Greece"
+  },
+  {
+    "name": "Keratsini Charger 062",
+    "address": "Keratsini Public Parking 062",
+    "lat": 37.9762,
+    "lng": 23.6798,
+    "connectorType": "CCS",
+    "maxKW": 180.0,
+    "status": "IN_USE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Korydallos Charger 063",
+    "address": "Korydallos Public Parking 063",
+    "lat": 37.9546,
+    "lng": 23.7163,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "NRG Charge"
+  },
+  {
+    "name": "Nikaia Charger 064",
+    "address": "Nikaia Public Parking 064",
+    "lat": 37.9778,
+    "lng": 23.6863,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "FosPower"
+  },
+  {
+    "name": "Petroupoli Charger 065",
+    "address": "Petroupoli Public Parking 065",
+    "lat": 37.9855,
+    "lng": 23.7361,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "OUTAGE",
+    "providerName": "ElpeFuture Charge"
+  },
+
+  {
+    "name": "Peristeri Charger 066",
+    "address": "Peristeri Public Parking 066",
+    "lat": 37.9634,
+    "lng": 23.7192,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Kaisariani Charger 067",
+    "address": "Kaisariani Public Parking 067",
+    "lat": 37.9698,
+    "lng": 23.7525,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "IN_USE",
+    "providerName": "Blink Greece"
+  },
+  {
+    "name": "Pefki Charger 068",
+    "address": "Pefki Public Parking 068",
+    "lat": 38.0107,
+    "lng": 23.7656,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Metamorfosi Charger 069",
+    "address": "Metamorfosi Public Parking 069",
+    "lat": 38.0208,
+    "lng": 23.7729,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "EKO Charge"
+  },
+  {
+    "name": "Agia Paraskevi Charger 070",
+    "address": "Agia Paraskevi Public Parking 070",
+    "lat": 37.975,
+    "lng": 23.7568,
+    "connectorType": "CHADEMO",
+    "maxKW": 100.0,
+    "status": "OUTAGE",
+    "providerName": "NRG Charge"
+  },
+
+  {
+    "name": "Neo Psychiko Charger 071",
+    "address": "Neo Psychiko Public Parking 071",
+    "lat": 37.9907,
+    "lng": 23.7576,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Destination"
+  },
+  {
+    "name": "Psychiko Charger 072",
+    "address": "Psychiko Public Parking 072",
+    "lat": 37.9831,
+    "lng": 23.7498,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "IN_USE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Ampelokipoi Charger 073",
+    "address": "Ampelokipoi Public Parking 073",
+    "lat": 37.9884,
+    "lng": 23.7321,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Galatsi Charger 074",
+    "address": "Galatsi Public Parking 074",
+    "lat": 38.0147,
+    "lng": 23.7247,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "FosPower"
+  },
+  {
+    "name": "Ano Patissia Charger 075",
+    "address": "Ano Patissia Public Parking 075",
+    "lat": 37.9653,
+    "lng": 23.7522,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "OUTAGE",
+    "providerName": "Volton eCharge"
+  },
+
+  {
+    "name": "Kato Patissia Charger 076",
+    "address": "Kato Patissia Public Parking 076",
+    "lat": 37.9589,
+    "lng": 23.7172,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "NRG Charge"
+  },
+  {
+    "name": "Ilion Charger 077",
+    "address": "Ilion Public Parking 077",
+    "lat": 37.9808,
+    "lng": 23.7089,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "IN_USE",
+    "providerName": "Blink Greece"
+  },
+  {
+    "name": "Aigaleo Charger 078",
+    "address": "Aigaleo Public Parking 078",
+    "lat": 37.9608,
+    "lng": 23.6742,
+    "connectorType": "CCS",
+    "maxKW": 180.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Sepolia Charger 079",
+    "address": "Sepolia Public Parking 079",
+    "lat": 37.9923,
+    "lng": 23.7014,
+    "connectorType": "CHADEMO",
+    "maxKW": 75.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Tavros Charger 080",
+    "address": "Tavros Public Parking 080",
+    "lat": 37.9639,
+    "lng": 23.7211,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "OUTAGE",
+    "providerName": "DEI Blue"
+  },
+
+  {
+    "name": "Kallithea Charger 081",
+    "address": "Kallithea Public Parking 081",
+    "lat": 37.9638,
+    "lng": 23.7121,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "EKO Charge"
+  },
+  {
+    "name": "Moschato Charger 082",
+    "address": "Moschato Public Parking 082",
+    "lat": 37.9705,
+    "lng": 23.7005,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "IN_USE",
+    "providerName": "NRG Charge"
+  },
+  {
+    "name": "Piraeus Charger 083",
+    "address": "Piraeus Public Parking 083",
+    "lat": 37.8856,
+    "lng": 23.7627,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Keratsini Charger 084",
+    "address": "Keratsini Public Parking 084",
+    "lat": 37.9527,
+    "lng": 23.692,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "FosPower"
+  },
+  {
+    "name": "Korydallos Charger 085",
+    "address": "Korydallos Public Parking 085",
+    "lat": 37.9672,
+    "lng": 23.7199,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "OUTAGE",
+    "providerName": "Volton eCharge"
+  },
+
+  {
+    "name": "Nikaia Charger 086",
+    "address": "Nikaia Public Parking 086",
+    "lat": 37.9708,
+    "lng": 23.6783,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Petroupoli Charger 087",
+    "address": "Petroupoli Public Parking 087",
+    "lat": 37.993,
+    "lng": 23.7427,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "IN_USE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Haidari Charger 088",
+    "address": "Haidari Public Parking 088",
+    "lat": 37.965,
+    "lng": 23.695,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Blink Greece"
+  },
+  {
+    "name": "Elliniko Charger 089",
+    "address": "Elliniko Public Parking 089",
+    "lat": 37.8994,
+    "lng": 23.7476,
+    "connectorType": "CCS",
+    "maxKW": 180.0,
+    "status": "AVAILABLE",
+    "providerName": "NRG Charge"
+  },
+  {
+    "name": "Alimos Charger 090",
+    "address": "Alimos Public Parking 090",
+    "lat": 37.8757,
+    "lng": 23.7485,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "OUTAGE",
+    "providerName": "EKO Charge"
+  },
+
+  {
+    "name": "Voula Charger 091",
+    "address": "Voula Public Parking 091",
+    "lat": 37.8923,
+    "lng": 23.7708,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Destination"
+  },
+  {
+    "name": "Vouliagmeni Charger 092",
+    "address": "Vouliagmeni Public Parking 092",
+    "lat": 37.8919,
+    "lng": 23.723,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "IN_USE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Paleo Faliro Charger 093",
+    "address": "Paleo Faliro Public Parking 093",
+    "lat": 37.8765,
+    "lng": 23.7385,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Glyfada Charger 094",
+    "address": "Glyfada Public Parking 094",
+    "lat": 37.8865,
+    "lng": 23.7499,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Marousi Charger 095",
+    "address": "Marousi Public Parking 095",
+    "lat": 38.0428,
+    "lng": 23.7366,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "OUTAGE",
+    "providerName": "Shell Recharge"
+  },
+
+  {
+    "name": "Chalandri Charger 096",
+    "address": "Chalandri Public Parking 096",
+    "lat": 37.9994,
+    "lng": 23.7546,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Blink Greece"
+  },
+  {
+    "name": "Kifisia Charger 097",
+    "address": "Kifisia Public Parking 097",
+    "lat": 38.0168,
+    "lng": 23.7841,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "IN_USE",
+    "providerName": "NRG Charge"
+  },
+  {
+    "name": "Pefki Charger 098",
+    "address": "Pefki Public Parking 098",
+    "lat": 38.0126,
+    "lng": 23.7709,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "EKO Charge"
+  },
+  {
+    "name": "Metamorfosi Charger 099",
+    "address": "Metamorfosi Public Parking 099",
+    "lat": 38.034,
+    "lng": 23.7801,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "FosPower"
+  },
+  {
+    "name": "Agia Paraskevi Charger 100",
+    "address": "Agia Paraskevi Public Parking 100",
+    "lat": 38.0153,
+    "lng": 23.7751,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "OUTAGE",
+    "providerName": "Volton eCharge"
+  },
+
+  {
+    "name": "Neo Psychiko Charger 101",
+    "address": "Neo Psychiko Public Parking 101",
+    "lat": 38.0059,
+    "lng": 23.771,
+    "connectorType": "CCS",
+    "maxKW": 180.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Psychiko Charger 102",
+    "address": "Psychiko Public Parking 102",
+    "lat": 37.975,
+    "lng": 23.728,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "IN_USE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Ampelokipoi Charger 103",
+    "address": "Ampelokipoi Public Parking 103",
+    "lat": 38.0189,
+    "lng": 23.7058,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Sepolia Charger 104",
+    "address": "Sepolia Public Parking 104",
+    "lat": 37.9737,
+    "lng": 23.714,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "OUTAGE",
+    "providerName": "Blink Greece"
+  },
+  {
+    "name": "Ilion Charger 105",
+    "address": "Ilion Public Parking 105",
+    "lat": 37.9926,
+    "lng": 23.7279,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "NRG Charge"
+  },
+
+  {
+    "name": "Nea Ionia Charger 106",
+    "address": "Nea Ionia Public Parking 106",
+    "lat": 38.0384,
+    "lng": 23.759,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "EKO Charge"
+  },
+  {
+    "name": "Iraklio Charger 107",
+    "address": "Iraklio Public Parking 107",
+    "lat": 38.0084,
+    "lng": 23.7854,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "IN_USE",
+    "providerName": "Tesla Destination"
+  },
+  {
+    "name": "Haidari Charger 108",
+    "address": "Haidari Public Parking 108",
+    "lat": 37.977,
+    "lng": 23.6753,
+    "connectorType": "CHADEMO",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Elliniko Charger 109",
+    "address": "Elliniko Public Parking 109",
+    "lat": 37.8985,
+    "lng": 23.7693,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Volton eCharge"
+  },
+  {
+    "name": "Alimos Charger 110",
+    "address": "Alimos Public Parking 110",
+    "lat": 37.8873,
+    "lng": 23.7256,
+    "connectorType": "CCS",
+    "maxKW": 180.0,
+    "status": "OUTAGE",
+    "providerName": "Motor Oil Charge"
+  },
+
+  {
+    "name": "Voula Charger 111",
+    "address": "Voula Public Parking 111",
+    "lat": 37.8889,
+    "lng": 23.7427,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Vouliagmeni Charger 112",
+    "address": "Vouliagmeni Public Parking 112",
+    "lat": 37.8879,
+    "lng": 23.7621,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "IN_USE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Paleo Faliro Charger 113",
+    "address": "Paleo Faliro Public Parking 113",
+    "lat": 37.905,
+    "lng": 23.7611,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Blink Greece"
+  },
+  {
+    "name": "Glyfada Charger 114",
+    "address": "Glyfada Public Parking 114",
+    "lat": 37.8756,
+    "lng": 23.762,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "NRG Charge"
+  },
+  {
+    "name": "Marousi Charger 115",
+    "address": "Marousi Public Parking 115",
+    "lat": 38.0159,
+    "lng": 23.7697,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "OUTAGE",
+    "providerName": "EKO Charge"
+  },
+
+  {
+    "name": "Chalandri Charger 116",
+    "address": "Chalandri Public Parking 116",
+    "lat": 38.0253,
+    "lng": 23.7519,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Kifisia Charger 117",
+    "address": "Kifisia Public Parking 117",
+    "lat": 38.0378,
+    "lng": 23.7632,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "IN_USE",
+    "providerName": "Tesla Destination"
+  },
+  {
+    "name": "Pefki Charger 118",
+    "address": "Pefki Public Parking 118",
+    "lat": 38.0193,
+    "lng": 23.777,
+    "connectorType": "CCS",
+    "maxKW": 180.0,
+    "status": "AVAILABLE",
+    "providerName": "FosPower"
+  },
+  {
+    "name": "Metamorfosi Charger 119",
+    "address": "Metamorfosi Public Parking 119",
+    "lat": 38.0232,
+    "lng": 23.7589,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Patisia Hub Charger 120",
+    "address": "Patisia Hub Public Parking 120",
+    "lat": 37.9659,
+    "lng": 23.7206,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "OUTAGE",
+    "providerName": "Volton eCharge"
   }
 ]
