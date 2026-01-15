@@ -3,6 +3,7 @@ import prisma from '../prisma/client.ts';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
+import stripe from '../services/stripe.ts';
 
 // Validation schema for signup
 const signupSchema = z.object({
@@ -32,10 +33,16 @@ export const signUp = async (req: Request, res: Response) => {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    const stripeCustomer = await stripe.customers.create({
+      email,
+      metadata: { appUserEmail: email },
+    });
+
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
+        stripeCustomerId: stripeCustomer.id,
       },
     });
 

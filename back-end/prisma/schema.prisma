@@ -51,6 +51,7 @@ model User {
   email     String   @unique
   password  String
   role      Role     @default(USER)
+  stripeCustomerId String? @unique
   preferences Json?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -169,6 +170,7 @@ model PaymentMethod {
   userId     Int
   provider   String // e.g. "stripe", "mock"
   tokenLast4 String // masked details
+  stripePaymentMethodId String? @unique
   status     String // "valid" | "invalid" etc.
   createdAt  DateTime @default(now())
 

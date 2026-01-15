@@ -12,6 +12,7 @@ import updpointRouter from "./routes/updpoint.ts";
 import newsessionRouter from "./routes/newsession.ts";
 import sessionsRouter from "./routes/sessions.ts";
 import pointStatusRouter from "./routes/pointstatus.ts";
+import paymentRouter from "./routes/payment.ts";
 import { schedulePricingUpdates } from "./pricing/scheduler.ts";
 
 const app = express();
@@ -30,6 +31,7 @@ app.use("/api/v1/updpoint", updpointRouter);
 app.use("/api/v1/newsession", newsessionRouter);
 app.use("/api/v1/sessions", sessionsRouter);
 app.use("/api/v1/pointstatus", pointStatusRouter);
+app.use("/api/v1/payments", paymentRouter);
 
 // simple generic system health
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
