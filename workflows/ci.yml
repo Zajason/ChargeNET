@@ -54,6 +54,6 @@ jobs:
       - name: Build frontend
         working-directory: front-end
         env:
-          VITE_API_URL: http://localhost:3000
+          VITE_API_URL: http://localhost:9876
         run: npm run build
         

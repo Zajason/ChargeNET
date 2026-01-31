@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import prisma from "../prisma/client.ts"; // Τσέκαρε το path
+import prisma from "../prisma/client.ts";
 import { makeErrorLog } from "../middleware/errorHandler.ts";
 import { verifyToken } from "../middleware/verifyToken.ts";
 import { ChargerStatus } from "@prisma/client";
@@ -8,6 +8,17 @@ const router = express.Router();
 
 const handleUpdate = async (req: Request, res: Response) => {
   try {
+    // Πίνακας αντιστοίχισης
+    const apiToDbStatus: Record<string, ChargerStatus> = {
+        "available": ChargerStatus.AVAILABLE,
+        "in_use": ChargerStatus.IN_USE,
+        "charging": ChargerStatus.IN_USE,
+        "reserved": ChargerStatus.IN_USE,
+        "outage": ChargerStatus.OUTAGE,
+        "outoforder": ChargerStatus.OUTAGE,
+        "malfunction": ChargerStatus.OUTAGE
+    };
+
     const id = Number(req.params.id);
     if (isNaN(id)) {
       const err = makeErrorLog(req, 400, `Invalid charger id '${req.params.id}'`);
@@ -22,14 +33,25 @@ const handleUpdate = async (req: Request, res: Response) => {
        return res.status(400).json(err);
     }
 
-    // Αν δόθηκε status, ελέγχουμε αν είναι έγκυρο Enum
-
     // Update object
     const dataToUpdate: any = {};
     
     if (status) {
-        // Mapping string to Enum (simple check)
-        dataToUpdate.status = status; 
+        const normalizedStatus = status.toLowerCase();
+        
+        // Έλεγχος αν το status είναι έγκυρο
+        if (!(normalizedStatus in apiToDbStatus)) {
+             const err = makeErrorLog(req, 400, `Invalid status '${status}'. Allowed: available, charging, outage...`);
+             return res.status(400).json(err);
+        }
+
+        // Αντιστοίχιση στο σωστό Enum της Prisma
+        dataToUpdate.status = apiToDbStatus[normalizedStatus];
+    }
+
+    // Προσθήκη της τιμής στο Update
+    if (kwhprice !== undefined) {
+        dataToUpdate.kwhprice = Number(kwhprice);
     }
     
     // Εκτέλεση Update
@@ -46,7 +68,7 @@ const handleUpdate = async (req: Request, res: Response) => {
     const payload = {
         pointid: String(updatedCharger.id),
         status: responseStatus,
-        kwhprice: 0.50 // Placeholder
+        kwhprice: updatedCharger.kwhprice
     };
 
     return res.status(200).json(payload);

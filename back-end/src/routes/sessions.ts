@@ -52,11 +52,12 @@ const getSessions = async (req: Request, res: Response) => {
     const responseData = sessions.map(s => ({
         starttime: formatDate(s.startedAt),
         endtime: formatDate(s.endedAt),
-        startsoc: 0,
+        // Προσοχή: Αν στη βάση έχεις πεδία startSoc/endSoc, βάλ' τα εδώ αντί για 0
+        startsoc: 0, 
         endsoc: 0,
-        totalkwh: s.kWh,
-        kwhprice: s.pricePerKWh,
-        amount: s.costEur
+        totalkwh: Number(s.kWh),
+        kwhprice: Number(s.pricePerKWh),
+        amount: Number(s.costEur)
     }));
 
     return res.status(200).json(responseData);

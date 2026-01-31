@@ -22,6 +22,7 @@ app.use(express.json());
 
 // --- Application routes ---
 app.use("/api/v1/points", pointsRouter);
+app.use("/api/v1/point", pointsRouter);
 app.use("/api/v1/reserve", reserveRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/me", meRouter);
@@ -36,7 +37,7 @@ app.use("/api/v1/payments", paymentRouter);
 // simple generic system health
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
-const port = Number(process.env.PORT ?? 3000);
+const port = Number(process.env.PORT ?? 9876);
 if (process.env.NODE_ENV !== "test") {
   app.listen(port, () => console.log(`API running on http://localhost:${port}`));
 }

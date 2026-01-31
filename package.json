@@ -10,6 +10,14 @@
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
-    "@types/multer": "^2.0.0"
-  }
+    "@types/chai": "^5.2.3",
+    "@types/mocha": "^10.0.10",
+    "@types/multer": "^2.0.0",
+    "chai": "^6.2.2",
+    "mocha": "^11.7.5",
+    "ts-node": "^10.9.2"
+  },
+  "scripts": {
+    "test:cli": "mocha -r ts-node/register tests/cli.test.ts"
+}
 }
