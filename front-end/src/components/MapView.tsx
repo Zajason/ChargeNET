@@ -14,10 +14,10 @@ import { useFetchChargers } from "../hooks/useFetchChargers";
 import type { Charger } from "../types/charger";
 
 // Custom grayscale map provider
-function grayscaleProvider(x: number, y: number, z: number) {
-  return `https://tiles.stadiamaps.com/tiles/alidade_smooth/${z}/${x}/${y}.png`;
+function cartoPositronProvider(x: number, y: number, z: number) {
+  const sub = ["a", "b", "c"][(x + y + z) % 3];
+  return `https://${sub}.basemaps.cartocdn.com/rastertiles/light_all/${z}/${x}/${y}.png`;
 }
-
 type Filters = {
   status: Set<Charger["status"]>;
   connectorType: Set<string>;
@@ -154,9 +154,14 @@ export function MapView() {
       <Map
         center={mapCenter}
         zoom={zoom}
-        height="100%"
-        provider={grayscaleProvider}
-        attribution={false}
+       
+        provider={cartoPositronProvider}
+        attribution={
+          <span>
+           © OpenStreetMap contributors © CARTO
+          </span>
+        }
+        attributionPrefix={false}
         onBoundsChanged={({ center, zoom }) => {
           // User interacted with the map -> stop following
           setMapCenter(center);

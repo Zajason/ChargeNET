@@ -58,7 +58,7 @@ const getPointStatus = async (req: Request, res: Response) => {
         });
 
         // Event 2: Charging -> Available
-        if (s.endedAt <= toDate) {
+        if (s.endedAt && s.endedAt <= toDate) {
              history.push({
                 timeref: s.endedAt,
                 old_state: "charging",
