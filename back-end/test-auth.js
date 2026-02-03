@@ -1,7 +1,7 @@
 //back-end/test-auth.js
 // Run this with: node test-auth.js
 
-const BASE_URL = 'http://localhost:3000/api/v1';
+const BASE_URL = 'http://localhost:9876/api/v1';
 
 async function testAuth() {
   console.log('🚀 Starting Auth Tests...\n');

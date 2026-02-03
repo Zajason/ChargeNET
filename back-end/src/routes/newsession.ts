@@ -20,7 +20,8 @@ const handleNewSession = async (req: Request, res: Response) => {
         amount 
     } = req.body;
 
-    if (!pointid || !starttime || !endtime || !totalkwh) {
+    // 1. Έλεγχος πληρότητας πεδίων -> 400 Bad Request
+    if (!pointid || !starttime || !endtime || !totalkwh || kwhprice === undefined || amount === undefined) {
         const err = makeErrorLog(req, 400, "Missing required fields");
         return res.status(400).json(err);
     }
@@ -30,7 +31,17 @@ const handleNewSession = async (req: Request, res: Response) => {
         return res.status(401).json({ error: "Unauthorized" });
     }
 
-    // Parse Dates
+    // 2. Έλεγχος ύπαρξης φορτιστή
+    // Αν δεν υπάρχει, επιστρέφουμε 400 (σύμφωνα με τις προδιαγραφές) αντί για 404
+    const charger = await prisma.charger.findUnique({
+        where: { id: Number(pointid) }
+    });
+
+    if (!charger) {
+        return res.status(400).json(makeErrorLog(req, 400, "Invalid pointid: Charger not found"));
+    }
+
+    // 3. Έλεγχος ημερομηνιών -> 400 Bad Request
     const start = new Date(starttime);
     const end = new Date(endtime);
     
@@ -39,6 +50,7 @@ const handleNewSession = async (req: Request, res: Response) => {
         return res.status(400).json(err);
     }
 
+    // Δημιουργία Session με τις τιμές που έδωσε ο ΧΡΗΣΤΗΣ (Custom Values)
     await prisma.session.create({
         data: {
             userId: userId,
@@ -46,13 +58,13 @@ const handleNewSession = async (req: Request, res: Response) => {
             startedAt: start,
             endedAt: end,
             kWh: Number(totalkwh),
-            pricePerKWh: Number(kwhprice || 0),
-            costEur: Number(amount || 0),
+            pricePerKWh: Number(kwhprice), // Τιμή από το body
+            costEur: Number(amount),       // Τιμή από το body
             status: SessionStatus.COMPLETED, 
         }
     });
 
-    // Success: Empty Body
+    // Success: Empty Body (200 OK)
     return res.status(200).send();
 
   } catch (err: any) {

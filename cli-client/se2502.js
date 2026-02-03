@@ -6,7 +6,7 @@ const path = require('path');
 const FormData = require('form-data');
 const program = new Command();
 
-const BASE_URL = 'http://localhost:3000/api/v1';
+const BASE_URL = 'http://localhost:9876/api/v1';
 const TOKEN_FILE = path.join(__dirname, '.softeng_token');
 
 // --- ΒΟΗΘΗΤΙΚΗ ΣΥΝΑΡΤΗΣΗ ΓΙΑ ΤΟ TOKEN ---
@@ -438,6 +438,8 @@ function handleError(error) {
     } else {
         console.error("Error:", error.message);
     }
+    // Τερματισμός με Error Code
+    process.exit(1);
 }
 
 program.parse(process.argv);

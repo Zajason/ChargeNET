@@ -40,7 +40,7 @@ export default function ReportProblemScreen() {
         description: '',
         email: '',
       });
-    }, 3000);
+    }, 9876);
   };
 
   const handleReset = () => {

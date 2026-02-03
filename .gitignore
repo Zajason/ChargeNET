@@ -4,8 +4,17 @@ dist
 coverage
 .vscode
 .DS_Store
-
-# Next.js build output
-front-end/.next/
+# Next.js
 .next/
 out/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Env files
+.env*.local
+
+front-end/.next/
