@@ -1,3 +1,4 @@
+// hooks/useFetchChargers.ts
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,9 +8,10 @@ import { fetchChargers } from "../utils/api";
 type ApiPoint = {
   pointid: number | string;
   lat: string | number;
-  lon: string | number;
-  status: string;
-  cap: number;
+  lng?: string | number; // ✅ might exist
+  lon?: string | number; // ✅ might exist
+  status?: string;
+  cap?: number;
   kwhprice?: number;
 
   name?: string;
@@ -17,6 +19,31 @@ type ApiPoint = {
   providerName?: string;
   connectorType?: string; // "CCS" | "CHADEMO" | "TYPE2"
 };
+
+function toNumber(value: unknown): number {
+  if (typeof value === "number") return value;
+  if (typeof value === "string") return parseFloat(value);
+  return NaN;
+}
+
+function normalizeStatus(s: unknown): Charger["status"] {
+  const v = String(s ?? "available").toLowerCase();
+
+  // handle a few common variants safely
+  if (v === "available") return "available";
+  if (v === "in_use" || v === "inuse" || v === "in-use" || v === "busy") return "in_use";
+  if (v === "outage" || v === "offline" || v === "down") return "outage";
+
+  return "available";
+}
+
+function normalizeConnector(c: unknown): Charger["connectorType"] {
+  const v = String(c ?? "TYPE2").toUpperCase();
+
+  if (v === "CCS") return "CCS";
+  if (v === "CHADEMO") return "CHADEMO";
+  return "TYPE2";
+}
 
 export function useFetchChargers() {
   const [chargers, setChargers] = useState<Charger[]>([]);
@@ -30,31 +57,51 @@ export function useFetchChargers() {
         setError(null);
 
         const data = await fetchChargers();
-        const points: ApiPoint[] = data.points ?? [];
 
-        const normalized: Charger[] = points.map((p) => ({
-          id: String(p.pointid),
-          lat: typeof p.lat === "string" ? parseFloat(p.lat) : p.lat,
-          lng: typeof p.lon === "string" ? parseFloat(p.lon) : p.lon,
+        // ✅ backend might return [] OR { points: [] }
+        const points: ApiPoint[] = Array.isArray(data) ? data : (data?.points ?? []);
 
-          status: (p.status ?? "available").toLowerCase() as Charger["status"],
+        const normalized: Charger[] = points
+          .filter((p) => {
+            const rawLng = p.lng ?? p.lon;
+            const lat = toNumber(p.lat);
+            const lng = toNumber(rawLng);
+            return Number.isFinite(lat) && Number.isFinite(lng);
+          })
+          .map((p) => {
+            // ✅ accept both lng and lon (lon has priority fallback)
+            const rawLng = p.lng ?? p.lon;
 
-          // ✅ extra fields you asked for
-          name: p.name ?? "Unknown charger",
-          address: p.address ?? "",
-          connectorType: (p.connectorType ?? "TYPE2") as Charger["connectorType"],
-          maxKW: p.cap,
-          kwhprice: p.kwhprice ?? 0.25,
-          providerName: p.providerName ?? "Unknown",
-        }));
+            const lat = toNumber(p.lat);
+            const lng = toNumber(rawLng);
+
+            return {
+              id: String(p.pointid),
+              lat,
+              lng,
+              status: normalizeStatus(p.status),
+
+              name: p.name ?? "Unknown charger",
+              address: p.address ?? "",
+              providerName: p.providerName ?? "Unknown",
+
+              connectorType: normalizeConnector(p.connectorType),
+              maxKW: Number(p.cap ?? 0),
+              kwhprice: Number(p.kwhprice ?? 0.25),
+            } satisfies Charger;
+          });
+
+        console.log("normalized chargers:", normalized.length, normalized[0]);
 
         setChargers(normalized);
       } catch (err: any) {
+        console.error(err);
         setError(err?.message ?? "Failed to load chargers");
       } finally {
         setLoading(false);
       }
     }
+
     load();
   }, []);
 
