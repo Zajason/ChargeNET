@@ -22,6 +22,8 @@ enum ConnectorType {
   CCS
   CHADEMO // (avoid special characters; all caps is simplest)
   TYPE2
+  TYPE1
+  SCHUKO
 }
 
 enum ReservationStatus {
@@ -56,7 +58,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  vehicles       Vehicle[]
+  carOwnerships CarOwnership[]
   paymentMethods PaymentMethod[]
   reservations   Reservation[]
   sessions       Session[]
@@ -65,17 +67,51 @@ model User {
   auditEvents    AuditEvent[]
 }
 
-model Vehicle {
-  id         Int      @id @default(autoincrement())
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     Int
-  make       String
-  model      String
-  batteryKWh Float
-  maxKW      Float
-  createdAt  DateTime @default(now())
+enum CarColor {
+  RED
+  BLUE
+  YELLOW
+  WHITE
+  BLACK
+  SILVER
+  GREY
+  GREEN
+  ORANGE
+  PURPLE
 }
 
+// ---------- Cars ----------
+model Car {
+  id                Int      @id @default(autoincrement())
+  brand             String
+  model             String
+  variant           String?
+  usableBatteryKWh  Float
+  acMaxKW           Float
+  dcMaxKW           Float
+  dcChargingCurve   Json        // example: [{"percentage":0,"power":80.75}, ...]
+  dcCurveIsDefault  Boolean     @default(true)
+  dcPorts           ConnectorType[]  // example: ["CCS"]
+  acPorts           ConnectorType[]  // example: ["TYPE2"]
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  ownerships        CarOwnership[]
+}
+
+model CarOwnership {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  car       Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
+  carId     Int
+  color     CarColor
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([carId])
+}
 // ---------- Catalog ----------
 model Charger {
   id               Int             @id @default(autoincrement())

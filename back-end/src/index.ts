@@ -14,6 +14,8 @@ import sessionsRouter from "./routes/sessions.ts";
 import pointStatusRouter from "./routes/pointstatus.ts";
 import paymentRouter from "./routes/payment.ts";
 import { schedulePricingUpdates } from "./pricing/scheduler.ts";
+import carsRouter from './routes/cars.ts'
+import carOwnershipRouter from "./routes/carOwnership.ts"
 
 const app = express();
 
@@ -33,6 +35,8 @@ app.use("/api/v1/newsession", newsessionRouter);
 app.use("/api/v1/sessions", sessionsRouter);
 app.use("/api/v1/pointstatus", pointStatusRouter);
 app.use("/api/v1/payments", paymentRouter);
+app.use('/api/v1/cars', carsRouter)
+app.use("/api/v1/car-ownership", carOwnershipRouter)
 
 // simple generic system health
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
