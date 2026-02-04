@@ -39,6 +39,7 @@ const getPointStatus = async (req: Request, res: Response) => {
         return res.status(400).json(makeErrorLog(req, 400, "Invalid date format"));
     }
 
+    // 1. Φέρνουμε τα Sessions (Φορτίσεις)
     const sessions = await prisma.session.findMany({
         where: {
             chargerId: chargerId,
@@ -46,22 +47,50 @@ const getPointStatus = async (req: Request, res: Response) => {
         }
     });
 
+    // 2. Φέρνουμε τα Reservations (Κρατήσεις) - ΠΡΟΣΘΗΚΗ
+    const reservations = await prisma.reservation.findMany({
+        where: {
+            chargerId: chargerId,
+            startsAt: { gte: fromDate, lte: toDate }
+        }
+    });
+
     let history: any[] = [];
 
-    // Construct events from sessions
+    // --- Επεξεργασία Sessions ---
     sessions.forEach(s => {
-        // Event 1: Available -> Charging
+        // Available (or Reserved) -> Charging
         history.push({
             timeref: s.startedAt,
-            old_state: "available",
+            old_state: "available", // Ή 'reserved' αν υπήρχε κράτηση, αλλά για απλότητα 'available'
             new_state: "charging" 
         });
 
-        // Event 2: Charging -> Available
+        // Charging -> Available
         if (s.endedAt && s.endedAt <= toDate) {
              history.push({
                 timeref: s.endedAt,
                 old_state: "charging",
+                new_state: "available"
+            });
+        }
+    });
+
+    // --- Επεξεργασία Reservations (ΠΡΟΣΘΗΚΗ) ---
+    reservations.forEach(r => {
+        // Event: Available -> Reserved
+        history.push({
+            timeref: r.startsAt,
+            old_state: "available",
+            new_state: "reserved"
+        });
+
+        // Αν έληξε και δεν έγινε Session (Status = EXPIRED), τότε Reserved -> Available
+        // (Αν έγινε session, το αναλαμβάνει το session logic παραπάνω)
+        if (r.status === 'EXPIRED' && r.expiresAt <= toDate) {
+             history.push({
+                timeref: r.expiresAt,
+                old_state: "reserved",
                 new_state: "available"
             });
         }
