@@ -1,16 +1,21 @@
 import { updatePricesForAllChargers } from "./engine.ts";
 
-/**
- * Run once every hour.
- * In production you might replace this with a cron service.
- */
 export function schedulePricingUpdates() {
   const oneHour = 60 * 60 * 1000;
+  let running = false;
 
-  // Run immediately on startup
-  updatePricesForAllChargers().catch(console.error);
+  const tick = async () => {
+    if (running) return;
+    running = true;
+    try {
+      await updatePricesForAllChargers();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      running = false;
+    }
+  };
 
-  setInterval(() => {
-    updatePricesForAllChargers().catch(console.error);
-  }, oneHour);
+  tick();
+  setInterval(tick, oneHour);
 }

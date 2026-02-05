@@ -1,47 +1,67 @@
 import { ConnectorType } from "@prisma/client";
 
-/**
- * Basic rule set for applying markup on wholesale prices.
- */
+function roundToCents(x: number) {
+  return Math.round(x * 100) / 100;
+}
+function clamp(x: number, lo: number, hi: number) {
+  return Math.max(lo, Math.min(hi, x));
+}
+
+// peak window: 18:00–22:00 local time
+function isPeakHourLocal(now = new Date()) {
+  const h = now.getHours(); // server local time (set TZ properly in prod)
+  return h >= 18 && h < 22;
+}
+
 export function computeRetailPrice({
   wholesaleEurPerKWh,
   connectorType,
   maxKW,
+  now = new Date(),
 }: {
   wholesaleEurPerKWh: number;
   connectorType: ConnectorType | string;
   maxKW: number;
+  now?: Date;
 }): number {
-  const baseMarkup = 0.05; // 5 cent markup baseline
-  let connectorPremium = 0;
+  const isDC = maxKW >= 40 || connectorType === "CCS" || connectorType === "CHADEMO";
 
-  switch (connectorType) {
-    case "CCS":
-      connectorPremium = 0.08;
-      break;
-    case "CHADEMO":
-      connectorPremium = 0.06;
-      break;
-    case "TYPE2":
-      connectorPremium = 0.05;
-      break;
-    default:
-      connectorPremium = 0.05;
-  }
+  const VAT = 0.24;
 
-  const powerPremium = maxKW > 50 ? 0.07 : 0;
+  const operatorFee = isDC ? 0.05 : 0.03;
+  const gridAdder = isDC ? 0.06 : 0.03;
 
-  const finalPrice = wholesaleEurPerKWh + baseMarkup + connectorPremium + powerPremium;
+  const marginRate = isDC ? 0.35 : 0.22;
 
-  // round sensibly
-  return Number(finalPrice.toFixed(4));
+  const connectorPremium =
+    connectorType === "CCS" ? 0.03 :
+    connectorType === "CHADEMO" ? 0.02 :
+    connectorType === "TYPE2" ? 0.00 : 0.01;
+
+  const powerPremium = isDC ? clamp((maxKW - 50) * 0.0009, 0, 0.12) : 0;
+
+  // ✅ peak adder (your values)
+  const peakAdder = isPeakHourLocal(now) ? (isDC ? 0.05 : 0.03) : 0;
+
+  const energyComponent = clamp(wholesaleEurPerKWh, 0.0, 1.5);
+
+  const preMargin =
+    energyComponent +
+    operatorFee +
+    gridAdder +
+    connectorPremium +
+    powerPremium +
+    peakAdder;
+
+  const withMargin = preMargin * (1 + marginRate);
+  const withVat = withMargin * (1 + VAT);
+
+  const floored = isDC ? Math.max(withVat, 0.39) : Math.max(withVat, 0.19);
+  const capped = isDC ? Math.min(floored, 0.99) : Math.min(floored, 0.69);
+
+  return roundToCents(capped);
 }
 
-/**
- * Very simple lat/lng → zone mapper.
- * Extend with real polygons if you have chargers in several countries.
- */
 export function mapLatLngToZone(lat: number, lng: number): string {
-  // Currently always return GR zone
   return "10YGR-HTSO-----Y";
 }
