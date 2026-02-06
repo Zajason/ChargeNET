@@ -37,14 +37,13 @@ export async function updatePricesForAllChargers() {
 
       const wholesaleEurPerKWh =
         wholesale[zone] ?? Object.values(wholesale)[0] ?? 0.12;
-        const now = new Date();
 
-        const target = computeRetailPrice({
-          wholesaleEurPerKWh,
-          connectorType: c.connectorType,
-          maxKW: c.maxKW,
-          now,
-        });
+      const target = computeRetailPrice({
+        wholesaleEurPerKWh,
+        connectorType: c.connectorType,
+        maxKW: c.maxKW,
+      });
+
       const smoothed = roundToCents(blend(c.kwhprice, target, 0.35));
 
       // Skip microscopic updates (avoids “thrashing”)

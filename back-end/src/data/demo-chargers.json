@@ -1421,5 +1421,5005 @@
     "maxKW": 120.0,
     "status": "OUTAGE",
     "providerName": "Volton eCharge"
+  },
+  {
+    "name": "Berlin Charger 001",
+    "address": "Berlin Marina Parking 1, Germany",
+    "lat": 52.50621,
+    "lng": 13.372979,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Thessaloniki Charger 002",
+    "address": "Thessaloniki Metro Station 2, Greece",
+    "lat": 40.630466,
+    "lng": 22.949245,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Larisa Charger 003",
+    "address": "Larisa Park & Ride 3, Greece",
+    "lat": 39.645995,
+    "lng": 22.407155,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Ioannina Charger 004",
+    "address": "Ioannina Marina Parking 4, Greece",
+    "lat": 39.661189,
+    "lng": 20.848221,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Larisa Charger 005",
+    "address": "Larisa Metro Station 5, Greece",
+    "lat": 39.643181,
+    "lng": 22.433459,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Rotterdam Charger 006",
+    "address": "Rotterdam Supermarket Lot 6, Netherlands",
+    "lat": 51.921882,
+    "lng": 4.506985,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Fastned"
+  },
+  {
+    "name": "Hamburg Charger 007",
+    "address": "Hamburg Public Parking 7, Germany",
+    "lat": 53.53897,
+    "lng": 9.986388,
+    "connectorType": "SCHUKO",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Athens Charger 008",
+    "address": "Athens Stadium Lot 8, Greece",
+    "lat": 37.978458,
+    "lng": 23.697749,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Chania Charger 009",
+    "address": "Chania Marina Parking 9, Greece",
+    "lat": 35.505327,
+    "lng": 24.006783,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Patras Charger 010",
+    "address": "Patras Supermarket Lot 10, Greece",
+    "lat": 38.209745,
+    "lng": 21.682648,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Ioannina Charger 011",
+    "address": "Ioannina University Lot 11, Greece",
+    "lat": 39.667623,
+    "lng": 20.908831,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Marseille Charger 012",
+    "address": "Marseille University Lot 12, France",
+    "lat": 43.275503,
+    "lng": 5.364955,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "IN_USE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Marseille Charger 013",
+    "address": "Marseille University Lot 13, France",
+    "lat": 43.306514,
+    "lng": 5.362315,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Prague Charger 014",
+    "address": "Prague Public Parking 14, Czechia",
+    "lat": 50.074884,
+    "lng": 14.405109,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "CEZ Charging"
+  },
+  {
+    "name": "Rhodes Charger 015",
+    "address": "Rhodes Stadium Lot 15, Greece",
+    "lat": 36.422801,
+    "lng": 28.217129,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Prague Charger 016",
+    "address": "Prague Metro Station 16, Czechia",
+    "lat": 50.076996,
+    "lng": 14.446778,
+    "connectorType": "TYPE1",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Lyon Charger 017",
+    "address": "Lyon University Lot 17, France",
+    "lat": 45.760654,
+    "lng": 4.837062,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "ChargePoint Europe"
+  },
+  {
+    "name": "Heraklion Charger 018",
+    "address": "Heraklion University Lot 18, Greece",
+    "lat": 35.327105,
+    "lng": 25.148544,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "IN_USE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Chania Charger 019",
+    "address": "Chania Marina Parking 19, Greece",
+    "lat": 35.515214,
+    "lng": 24.027888,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Thessaloniki Charger 020",
+    "address": "Thessaloniki Shopping Area 20, Greece",
+    "lat": 40.626974,
+    "lng": 22.933846,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Volos Charger 021",
+    "address": "Volos Shopping Area 21, Greece",
+    "lat": 39.354207,
+    "lng": 22.931171,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Kalamata Charger 022",
+    "address": "Kalamata Metro Station 22, Greece",
+    "lat": 37.026754,
+    "lng": 22.131105,
+    "connectorType": "CHADEMO",
+    "maxKW": 100.0,
+    "status": "IN_USE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Chania Charger 023",
+    "address": "Chania Stadium Lot 23, Greece",
+    "lat": 35.488011,
+    "lng": 24.007047,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "OUTAGE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Kalamata Charger 024",
+    "address": "Kalamata Park & Ride 24, Greece",
+    "lat": 37.007801,
+    "lng": 22.091256,
+    "connectorType": "TYPE1",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Rhodes Charger 025",
+    "address": "Rhodes Shopping Area 25, Greece",
+    "lat": 36.434257,
+    "lng": 28.257096,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Turin Charger 026",
+    "address": "Turin Marina Parking 26, Italy",
+    "lat": 45.066832,
+    "lng": 7.709433,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Enel X Way"
+  },
+  {
+    "name": "Hamburg Charger 027",
+    "address": "Hamburg Stadium Lot 27, Germany",
+    "lat": 53.574598,
+    "lng": 9.966792,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Thessaloniki Charger 028",
+    "address": "Thessaloniki Business Park 28, Greece",
+    "lat": 40.638973,
+    "lng": 22.962154,
+    "connectorType": "SCHUKO",
+    "maxKW": 2.3,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Vienna Charger 029",
+    "address": "Vienna University Lot 29, Austria",
+    "lat": 48.203498,
+    "lng": 16.355293,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "SMATRICS"
+  },
+  {
+    "name": "Thessaloniki Charger 030",
+    "address": "Thessaloniki Park & Ride 30, Greece",
+    "lat": 40.631612,
+    "lng": 22.962907,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Larisa Charger 031",
+    "address": "Larisa Public Parking 31, Greece",
+    "lat": 39.616578,
+    "lng": 22.46685,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "IN_USE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Patras Charger 032",
+    "address": "Patras Business Park 32, Greece",
+    "lat": 38.228307,
+    "lng": 21.730597,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Volos Charger 033",
+    "address": "Volos Park & Ride 33, Greece",
+    "lat": 39.35847,
+    "lng": 22.920645,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "OUTAGE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Heraklion Charger 034",
+    "address": "Heraklion Business Park 34, Greece",
+    "lat": 35.334745,
+    "lng": 25.146184,
+    "connectorType": "CHADEMO",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Warsaw Charger 035",
+    "address": "Warsaw City Hall Lot 35, Poland",
+    "lat": 52.186888,
+    "lng": 21.046995,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Orlen Charge"
+  },
+  {
+    "name": "Thessaloniki Charger 036",
+    "address": "Thessaloniki Metro Station 36, Greece",
+    "lat": 40.673629,
+    "lng": 22.986974,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Heraklion Charger 037",
+    "address": "Heraklion University Lot 37, Greece",
+    "lat": 35.323228,
+    "lng": 25.184439,
+    "connectorType": "TYPE1",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Athens Charger 038",
+    "address": "Athens Marina Parking 38, Greece",
+    "lat": 37.99399,
+    "lng": 23.719312,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Volos Charger 039",
+    "address": "Volos Marina Parking 39, Greece",
+    "lat": 39.370568,
+    "lng": 22.943331,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Kalamata Charger 040",
+    "address": "Kalamata Shopping Area 40, Greece",
+    "lat": 37.034007,
+    "lng": 22.094786,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Lyon Charger 041",
+    "address": "Lyon Business Park 41, France",
+    "lat": 45.773021,
+    "lng": 4.822232,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Allego"
+  },
+  {
+    "name": "Milan Charger 042",
+    "address": "Milan Stadium Lot 42, Italy",
+    "lat": 45.468519,
+    "lng": 9.125826,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Heraklion Charger 043",
+    "address": "Heraklion Supermarket Lot 43, Greece",
+    "lat": 35.365163,
+    "lng": 25.194983,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Heraklion Charger 044",
+    "address": "Heraklion Shopping Area 44, Greece",
+    "lat": 35.323816,
+    "lng": 25.124263,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Rhodes Charger 045",
+    "address": "Rhodes Shopping Area 45, Greece",
+    "lat": 36.441868,
+    "lng": 28.212403,
+    "connectorType": "CCS",
+    "maxKW": 75.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Paris Charger 046",
+    "address": "Paris Stadium Lot 46, France",
+    "lat": 48.867559,
+    "lng": 2.36293,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "IN_USE",
+    "providerName": "TotalEnergies Charge"
+  },
+  {
+    "name": "Chania Charger 047",
+    "address": "Chania University Lot 47, Greece",
+    "lat": 35.538126,
+    "lng": 24.043994,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Patras Charger 048",
+    "address": "Patras Metro Station 48, Greece",
+    "lat": 38.242102,
+    "lng": 21.763482,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Thessaloniki Charger 049",
+    "address": "Thessaloniki Business Park 49, Greece",
+    "lat": 40.625748,
+    "lng": 22.932707,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Berlin Charger 050",
+    "address": "Berlin Public Parking 50, Germany",
+    "lat": 52.511676,
+    "lng": 13.411309,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Valencia Charger 051",
+    "address": "Valencia University Lot 51, Spain",
+    "lat": 39.467826,
+    "lng": -0.324631,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "IN_USE",
+    "providerName": "Repsol EV"
+  },
+  {
+    "name": "Marseille Charger 052",
+    "address": "Marseille Business Park 52, France",
+    "lat": 43.296076,
+    "lng": 5.358557,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Allego"
+  },
+  {
+    "name": "Madrid Charger 053",
+    "address": "Madrid Business Park 53, Spain",
+    "lat": 40.427798,
+    "lng": -3.700538,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Repsol EV"
+  },
+  {
+    "name": "Ioannina Charger 054",
+    "address": "Ioannina Marina Parking 54, Greece",
+    "lat": 39.649414,
+    "lng": 20.841541,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Thessaloniki Charger 055",
+    "address": "Thessaloniki Public Parking 55, Greece",
+    "lat": 40.596801,
+    "lng": 22.94908,
+    "connectorType": "SCHUKO",
+    "maxKW": 2.3,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Paris Charger 056",
+    "address": "Paris Stadium Lot 56, France",
+    "lat": 48.868824,
+    "lng": 2.358846,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Munich Charger 057",
+    "address": "Munich Shopping Area 57, Germany",
+    "lat": 48.138916,
+    "lng": 11.60704,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Milan Charger 058",
+    "address": "Milan City Hall Lot 58, Italy",
+    "lat": 45.45489,
+    "lng": 9.217619,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Enel X Way"
+  },
+  {
+    "name": "Valencia Charger 059",
+    "address": "Valencia University Lot 59, Spain",
+    "lat": 39.477906,
+    "lng": -0.373992,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "Iberdrola Public Charging"
+  },
+  {
+    "name": "Berlin Charger 060",
+    "address": "Berlin Marina Parking 60, Germany",
+    "lat": 52.549039,
+    "lng": 13.346597,
+    "connectorType": "TYPE1",
+    "maxKW": 7.4,
+    "status": "IN_USE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Kalamata Charger 061",
+    "address": "Kalamata City Hall Lot 61, Greece",
+    "lat": 37.045166,
+    "lng": 22.142616,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "IN_USE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Heraklion Charger 062",
+    "address": "Heraklion Public Parking 62, Greece",
+    "lat": 35.332725,
+    "lng": 25.14257,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Volos Charger 063",
+    "address": "Volos University Lot 63, Greece",
+    "lat": 39.360551,
+    "lng": 22.935234,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Heraklion Charger 064",
+    "address": "Heraklion Stadium Lot 64, Greece",
+    "lat": 35.33171,
+    "lng": 25.1411,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Athens Charger 065",
+    "address": "Athens University Lot 65, Greece",
+    "lat": 37.978239,
+    "lng": 23.724222,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Kalamata Charger 066",
+    "address": "Kalamata Shopping Area 66, Greece",
+    "lat": 37.03089,
+    "lng": 22.111068,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Marseille Charger 067",
+    "address": "Marseille City Hall Lot 67, France",
+    "lat": 43.285384,
+    "lng": 5.381614,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "ChargePoint Europe"
+  },
+  {
+    "name": "Warsaw Charger 068",
+    "address": "Warsaw University Lot 68, Poland",
+    "lat": 52.214969,
+    "lng": 20.98391,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "GreenWay Polska"
+  },
+  {
+    "name": "Patras Charger 069",
+    "address": "Patras City Hall Lot 69, Greece",
+    "lat": 38.210797,
+    "lng": 21.678651,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Prague Charger 070",
+    "address": "Prague Supermarket Lot 70, Czechia",
+    "lat": 50.084206,
+    "lng": 14.433619,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "CEZ Charging"
+  },
+  {
+    "name": "Prague Charger 071",
+    "address": "Prague Marina Parking 71, Czechia",
+    "lat": 50.061751,
+    "lng": 14.452649,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Chania Charger 072",
+    "address": "Chania Shopping Area 72, Greece",
+    "lat": 35.533268,
+    "lng": 24.050542,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Prague Charger 073",
+    "address": "Prague Stadium Lot 73, Czechia",
+    "lat": 50.067019,
+    "lng": 14.414284,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Munich Charger 074",
+    "address": "Munich City Hall Lot 74, Germany",
+    "lat": 48.109837,
+    "lng": 11.564838,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Marseille Charger 075",
+    "address": "Marseille Public Parking 75, France",
+    "lat": 43.293802,
+    "lng": 5.372006,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "IN_USE",
+    "providerName": "TotalEnergies Charge"
+  },
+  {
+    "name": "Larisa Charger 076",
+    "address": "Larisa Stadium Lot 76, Greece",
+    "lat": 39.635711,
+    "lng": 22.416903,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Rhodes Charger 077",
+    "address": "Rhodes Supermarket Lot 77, Greece",
+    "lat": 36.444525,
+    "lng": 28.225479,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Rome Charger 078",
+    "address": "Rome Business Park 78, Italy",
+    "lat": 41.906921,
+    "lng": 12.515509,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Gothenburg Charger 079",
+    "address": "Gothenburg Park & Ride 79, Sweden",
+    "lat": 57.751157,
+    "lng": 11.969543,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Chania Charger 080",
+    "address": "Chania Park & Ride 80, Greece",
+    "lat": 35.522588,
+    "lng": 24.011389,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Ioannina Charger 081",
+    "address": "Ioannina Stadium Lot 81, Greece",
+    "lat": 39.669261,
+    "lng": 20.855195,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Berlin Charger 082",
+    "address": "Berlin Supermarket Lot 82, Germany",
+    "lat": 52.511606,
+    "lng": 13.383148,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "E.ON Drive"
+  },
+  {
+    "name": "Valencia Charger 083",
+    "address": "Valencia Stadium Lot 83, Spain",
+    "lat": 39.46308,
+    "lng": -0.399002,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "IN_USE",
+    "providerName": "Iberdrola Public Charging"
+  },
+  {
+    "name": "Prague Charger 084",
+    "address": "Prague Metro Station 84, Czechia",
+    "lat": 50.114478,
+    "lng": 14.408582,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Patras Charger 085",
+    "address": "Patras Marina Parking 85, Greece",
+    "lat": 38.218727,
+    "lng": 21.746,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Kalamata Charger 086",
+    "address": "Kalamata Business Park 86, Greece",
+    "lat": 37.056227,
+    "lng": 22.099494,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "OUTAGE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Chania Charger 087",
+    "address": "Chania Metro Station 87, Greece",
+    "lat": 35.504743,
+    "lng": 24.035457,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "IN_USE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Rome Charger 088",
+    "address": "Rome Stadium Lot 88, Italy",
+    "lat": 41.861687,
+    "lng": 12.52602,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Warsaw Charger 089",
+    "address": "Warsaw Marina Parking 89, Poland",
+    "lat": 52.249684,
+    "lng": 21.045223,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "Orlen Charge"
+  },
+  {
+    "name": "Amsterdam Charger 090",
+    "address": "Amsterdam University Lot 90, Netherlands",
+    "lat": 52.366775,
+    "lng": 4.924869,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "EVBox Network"
+  },
+  {
+    "name": "Volos Charger 091",
+    "address": "Volos Shopping Area 91, Greece",
+    "lat": 39.394548,
+    "lng": 22.887922,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "IN_USE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Thessaloniki Charger 092",
+    "address": "Thessaloniki Park & Ride 92, Greece",
+    "lat": 40.638578,
+    "lng": 22.95131,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Patras Charger 093",
+    "address": "Patras Marina Parking 93, Greece",
+    "lat": 38.247723,
+    "lng": 21.737625,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Rome Charger 094",
+    "address": "Rome Stadium Lot 94, Italy",
+    "lat": 41.939992,
+    "lng": 12.453202,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "Enel X Way"
+  },
+  {
+    "name": "Amsterdam Charger 095",
+    "address": "Amsterdam Stadium Lot 95, Netherlands",
+    "lat": 52.366025,
+    "lng": 4.897264,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "EVBox Network"
+  },
+  {
+    "name": "Madrid Charger 096",
+    "address": "Madrid Public Parking 96, Spain",
+    "lat": 40.448632,
+    "lng": -3.750345,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Krakow Charger 097",
+    "address": "Krakow City Hall Lot 97, Poland",
+    "lat": 50.038111,
+    "lng": 19.975741,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "IN_USE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Paris Charger 098",
+    "address": "Paris Shopping Area 98, France",
+    "lat": 48.841411,
+    "lng": 2.326743,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Amsterdam Charger 099",
+    "address": "Amsterdam Marina Parking 99, Netherlands",
+    "lat": 52.383201,
+    "lng": 4.86279,
+    "connectorType": "CCS",
+    "maxKW": 75.0,
+    "status": "IN_USE",
+    "providerName": "EVBox Network"
+  },
+  {
+    "name": "Patras Charger 100",
+    "address": "Patras City Hall Lot 100, Greece",
+    "lat": 38.248268,
+    "lng": 21.763059,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "IN_USE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Lyon Charger 101",
+    "address": "Lyon University Lot 101, France",
+    "lat": 45.763144,
+    "lng": 4.819246,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Allego"
+  },
+  {
+    "name": "Ioannina Charger 102",
+    "address": "Ioannina Park & Ride 102, Greece",
+    "lat": 39.658634,
+    "lng": 20.840484,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Heraklion Charger 103",
+    "address": "Heraklion Stadium Lot 103, Greece",
+    "lat": 35.295909,
+    "lng": 25.186634,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Rotterdam Charger 104",
+    "address": "Rotterdam University Lot 104, Netherlands",
+    "lat": 51.889866,
+    "lng": 4.411282,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Allego"
+  },
+  {
+    "name": "Chania Charger 105",
+    "address": "Chania Marina Parking 105, Greece",
+    "lat": 35.523015,
+    "lng": 24.034146,
+    "connectorType": "TYPE1",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Munich Charger 106",
+    "address": "Munich Park & Ride 106, Germany",
+    "lat": 48.174654,
+    "lng": 11.552267,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Volos Charger 107",
+    "address": "Volos Metro Station 107, Greece",
+    "lat": 39.337246,
+    "lng": 22.926331,
+    "connectorType": "TYPE1",
+    "maxKW": 7.4,
+    "status": "IN_USE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Hamburg Charger 108",
+    "address": "Hamburg Metro Station 108, Germany",
+    "lat": 53.538953,
+    "lng": 9.986126,
+    "connectorType": "SCHUKO",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Rome Charger 109",
+    "address": "Rome University Lot 109, Italy",
+    "lat": 41.917631,
+    "lng": 12.517363,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "OUTAGE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Patras Charger 110",
+    "address": "Patras Public Parking 110, Greece",
+    "lat": 38.250953,
+    "lng": 21.71828,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Athens Charger 111",
+    "address": "Athens Supermarket Lot 111, Greece",
+    "lat": 37.992511,
+    "lng": 23.728693,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Kalamata Charger 112",
+    "address": "Kalamata Public Parking 112, Greece",
+    "lat": 37.054951,
+    "lng": 22.093585,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Chania Charger 113",
+    "address": "Chania Supermarket Lot 113, Greece",
+    "lat": 35.507158,
+    "lng": 23.97461,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "IN_USE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Patras Charger 114",
+    "address": "Patras Stadium Lot 114, Greece",
+    "lat": 38.25332,
+    "lng": 21.740475,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Ioannina Charger 115",
+    "address": "Ioannina Metro Station 115, Greece",
+    "lat": 39.672922,
+    "lng": 20.840162,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Heraklion Charger 116",
+    "address": "Heraklion City Hall Lot 116, Greece",
+    "lat": 35.324189,
+    "lng": 25.139064,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Patras Charger 117",
+    "address": "Patras Business Park 117, Greece",
+    "lat": 38.207603,
+    "lng": 21.772658,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Turin Charger 118",
+    "address": "Turin City Hall Lot 118, Italy",
+    "lat": 45.07949,
+    "lng": 7.680073,
+    "connectorType": "CHADEMO",
+    "maxKW": 62.5,
+    "status": "AVAILABLE",
+    "providerName": "Enel X Way"
+  },
+  {
+    "name": "Milan Charger 119",
+    "address": "Milan Park & Ride 119, Italy",
+    "lat": 45.466306,
+    "lng": 9.17893,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "TotalEnergies Charge"
+  },
+  {
+    "name": "Larisa Charger 120",
+    "address": "Larisa University Lot 120, Greece",
+    "lat": 39.650071,
+    "lng": 22.435252,
+    "connectorType": "SCHUKO",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Larisa Charger 121",
+    "address": "Larisa Business Park 121, Greece",
+    "lat": 39.630363,
+    "lng": 22.426214,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Milan Charger 122",
+    "address": "Milan Stadium Lot 122, Italy",
+    "lat": 45.454521,
+    "lng": 9.195132,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Volos Charger 123",
+    "address": "Volos Supermarket Lot 123, Greece",
+    "lat": 39.372978,
+    "lng": 22.961354,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Thessaloniki Charger 124",
+    "address": "Thessaloniki Shopping Area 124, Greece",
+    "lat": 40.637025,
+    "lng": 22.938987,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Thessaloniki Charger 125",
+    "address": "Thessaloniki Public Parking 125, Greece",
+    "lat": 40.649733,
+    "lng": 22.951034,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Larisa Charger 126",
+    "address": "Larisa Business Park 126, Greece",
+    "lat": 39.648634,
+    "lng": 22.431461,
+    "connectorType": "CCS",
+    "maxKW": 75.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Kalamata Charger 127",
+    "address": "Kalamata Marina Parking 127, Greece",
+    "lat": 37.038909,
+    "lng": 22.129249,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "IN_USE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Thessaloniki Charger 128",
+    "address": "Thessaloniki Park & Ride 128, Greece",
+    "lat": 40.644195,
+    "lng": 22.949629,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Rhodes Charger 129",
+    "address": "Rhodes Marina Parking 129, Greece",
+    "lat": 36.463912,
+    "lng": 28.264605,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Ioannina Charger 130",
+    "address": "Ioannina University Lot 130, Greece",
+    "lat": 39.678287,
+    "lng": 20.834149,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Volos Charger 131",
+    "address": "Volos Business Park 131, Greece",
+    "lat": 39.373291,
+    "lng": 22.964299,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Turin Charger 132",
+    "address": "Turin Supermarket Lot 132, Italy",
+    "lat": 45.061574,
+    "lng": 7.697342,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Hamburg Charger 133",
+    "address": "Hamburg City Hall Lot 133, Germany",
+    "lat": 53.570789,
+    "lng": 10.005275,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Milan Charger 134",
+    "address": "Milan Supermarket Lot 134, Italy",
+    "lat": 45.459076,
+    "lng": 9.188147,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "AVAILABLE",
+    "providerName": "Enel X Way"
+  },
+  {
+    "name": "Milan Charger 135",
+    "address": "Milan Metro Station 135, Italy",
+    "lat": 45.471437,
+    "lng": 9.248347,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "IN_USE",
+    "providerName": "TotalEnergies Charge"
+  },
+  {
+    "name": "Chania Charger 136",
+    "address": "Chania University Lot 136, Greece",
+    "lat": 35.530294,
+    "lng": 24.01581,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "OUTAGE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Berlin Charger 137",
+    "address": "Berlin Marina Parking 137, Germany",
+    "lat": 52.527482,
+    "lng": 13.434077,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Volos Charger 138",
+    "address": "Volos City Hall Lot 138, Greece",
+    "lat": 39.368817,
+    "lng": 22.947149,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Marseille Charger 139",
+    "address": "Marseille Business Park 139, France",
+    "lat": 43.290495,
+    "lng": 5.373897,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "OUTAGE",
+    "providerName": "Allego"
+  },
+  {
+    "name": "Rome Charger 140",
+    "address": "Rome Shopping Area 140, Italy",
+    "lat": 41.905985,
+    "lng": 12.506821,
+    "connectorType": "CCS",
+    "maxKW": 75.0,
+    "status": "AVAILABLE",
+    "providerName": "TotalEnergies Charge"
+  },
+  {
+    "name": "Munich Charger 141",
+    "address": "Munich Metro Station 141, Germany",
+    "lat": 48.109058,
+    "lng": 11.566519,
+    "connectorType": "TYPE1",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Stockholm Charger 142",
+    "address": "Stockholm Park & Ride 142, Sweden",
+    "lat": 59.323781,
+    "lng": 18.083866,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "Vattenfall InCharge"
+  },
+  {
+    "name": "Amsterdam Charger 143",
+    "address": "Amsterdam Public Parking 143, Netherlands",
+    "lat": 52.336452,
+    "lng": 4.85701,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "IN_USE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Heraklion Charger 144",
+    "address": "Heraklion Stadium Lot 144, Greece",
+    "lat": 35.348664,
+    "lng": 25.172074,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Amsterdam Charger 145",
+    "address": "Amsterdam University Lot 145, Netherlands",
+    "lat": 52.377238,
+    "lng": 4.910334,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Patras Charger 146",
+    "address": "Patras Shopping Area 146, Greece",
+    "lat": 38.257456,
+    "lng": 21.718008,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "IN_USE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Marseille Charger 147",
+    "address": "Marseille Shopping Area 147, France",
+    "lat": 43.290691,
+    "lng": 5.379571,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Allego"
+  },
+  {
+    "name": "Prague Charger 148",
+    "address": "Prague Shopping Area 148, Czechia",
+    "lat": 50.110151,
+    "lng": 14.498228,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Athens Charger 149",
+    "address": "Athens Stadium Lot 149, Greece",
+    "lat": 38.007088,
+    "lng": 23.750761,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Berlin Charger 150",
+    "address": "Berlin Supermarket Lot 150, Germany",
+    "lat": 52.51537,
+    "lng": 13.331749,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "IN_USE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Thessaloniki Charger 151",
+    "address": "Thessaloniki Shopping Area 151, Greece",
+    "lat": 40.625918,
+    "lng": 22.917462,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Barcelona Charger 152",
+    "address": "Barcelona Metro Station 152, Spain",
+    "lat": 41.388666,
+    "lng": 2.176103,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Rome Charger 153",
+    "address": "Rome University Lot 153, Italy",
+    "lat": 41.903435,
+    "lng": 12.491338,
+    "connectorType": "TYPE1",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "TotalEnergies Charge"
+  },
+  {
+    "name": "Chania Charger 154",
+    "address": "Chania Metro Station 154, Greece",
+    "lat": 35.517467,
+    "lng": 24.033972,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Marseille Charger 155",
+    "address": "Marseille Stadium Lot 155, France",
+    "lat": 43.303838,
+    "lng": 5.378534,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Krakow Charger 156",
+    "address": "Krakow Metro Station 156, Poland",
+    "lat": 50.075925,
+    "lng": 19.920473,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "GreenWay Polska"
+  },
+  {
+    "name": "Rotterdam Charger 157",
+    "address": "Rotterdam City Hall Lot 157, Netherlands",
+    "lat": 51.925232,
+    "lng": 4.520572,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "Allego"
+  },
+  {
+    "name": "Athens Charger 158",
+    "address": "Athens Park & Ride 158, Greece",
+    "lat": 37.971541,
+    "lng": 23.748029,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Krakow Charger 159",
+    "address": "Krakow Supermarket Lot 159, Poland",
+    "lat": 50.052749,
+    "lng": 19.986723,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Stockholm Charger 160",
+    "address": "Stockholm Business Park 160, Sweden",
+    "lat": 59.319636,
+    "lng": 18.024101,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "E.ON Drive"
+  },
+  {
+    "name": "Munich Charger 161",
+    "address": "Munich Shopping Area 161, Germany",
+    "lat": 48.093871,
+    "lng": 11.631952,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "E.ON Drive"
+  },
+  {
+    "name": "Munich Charger 162",
+    "address": "Munich Public Parking 162, Germany",
+    "lat": 48.135807,
+    "lng": 11.60224,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "IN_USE",
+    "providerName": "EnBW mobility+"
+  },
+  {
+    "name": "Heraklion Charger 163",
+    "address": "Heraklion Park & Ride 163, Greece",
+    "lat": 35.331249,
+    "lng": 25.173983,
+    "connectorType": "CCS",
+    "maxKW": 75.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Thessaloniki Charger 164",
+    "address": "Thessaloniki Business Park 164, Greece",
+    "lat": 40.641162,
+    "lng": 22.939558,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Ioannina Charger 165",
+    "address": "Ioannina Metro Station 165, Greece",
+    "lat": 39.658562,
+    "lng": 20.845284,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Thessaloniki Charger 166",
+    "address": "Thessaloniki Park & Ride 166, Greece",
+    "lat": 40.61061,
+    "lng": 22.969732,
+    "connectorType": "SCHUKO",
+    "maxKW": 3.7,
+    "status": "OUTAGE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Hamburg Charger 167",
+    "address": "Hamburg University Lot 167, Germany",
+    "lat": 53.572253,
+    "lng": 10.025668,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Heraklion Charger 168",
+    "address": "Heraklion Business Park 168, Greece",
+    "lat": 35.329213,
+    "lng": 25.143936,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Rome Charger 169",
+    "address": "Rome Shopping Area 169, Italy",
+    "lat": 41.897646,
+    "lng": 12.514542,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "TotalEnergies Charge"
+  },
+  {
+    "name": "Volos Charger 170",
+    "address": "Volos Supermarket Lot 170, Greece",
+    "lat": 39.359648,
+    "lng": 22.948296,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Patras Charger 171",
+    "address": "Patras Park & Ride 171, Greece",
+    "lat": 38.246858,
+    "lng": 21.776839,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Vienna Charger 172",
+    "address": "Vienna Business Park 172, Austria",
+    "lat": 48.232388,
+    "lng": 16.375333,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Hamburg Charger 173",
+    "address": "Hamburg Park & Ride 173, Germany",
+    "lat": 53.55117,
+    "lng": 9.978626,
+    "connectorType": "TYPE1",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Valencia Charger 174",
+    "address": "Valencia Supermarket Lot 174, Spain",
+    "lat": 39.47869,
+    "lng": -0.392812,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Athens Charger 175",
+    "address": "Athens Marina Parking 175, Greece",
+    "lat": 38.018845,
+    "lng": 23.73271,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Thessaloniki Charger 176",
+    "address": "Thessaloniki Park & Ride 176, Greece",
+    "lat": 40.630859,
+    "lng": 22.941395,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Lyon Charger 177",
+    "address": "Lyon Stadium Lot 177, France",
+    "lat": 45.730736,
+    "lng": 4.818982,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Thessaloniki Charger 178",
+    "address": "Thessaloniki Park & Ride 178, Greece",
+    "lat": 40.63443,
+    "lng": 22.940274,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "IN_USE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Vienna Charger 179",
+    "address": "Vienna Shopping Area 179, Austria",
+    "lat": 48.217682,
+    "lng": 16.373706,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "SMATRICS"
+  },
+  {
+    "name": "Prague Charger 180",
+    "address": "Prague Stadium Lot 180, Czechia",
+    "lat": 50.065235,
+    "lng": 14.42954,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "IN_USE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Athens Charger 181",
+    "address": "Athens Public Parking 181, Greece",
+    "lat": 37.981933,
+    "lng": 23.740614,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Rome Charger 182",
+    "address": "Rome Supermarket Lot 182, Italy",
+    "lat": 41.905677,
+    "lng": 12.465427,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "TotalEnergies Charge"
+  },
+  {
+    "name": "Thessaloniki Charger 183",
+    "address": "Thessaloniki University Lot 183, Greece",
+    "lat": 40.628676,
+    "lng": 23.002194,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Athens Charger 184",
+    "address": "Athens Business Park 184, Greece",
+    "lat": 37.971338,
+    "lng": 23.734824,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Rhodes Charger 185",
+    "address": "Rhodes University Lot 185, Greece",
+    "lat": 36.415757,
+    "lng": 28.250563,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Rhodes Charger 186",
+    "address": "Rhodes Public Parking 186, Greece",
+    "lat": 36.432643,
+    "lng": 28.185125,
+    "connectorType": "CCS",
+    "maxKW": 75.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Milan Charger 187",
+    "address": "Milan Business Park 187, Italy",
+    "lat": 45.472178,
+    "lng": 9.194291,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Madrid Charger 188",
+    "address": "Madrid Metro Station 188, Spain",
+    "lat": 40.418761,
+    "lng": -3.696682,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Repsol EV"
+  },
+  {
+    "name": "Rhodes Charger 189",
+    "address": "Rhodes Stadium Lot 189, Greece",
+    "lat": 36.467587,
+    "lng": 28.244008,
+    "connectorType": "CCS",
+    "maxKW": 75.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Volos Charger 190",
+    "address": "Volos City Hall Lot 190, Greece",
+    "lat": 39.359546,
+    "lng": 22.943544,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "IN_USE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Rome Charger 191",
+    "address": "Rome Stadium Lot 191, Italy",
+    "lat": 41.894836,
+    "lng": 12.486644,
+    "connectorType": "TYPE1",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Volos Charger 192",
+    "address": "Volos Business Park 192, Greece",
+    "lat": 39.349529,
+    "lng": 22.947137,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Larisa Charger 193",
+    "address": "Larisa City Hall Lot 193, Greece",
+    "lat": 39.634848,
+    "lng": 22.417078,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Vienna Charger 194",
+    "address": "Vienna Metro Station 194, Austria",
+    "lat": 48.194118,
+    "lng": 16.386826,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "IN_USE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Ioannina Charger 195",
+    "address": "Ioannina Marina Parking 195, Greece",
+    "lat": 39.676749,
+    "lng": 20.825651,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Munich Charger 196",
+    "address": "Munich Supermarket Lot 196, Germany",
+    "lat": 48.148662,
+    "lng": 11.616546,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "E.ON Drive"
+  },
+  {
+    "name": "Athens Charger 197",
+    "address": "Athens Stadium Lot 197, Greece",
+    "lat": 37.980841,
+    "lng": 23.742935,
+    "connectorType": "TYPE1",
+    "maxKW": 3.7,
+    "status": "IN_USE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Larisa Charger 198",
+    "address": "Larisa University Lot 198, Greece",
+    "lat": 39.625737,
+    "lng": 22.421485,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Patras Charger 199",
+    "address": "Patras Business Park 199, Greece",
+    "lat": 38.226135,
+    "lng": 21.770025,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Volos Charger 200",
+    "address": "Volos Marina Parking 200, Greece",
+    "lat": 39.364664,
+    "lng": 22.959987,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "IN_USE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Thessaloniki Charger 201",
+    "address": "Thessaloniki Marina Parking 201, Greece",
+    "lat": 40.655348,
+    "lng": 22.906976,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Larisa Charger 202",
+    "address": "Larisa Shopping Area 202, Greece",
+    "lat": 39.628294,
+    "lng": 22.434745,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Patras Charger 203",
+    "address": "Patras City Hall Lot 203, Greece",
+    "lat": 38.263363,
+    "lng": 21.783136,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Heraklion Charger 204",
+    "address": "Heraklion University Lot 204, Greece",
+    "lat": 35.355181,
+    "lng": 25.143236,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Vienna Charger 205",
+    "address": "Vienna Shopping Area 205, Austria",
+    "lat": 48.214699,
+    "lng": 16.378981,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Vienna Charger 206",
+    "address": "Vienna Shopping Area 206, Austria",
+    "lat": 48.217086,
+    "lng": 16.390139,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Hamburg Charger 207",
+    "address": "Hamburg Supermarket Lot 207, Germany",
+    "lat": 53.514248,
+    "lng": 9.995273,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "EnBW mobility+"
+  },
+  {
+    "name": "Chania Charger 208",
+    "address": "Chania Marina Parking 208, Greece",
+    "lat": 35.525869,
+    "lng": 24.01109,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Thessaloniki Charger 209",
+    "address": "Thessaloniki Business Park 209, Greece",
+    "lat": 40.651845,
+    "lng": 22.92905,
+    "connectorType": "TYPE1",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Marseille Charger 210",
+    "address": "Marseille University Lot 210, France",
+    "lat": 43.28519,
+    "lng": 5.41824,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "TotalEnergies Charge"
+  },
+  {
+    "name": "Volos Charger 211",
+    "address": "Volos Public Parking 211, Greece",
+    "lat": 39.35231,
+    "lng": 22.943302,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Krakow Charger 212",
+    "address": "Krakow Public Parking 212, Poland",
+    "lat": 50.067577,
+    "lng": 19.990382,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "GreenWay Polska"
+  },
+  {
+    "name": "Barcelona Charger 213",
+    "address": "Barcelona Metro Station 213, Spain",
+    "lat": 41.378091,
+    "lng": 2.157813,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Iberdrola Public Charging"
+  },
+  {
+    "name": "Lyon Charger 214",
+    "address": "Lyon Metro Station 214, France",
+    "lat": 45.740067,
+    "lng": 4.799188,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Valencia Charger 215",
+    "address": "Valencia Metro Station 215, Spain",
+    "lat": 39.474088,
+    "lng": -0.357216,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "IN_USE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Larisa Charger 216",
+    "address": "Larisa Stadium Lot 216, Greece",
+    "lat": 39.640533,
+    "lng": 22.422317,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Volos Charger 217",
+    "address": "Volos University Lot 217, Greece",
+    "lat": 39.386748,
+    "lng": 22.920879,
+    "connectorType": "CCS",
+    "maxKW": 75.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Heraklion Charger 218",
+    "address": "Heraklion University Lot 218, Greece",
+    "lat": 35.358027,
+    "lng": 25.120634,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Ioannina Charger 219",
+    "address": "Ioannina Metro Station 219, Greece",
+    "lat": 39.656171,
+    "lng": 20.845754,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Ioannina Charger 220",
+    "address": "Ioannina Metro Station 220, Greece",
+    "lat": 39.675098,
+    "lng": 20.842752,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Rotterdam Charger 221",
+    "address": "Rotterdam Metro Station 221, Netherlands",
+    "lat": 51.949104,
+    "lng": 4.435219,
+    "connectorType": "TYPE1",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Hamburg Charger 222",
+    "address": "Hamburg City Hall Lot 222, Germany",
+    "lat": 53.547375,
+    "lng": 9.977889,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Kalamata Charger 223",
+    "address": "Kalamata Park & Ride 223, Greece",
+    "lat": 37.035837,
+    "lng": 22.148377,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Athens Charger 224",
+    "address": "Athens Business Park 224, Greece",
+    "lat": 37.992494,
+    "lng": 23.705381,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Heraklion Charger 225",
+    "address": "Heraklion Stadium Lot 225, Greece",
+    "lat": 35.344987,
+    "lng": 25.116119,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Krakow Charger 226",
+    "address": "Krakow University Lot 226, Poland",
+    "lat": 50.034811,
+    "lng": 19.986398,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "GreenWay Polska"
+  },
+  {
+    "name": "Thessaloniki Charger 227",
+    "address": "Thessaloniki Metro Station 227, Greece",
+    "lat": 40.647244,
+    "lng": 22.94128,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Volos Charger 228",
+    "address": "Volos University Lot 228, Greece",
+    "lat": 39.364185,
+    "lng": 22.947829,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Rome Charger 229",
+    "address": "Rome Business Park 229, Italy",
+    "lat": 41.903595,
+    "lng": 12.48822,
+    "connectorType": "SCHUKO",
+    "maxKW": 2.3,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Thessaloniki Charger 230",
+    "address": "Thessaloniki Park & Ride 230, Greece",
+    "lat": 40.630766,
+    "lng": 22.950088,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Prague Charger 231",
+    "address": "Prague Public Parking 231, Czechia",
+    "lat": 50.093166,
+    "lng": 14.422407,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Ioannina Charger 232",
+    "address": "Ioannina Park & Ride 232, Greece",
+    "lat": 39.669748,
+    "lng": 20.801751,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Rome Charger 233",
+    "address": "Rome City Hall Lot 233, Italy",
+    "lat": 41.895496,
+    "lng": 12.510971,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Enel X Way"
+  },
+  {
+    "name": "Amsterdam Charger 234",
+    "address": "Amsterdam Shopping Area 234, Netherlands",
+    "lat": 52.383051,
+    "lng": 4.893151,
+    "connectorType": "TYPE1",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Rhodes Charger 235",
+    "address": "Rhodes Business Park 235, Greece",
+    "lat": 36.436403,
+    "lng": 28.233252,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Valencia Charger 236",
+    "address": "Valencia Supermarket Lot 236, Spain",
+    "lat": 39.469921,
+    "lng": -0.359693,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "IN_USE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Marseille Charger 237",
+    "address": "Marseille Park & Ride 237, France",
+    "lat": 43.338745,
+    "lng": 5.348309,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Milan Charger 238",
+    "address": "Milan Shopping Area 238, Italy",
+    "lat": 45.435888,
+    "lng": 9.201031,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Patras Charger 239",
+    "address": "Patras City Hall Lot 239, Greece",
+    "lat": 38.26567,
+    "lng": 21.74996,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Larisa Charger 240",
+    "address": "Larisa Shopping Area 240, Greece",
+    "lat": 39.629068,
+    "lng": 22.408129,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Thessaloniki Charger 241",
+    "address": "Thessaloniki Metro Station 241, Greece",
+    "lat": 40.65976,
+    "lng": 22.909662,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Rome Charger 242",
+    "address": "Rome Marina Parking 242, Italy",
+    "lat": 41.873025,
+    "lng": 12.468429,
+    "connectorType": "CCS",
+    "maxKW": 75.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Thessaloniki Charger 243",
+    "address": "Thessaloniki Business Park 243, Greece",
+    "lat": 40.626678,
+    "lng": 22.926348,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Ioannina Charger 244",
+    "address": "Ioannina Supermarket Lot 244, Greece",
+    "lat": 39.683466,
+    "lng": 20.845266,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Volos Charger 245",
+    "address": "Volos Stadium Lot 245, Greece",
+    "lat": 39.360244,
+    "lng": 22.926975,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Warsaw Charger 246",
+    "address": "Warsaw University Lot 246, Poland",
+    "lat": 52.223,
+    "lng": 21.040131,
+    "connectorType": "CCS",
+    "maxKW": 75.0,
+    "status": "AVAILABLE",
+    "providerName": "Orlen Charge"
+  },
+  {
+    "name": "Chania Charger 247",
+    "address": "Chania Stadium Lot 247, Greece",
+    "lat": 35.511582,
+    "lng": 24.008762,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Larisa Charger 248",
+    "address": "Larisa Stadium Lot 248, Greece",
+    "lat": 39.630088,
+    "lng": 22.402916,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Turin Charger 249",
+    "address": "Turin Shopping Area 249, Italy",
+    "lat": 45.074232,
+    "lng": 7.723985,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Enel X Way"
+  },
+  {
+    "name": "Marseille Charger 250",
+    "address": "Marseille Marina Parking 250, France",
+    "lat": 43.278464,
+    "lng": 5.378168,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Thessaloniki Charger 251",
+    "address": "Thessaloniki Marina Parking 251, Greece",
+    "lat": 40.625073,
+    "lng": 22.961985,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Rhodes Charger 252",
+    "address": "Rhodes Business Park 252, Greece",
+    "lat": 36.428413,
+    "lng": 28.196305,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "OUTAGE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Volos Charger 253",
+    "address": "Volos Park & Ride 253, Greece",
+    "lat": 39.38661,
+    "lng": 22.94446,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Athens Charger 254",
+    "address": "Athens Metro Station 254, Greece",
+    "lat": 37.970897,
+    "lng": 23.722119,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "IN_USE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Kalamata Charger 255",
+    "address": "Kalamata Marina Parking 255, Greece",
+    "lat": 37.03281,
+    "lng": 22.110876,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Rhodes Charger 256",
+    "address": "Rhodes Shopping Area 256, Greece",
+    "lat": 36.432183,
+    "lng": 28.214445,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Turin Charger 257",
+    "address": "Turin Supermarket Lot 257, Italy",
+    "lat": 45.065464,
+    "lng": 7.671443,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Ioannina Charger 258",
+    "address": "Ioannina Supermarket Lot 258, Greece",
+    "lat": 39.66089,
+    "lng": 20.865831,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Turin Charger 259",
+    "address": "Turin Marina Parking 259, Italy",
+    "lat": 45.063568,
+    "lng": 7.673561,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Turin Charger 260",
+    "address": "Turin University Lot 260, Italy",
+    "lat": 45.063367,
+    "lng": 7.6852,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "IN_USE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Larisa Charger 261",
+    "address": "Larisa Business Park 261, Greece",
+    "lat": 39.627724,
+    "lng": 22.435103,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "IN_USE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Ioannina Charger 262",
+    "address": "Ioannina Public Parking 262, Greece",
+    "lat": 39.656814,
+    "lng": 20.852732,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Madrid Charger 263",
+    "address": "Madrid University Lot 263, Spain",
+    "lat": 40.39154,
+    "lng": -3.723336,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Repsol EV"
+  },
+  {
+    "name": "Rhodes Charger 264",
+    "address": "Rhodes Stadium Lot 264, Greece",
+    "lat": 36.427727,
+    "lng": 28.219048,
+    "connectorType": "SCHUKO",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Ioannina Charger 265",
+    "address": "Ioannina Park & Ride 265, Greece",
+    "lat": 39.671378,
+    "lng": 20.859095,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Amsterdam Charger 266",
+    "address": "Amsterdam Supermarket Lot 266, Netherlands",
+    "lat": 52.400509,
+    "lng": 4.847647,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "EVBox Network"
+  },
+  {
+    "name": "Berlin Charger 267",
+    "address": "Berlin University Lot 267, Germany",
+    "lat": 52.530265,
+    "lng": 13.423568,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Larisa Charger 268",
+    "address": "Larisa Marina Parking 268, Greece",
+    "lat": 39.642932,
+    "lng": 22.450855,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Vienna Charger 269",
+    "address": "Vienna Stadium Lot 269, Austria",
+    "lat": 48.215459,
+    "lng": 16.353938,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Larisa Charger 270",
+    "address": "Larisa City Hall Lot 270, Greece",
+    "lat": 39.627754,
+    "lng": 22.36944,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Munich Charger 271",
+    "address": "Munich Park & Ride 271, Germany",
+    "lat": 48.175663,
+    "lng": 11.558686,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "EnBW mobility+"
+  },
+  {
+    "name": "Valencia Charger 272",
+    "address": "Valencia University Lot 272, Spain",
+    "lat": 39.444479,
+    "lng": -0.384511,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "IN_USE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Turin Charger 273",
+    "address": "Turin Public Parking 273, Italy",
+    "lat": 45.096273,
+    "lng": 7.73718,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Patras Charger 274",
+    "address": "Patras City Hall Lot 274, Greece",
+    "lat": 38.242683,
+    "lng": 21.79102,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "IN_USE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Larisa Charger 275",
+    "address": "Larisa City Hall Lot 275, Greece",
+    "lat": 39.643178,
+    "lng": 22.41034,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Paris Charger 276",
+    "address": "Paris University Lot 276, France",
+    "lat": 48.870608,
+    "lng": 2.380092,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Berlin Charger 277",
+    "address": "Berlin Metro Station 277, Germany",
+    "lat": 52.525286,
+    "lng": 13.419085,
+    "connectorType": "SCHUKO",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "E.ON Drive"
+  },
+  {
+    "name": "Thessaloniki Charger 278",
+    "address": "Thessaloniki Business Park 278, Greece",
+    "lat": 40.635055,
+    "lng": 22.95797,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Rhodes Charger 279",
+    "address": "Rhodes Supermarket Lot 279, Greece",
+    "lat": 36.436982,
+    "lng": 28.206317,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Berlin Charger 280",
+    "address": "Berlin Park & Ride 280, Germany",
+    "lat": 52.530719,
+    "lng": 13.38901,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "EnBW mobility+"
+  },
+  {
+    "name": "Madrid Charger 281",
+    "address": "Madrid City Hall Lot 281, Spain",
+    "lat": 40.424617,
+    "lng": -3.72168,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Iberdrola Public Charging"
+  },
+  {
+    "name": "Rhodes Charger 282",
+    "address": "Rhodes Marina Parking 282, Greece",
+    "lat": 36.442931,
+    "lng": 28.208442,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "IN_USE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Chania Charger 283",
+    "address": "Chania Supermarket Lot 283, Greece",
+    "lat": 35.514565,
+    "lng": 24.033861,
+    "connectorType": "SCHUKO",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Kalamata Charger 284",
+    "address": "Kalamata Metro Station 284, Greece",
+    "lat": 37.048368,
+    "lng": 22.134716,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Athens Charger 285",
+    "address": "Athens University Lot 285, Greece",
+    "lat": 37.984396,
+    "lng": 23.742196,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Patras Charger 286",
+    "address": "Patras Marina Parking 286, Greece",
+    "lat": 38.224092,
+    "lng": 21.705625,
+    "connectorType": "TYPE1",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Turin Charger 287",
+    "address": "Turin Shopping Area 287, Italy",
+    "lat": 45.065169,
+    "lng": 7.684508,
+    "connectorType": "TYPE1",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Rhodes Charger 288",
+    "address": "Rhodes Public Parking 288, Greece",
+    "lat": 36.428846,
+    "lng": 28.225719,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Volos Charger 289",
+    "address": "Volos Public Parking 289, Greece",
+    "lat": 39.342998,
+    "lng": 22.915918,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "IN_USE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Ioannina Charger 290",
+    "address": "Ioannina Park & Ride 290, Greece",
+    "lat": 39.666289,
+    "lng": 20.837055,
+    "connectorType": "SCHUKO",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Rhodes Charger 291",
+    "address": "Rhodes University Lot 291, Greece",
+    "lat": 36.429232,
+    "lng": 28.206631,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Athens Charger 292",
+    "address": "Athens University Lot 292, Greece",
+    "lat": 37.967439,
+    "lng": 23.721281,
+    "connectorType": "TYPE1",
+    "maxKW": 3.7,
+    "status": "OUTAGE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Valencia Charger 293",
+    "address": "Valencia Park & Ride 293, Spain",
+    "lat": 39.445082,
+    "lng": -0.405679,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "IN_USE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Athens Charger 294",
+    "address": "Athens City Hall Lot 294, Greece",
+    "lat": 37.973825,
+    "lng": 23.728221,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "IN_USE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Lyon Charger 295",
+    "address": "Lyon Metro Station 295, France",
+    "lat": 45.741642,
+    "lng": 4.832349,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "ChargePoint Europe"
+  },
+  {
+    "name": "Rhodes Charger 296",
+    "address": "Rhodes Public Parking 296, Greece",
+    "lat": 36.478846,
+    "lng": 28.248493,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Vienna Charger 297",
+    "address": "Vienna City Hall Lot 297, Austria",
+    "lat": 48.209697,
+    "lng": 16.381151,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Kalamata Charger 298",
+    "address": "Kalamata Metro Station 298, Greece",
+    "lat": 37.03601,
+    "lng": 22.13502,
+    "connectorType": "SCHUKO",
+    "maxKW": 2.3,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Rotterdam Charger 299",
+    "address": "Rotterdam Shopping Area 299, Netherlands",
+    "lat": 51.922154,
+    "lng": 4.499428,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Rome Charger 300",
+    "address": "Rome Park & Ride 300, Italy",
+    "lat": 41.917435,
+    "lng": 12.4517,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "IN_USE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Larisa Charger 301",
+    "address": "Larisa Stadium Lot 301, Greece",
+    "lat": 39.623673,
+    "lng": 22.405188,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Ioannina Charger 302",
+    "address": "Ioannina Shopping Area 302, Greece",
+    "lat": 39.665971,
+    "lng": 20.870013,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Larisa Charger 303",
+    "address": "Larisa University Lot 303, Greece",
+    "lat": 39.631298,
+    "lng": 22.431614,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "OUTAGE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Larisa Charger 304",
+    "address": "Larisa Metro Station 304, Greece",
+    "lat": 39.656302,
+    "lng": 22.396208,
+    "connectorType": "TYPE1",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Thessaloniki Charger 305",
+    "address": "Thessaloniki Park & Ride 305, Greece",
+    "lat": 40.626459,
+    "lng": 22.923584,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Hamburg Charger 306",
+    "address": "Hamburg Business Park 306, Germany",
+    "lat": 53.553325,
+    "lng": 9.982728,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "EnBW mobility+"
+  },
+  {
+    "name": "Volos Charger 307",
+    "address": "Volos Stadium Lot 307, Greece",
+    "lat": 39.34864,
+    "lng": 22.940637,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "IN_USE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Ioannina Charger 308",
+    "address": "Ioannina Supermarket Lot 308, Greece",
+    "lat": 39.659737,
+    "lng": 20.872814,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Turin Charger 309",
+    "address": "Turin Metro Station 309, Italy",
+    "lat": 45.07024,
+    "lng": 7.716197,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Hamburg Charger 310",
+    "address": "Hamburg Stadium Lot 310, Germany",
+    "lat": 53.555812,
+    "lng": 10.012028,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Chania Charger 311",
+    "address": "Chania Public Parking 311, Greece",
+    "lat": 35.536107,
+    "lng": 24.018159,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Rotterdam Charger 312",
+    "address": "Rotterdam Shopping Area 312, Netherlands",
+    "lat": 51.932742,
+    "lng": 4.476459,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Allego"
+  },
+  {
+    "name": "Heraklion Charger 313",
+    "address": "Heraklion Marina Parking 313, Greece",
+    "lat": 35.340521,
+    "lng": 25.163498,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "IN_USE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Patras Charger 314",
+    "address": "Patras Park & Ride 314, Greece",
+    "lat": 38.237106,
+    "lng": 21.726249,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Prague Charger 315",
+    "address": "Prague Shopping Area 315, Czechia",
+    "lat": 50.087633,
+    "lng": 14.455229,
+    "connectorType": "SCHUKO",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "CEZ Charging"
+  },
+  {
+    "name": "Rhodes Charger 316",
+    "address": "Rhodes Business Park 316, Greece",
+    "lat": 36.4167,
+    "lng": 28.216614,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Vienna Charger 317",
+    "address": "Vienna Shopping Area 317, Austria",
+    "lat": 48.195279,
+    "lng": 16.377312,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "IN_USE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Ioannina Charger 318",
+    "address": "Ioannina Stadium Lot 318, Greece",
+    "lat": 39.660583,
+    "lng": 20.847472,
+    "connectorType": "SCHUKO",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Berlin Charger 319",
+    "address": "Berlin Business Park 319, Germany",
+    "lat": 52.50504,
+    "lng": 13.412902,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Marseille Charger 320",
+    "address": "Marseille Metro Station 320, France",
+    "lat": 43.3281,
+    "lng": 5.403324,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "ChargePoint Europe"
+  },
+  {
+    "name": "Berlin Charger 321",
+    "address": "Berlin Park & Ride 321, Germany",
+    "lat": 52.487626,
+    "lng": 13.441325,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "E.ON Drive"
+  },
+  {
+    "name": "Larisa Charger 322",
+    "address": "Larisa Stadium Lot 322, Greece",
+    "lat": 39.629974,
+    "lng": 22.398875,
+    "connectorType": "CCS",
+    "maxKW": 75.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Paris Charger 323",
+    "address": "Paris Metro Station 323, France",
+    "lat": 48.855977,
+    "lng": 2.335593,
+    "connectorType": "CCS",
+    "maxKW": 75.0,
+    "status": "AVAILABLE",
+    "providerName": "ChargePoint Europe"
+  },
+  {
+    "name": "Thessaloniki Charger 324",
+    "address": "Thessaloniki Business Park 324, Greece",
+    "lat": 40.634557,
+    "lng": 22.937943,
+    "connectorType": "TYPE1",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Marseille Charger 325",
+    "address": "Marseille Supermarket Lot 325, France",
+    "lat": 43.29212,
+    "lng": 5.38782,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Amsterdam Charger 326",
+    "address": "Amsterdam City Hall Lot 326, Netherlands",
+    "lat": 52.356823,
+    "lng": 4.891067,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Munich Charger 327",
+    "address": "Munich Marina Parking 327, Germany",
+    "lat": 48.120538,
+    "lng": 11.576217,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "E.ON Drive"
+  },
+  {
+    "name": "Rhodes Charger 328",
+    "address": "Rhodes Shopping Area 328, Greece",
+    "lat": 36.406944,
+    "lng": 28.164493,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Ioannina Charger 329",
+    "address": "Ioannina Park & Ride 329, Greece",
+    "lat": 39.664018,
+    "lng": 20.872547,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Athens Charger 330",
+    "address": "Athens Shopping Area 330, Greece",
+    "lat": 37.980543,
+    "lng": 23.711274,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Volos Charger 331",
+    "address": "Volos University Lot 331, Greece",
+    "lat": 39.403406,
+    "lng": 22.952455,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Munich Charger 332",
+    "address": "Munich Supermarket Lot 332, Germany",
+    "lat": 48.134245,
+    "lng": 11.559265,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Hamburg Charger 333",
+    "address": "Hamburg Business Park 333, Germany",
+    "lat": 53.537416,
+    "lng": 10.0093,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "OUTAGE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Thessaloniki Charger 334",
+    "address": "Thessaloniki Shopping Area 334, Greece",
+    "lat": 40.613246,
+    "lng": 22.982696,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Kalamata Charger 335",
+    "address": "Kalamata Supermarket Lot 335, Greece",
+    "lat": 37.04359,
+    "lng": 22.15445,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Milan Charger 336",
+    "address": "Milan Supermarket Lot 336, Italy",
+    "lat": 45.461888,
+    "lng": 9.176443,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "IN_USE",
+    "providerName": "Enel X Way"
+  },
+  {
+    "name": "Lyon Charger 337",
+    "address": "Lyon City Hall Lot 337, France",
+    "lat": 45.784427,
+    "lng": 4.817424,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Rhodes Charger 338",
+    "address": "Rhodes Park & Ride 338, Greece",
+    "lat": 36.392449,
+    "lng": 28.261223,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Larisa Charger 339",
+    "address": "Larisa City Hall Lot 339, Greece",
+    "lat": 39.627127,
+    "lng": 22.418512,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "IN_USE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Krakow Charger 340",
+    "address": "Krakow Stadium Lot 340, Poland",
+    "lat": 50.052236,
+    "lng": 19.937992,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Lyon Charger 341",
+    "address": "Lyon Supermarket Lot 341, France",
+    "lat": 45.764413,
+    "lng": 4.822488,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "ChargePoint Europe"
+  },
+  {
+    "name": "Heraklion Charger 342",
+    "address": "Heraklion Park & Ride 342, Greece",
+    "lat": 35.350843,
+    "lng": 25.133134,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Valencia Charger 343",
+    "address": "Valencia Stadium Lot 343, Spain",
+    "lat": 39.482099,
+    "lng": -0.420195,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Milan Charger 344",
+    "address": "Milan Public Parking 344, Italy",
+    "lat": 45.446012,
+    "lng": 9.220404,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Rhodes Charger 345",
+    "address": "Rhodes Public Parking 345, Greece",
+    "lat": 36.446869,
+    "lng": 28.224201,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Patras Charger 346",
+    "address": "Patras City Hall Lot 346, Greece",
+    "lat": 38.250245,
+    "lng": 21.712046,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Ioannina Charger 347",
+    "address": "Ioannina Shopping Area 347, Greece",
+    "lat": 39.662784,
+    "lng": 20.833913,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Volos Charger 348",
+    "address": "Volos City Hall Lot 348, Greece",
+    "lat": 39.350107,
+    "lng": 22.914602,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Larisa Charger 349",
+    "address": "Larisa Marina Parking 349, Greece",
+    "lat": 39.626385,
+    "lng": 22.431523,
+    "connectorType": "CHADEMO",
+    "maxKW": 62.5,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Hamburg Charger 350",
+    "address": "Hamburg Public Parking 350, Germany",
+    "lat": 53.559074,
+    "lng": 10.003126,
+    "connectorType": "SCHUKO",
+    "maxKW": 2.3,
+    "status": "AVAILABLE",
+    "providerName": "EnBW mobility+"
+  },
+  {
+    "name": "Turin Charger 351",
+    "address": "Turin University Lot 351, Italy",
+    "lat": 45.064648,
+    "lng": 7.697787,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Patras Charger 352",
+    "address": "Patras Park & Ride 352, Greece",
+    "lat": 38.239169,
+    "lng": 21.733259,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Berlin Charger 353",
+    "address": "Berlin City Hall Lot 353, Germany",
+    "lat": 52.505045,
+    "lng": 13.437996,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Thessaloniki Charger 354",
+    "address": "Thessaloniki University Lot 354, Greece",
+    "lat": 40.599891,
+    "lng": 22.960356,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Ioannina Charger 355",
+    "address": "Ioannina Stadium Lot 355, Greece",
+    "lat": 39.660303,
+    "lng": 20.879741,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Patras Charger 356",
+    "address": "Patras Metro Station 356, Greece",
+    "lat": 38.246264,
+    "lng": 21.739109,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Paris Charger 357",
+    "address": "Paris Marina Parking 357, France",
+    "lat": 48.856224,
+    "lng": 2.366636,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Allego"
+  },
+  {
+    "name": "Krakow Charger 358",
+    "address": "Krakow Public Parking 358, Poland",
+    "lat": 50.052206,
+    "lng": 19.932344,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Orlen Charge"
+  },
+  {
+    "name": "Hamburg Charger 359",
+    "address": "Hamburg Business Park 359, Germany",
+    "lat": 53.541236,
+    "lng": 10.016566,
+    "connectorType": "CCS",
+    "maxKW": 75.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Athens Charger 360",
+    "address": "Athens Business Park 360, Greece",
+    "lat": 38.008041,
+    "lng": 23.724477,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Chania Charger 361",
+    "address": "Chania Business Park 361, Greece",
+    "lat": 35.52732,
+    "lng": 23.995746,
+    "connectorType": "CHADEMO",
+    "maxKW": 62.5,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Athens Charger 362",
+    "address": "Athens University Lot 362, Greece",
+    "lat": 37.97022,
+    "lng": 23.737152,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Hamburg Charger 363",
+    "address": "Hamburg Shopping Area 363, Germany",
+    "lat": 53.555478,
+    "lng": 10.000686,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "EnBW mobility+"
+  },
+  {
+    "name": "Chania Charger 364",
+    "address": "Chania City Hall Lot 364, Greece",
+    "lat": 35.503187,
+    "lng": 24.026223,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Hamburg Charger 365",
+    "address": "Hamburg Stadium Lot 365, Germany",
+    "lat": 53.548175,
+    "lng": 10.017879,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "E.ON Drive"
+  },
+  {
+    "name": "Heraklion Charger 366",
+    "address": "Heraklion Stadium Lot 366, Greece",
+    "lat": 35.356619,
+    "lng": 25.17555,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Vienna Charger 367",
+    "address": "Vienna Business Park 367, Austria",
+    "lat": 48.193849,
+    "lng": 16.334279,
+    "connectorType": "CCS",
+    "maxKW": 75.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Prague Charger 368",
+    "address": "Prague Shopping Area 368, Czechia",
+    "lat": 50.08644,
+    "lng": 14.443878,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "CEZ Charging"
+  },
+  {
+    "name": "Madrid Charger 369",
+    "address": "Madrid Public Parking 369, Spain",
+    "lat": 40.409244,
+    "lng": -3.69125,
+    "connectorType": "CCS",
+    "maxKW": 75.0,
+    "status": "IN_USE",
+    "providerName": "Iberdrola Public Charging"
+  },
+  {
+    "name": "Valencia Charger 370",
+    "address": "Valencia Park & Ride 370, Spain",
+    "lat": 39.463726,
+    "lng": -0.357883,
+    "connectorType": "TYPE1",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Ioannina Charger 371",
+    "address": "Ioannina Business Park 371, Greece",
+    "lat": 39.70665,
+    "lng": 20.826997,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Athens Charger 372",
+    "address": "Athens Marina Parking 372, Greece",
+    "lat": 37.969519,
+    "lng": 23.746301,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Marseille Charger 373",
+    "address": "Marseille Shopping Area 373, France",
+    "lat": 43.306299,
+    "lng": 5.383909,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Allego"
+  },
+  {
+    "name": "Rotterdam Charger 374",
+    "address": "Rotterdam Supermarket Lot 374, Netherlands",
+    "lat": 51.912598,
+    "lng": 4.484492,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Volos Charger 375",
+    "address": "Volos University Lot 375, Greece",
+    "lat": 39.359185,
+    "lng": 22.949923,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Amsterdam Charger 376",
+    "address": "Amsterdam Stadium Lot 376, Netherlands",
+    "lat": 52.371476,
+    "lng": 4.888914,
+    "connectorType": "CHADEMO",
+    "maxKW": 62.5,
+    "status": "IN_USE",
+    "providerName": "Fastned"
+  },
+  {
+    "name": "Volos Charger 377",
+    "address": "Volos Stadium Lot 377, Greece",
+    "lat": 39.336695,
+    "lng": 22.922614,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Barcelona Charger 378",
+    "address": "Barcelona Marina Parking 378, Spain",
+    "lat": 41.394738,
+    "lng": 2.171493,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "Iberdrola Public Charging"
+  },
+  {
+    "name": "Kalamata Charger 379",
+    "address": "Kalamata Metro Station 379, Greece",
+    "lat": 37.047708,
+    "lng": 22.124079,
+    "connectorType": "TYPE1",
+    "maxKW": 7.4,
+    "status": "IN_USE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Munich Charger 380",
+    "address": "Munich Supermarket Lot 380, Germany",
+    "lat": 48.127713,
+    "lng": 11.545899,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Volos Charger 381",
+    "address": "Volos City Hall Lot 381, Greece",
+    "lat": 39.326227,
+    "lng": 22.972216,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "IN_USE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Volos Charger 382",
+    "address": "Volos City Hall Lot 382, Greece",
+    "lat": 39.348724,
+    "lng": 22.93026,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Rome Charger 383",
+    "address": "Rome Marina Parking 383, Italy",
+    "lat": 41.914427,
+    "lng": 12.492511,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Enel X Way"
+  },
+  {
+    "name": "Rhodes Charger 384",
+    "address": "Rhodes Public Parking 384, Greece",
+    "lat": 36.441355,
+    "lng": 28.215937,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Athens Charger 385",
+    "address": "Athens Business Park 385, Greece",
+    "lat": 38.014324,
+    "lng": 23.725549,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Paris Charger 386",
+    "address": "Paris Metro Station 386, France",
+    "lat": 48.853557,
+    "lng": 2.35633,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "ChargePoint Europe"
+  },
+  {
+    "name": "Volos Charger 387",
+    "address": "Volos University Lot 387, Greece",
+    "lat": 39.358451,
+    "lng": 22.916368,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Amsterdam Charger 388",
+    "address": "Amsterdam University Lot 388, Netherlands",
+    "lat": 52.357139,
+    "lng": 4.916753,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Allego"
+  },
+  {
+    "name": "Volos Charger 389",
+    "address": "Volos University Lot 389, Greece",
+    "lat": 39.368048,
+    "lng": 22.944177,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Ioannina Charger 390",
+    "address": "Ioannina Business Park 390, Greece",
+    "lat": 39.665614,
+    "lng": 20.837032,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Krakow Charger 391",
+    "address": "Krakow Shopping Area 391, Poland",
+    "lat": 50.07693,
+    "lng": 19.9557,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Turin Charger 392",
+    "address": "Turin Public Parking 392, Italy",
+    "lat": 45.079036,
+    "lng": 7.690026,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Vienna Charger 393",
+    "address": "Vienna Metro Station 393, Austria",
+    "lat": 48.249344,
+    "lng": 16.438124,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Munich Charger 394",
+    "address": "Munich Metro Station 394, Germany",
+    "lat": 48.149928,
+    "lng": 11.593049,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Paris Charger 395",
+    "address": "Paris Marina Parking 395, France",
+    "lat": 48.853833,
+    "lng": 2.391918,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "TotalEnergies Charge"
+  },
+  {
+    "name": "Larisa Charger 396",
+    "address": "Larisa Public Parking 396, Greece",
+    "lat": 39.619004,
+    "lng": 22.424995,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Volos Charger 397",
+    "address": "Volos Park & Ride 397, Greece",
+    "lat": 39.368396,
+    "lng": 22.946382,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Volos Charger 398",
+    "address": "Volos Shopping Area 398, Greece",
+    "lat": 39.377468,
+    "lng": 22.94296,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Heraklion Charger 399",
+    "address": "Heraklion Public Parking 399, Greece",
+    "lat": 35.329568,
+    "lng": 25.130522,
+    "connectorType": "TYPE1",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Volos Charger 400",
+    "address": "Volos Marina Parking 400, Greece",
+    "lat": 39.337608,
+    "lng": 22.958577,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Vienna Charger 401",
+    "address": "Vienna Stadium Lot 401, Austria",
+    "lat": 48.186271,
+    "lng": 16.404078,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Heraklion Charger 402",
+    "address": "Heraklion Shopping Area 402, Greece",
+    "lat": 35.339451,
+    "lng": 25.1739,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Heraklion Charger 403",
+    "address": "Heraklion Shopping Area 403, Greece",
+    "lat": 35.36894,
+    "lng": 25.111685,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Paris Charger 404",
+    "address": "Paris Shopping Area 404, France",
+    "lat": 48.855498,
+    "lng": 2.345287,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "ChargePoint Europe"
+  },
+  {
+    "name": "Rome Charger 405",
+    "address": "Rome University Lot 405, Italy",
+    "lat": 41.897807,
+    "lng": 12.49285,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Enel X Way"
+  },
+  {
+    "name": "Rhodes Charger 406",
+    "address": "Rhodes City Hall Lot 406, Greece",
+    "lat": 36.440918,
+    "lng": 28.220476,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "IN_USE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Lyon Charger 407",
+    "address": "Lyon University Lot 407, France",
+    "lat": 45.758095,
+    "lng": 4.852231,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Ioannina Charger 408",
+    "address": "Ioannina Park & Ride 408, Greece",
+    "lat": 39.689872,
+    "lng": 20.828707,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Prague Charger 409",
+    "address": "Prague Metro Station 409, Czechia",
+    "lat": 50.061923,
+    "lng": 14.410007,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "IN_USE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Marseille Charger 410",
+    "address": "Marseille City Hall Lot 410, France",
+    "lat": 43.280918,
+    "lng": 5.399926,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "ChargePoint Europe"
+  },
+  {
+    "name": "Patras Charger 411",
+    "address": "Patras Shopping Area 411, Greece",
+    "lat": 38.256097,
+    "lng": 21.74948,
+    "connectorType": "SCHUKO",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Heraklion Charger 412",
+    "address": "Heraklion Metro Station 412, Greece",
+    "lat": 35.379379,
+    "lng": 25.128423,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Chania Charger 413",
+    "address": "Chania Marina Parking 413, Greece",
+    "lat": 35.520089,
+    "lng": 24.005095,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Volos Charger 414",
+    "address": "Volos Park & Ride 414, Greece",
+    "lat": 39.371294,
+    "lng": 22.95189,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Rotterdam Charger 415",
+    "address": "Rotterdam Business Park 415, Netherlands",
+    "lat": 51.911674,
+    "lng": 4.449283,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "EVBox Network"
+  },
+  {
+    "name": "Amsterdam Charger 416",
+    "address": "Amsterdam Supermarket Lot 416, Netherlands",
+    "lat": 52.380224,
+    "lng": 4.915309,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "IN_USE",
+    "providerName": "Fastned"
+  },
+  {
+    "name": "Turin Charger 417",
+    "address": "Turin Park & Ride 417, Italy",
+    "lat": 45.084942,
+    "lng": 7.689533,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Rhodes Charger 418",
+    "address": "Rhodes Supermarket Lot 418, Greece",
+    "lat": 36.41421,
+    "lng": 28.217675,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Hamburg Charger 419",
+    "address": "Hamburg Park & Ride 419, Germany",
+    "lat": 53.549162,
+    "lng": 9.974238,
+    "connectorType": "TYPE1",
+    "maxKW": 7.4,
+    "status": "OUTAGE",
+    "providerName": "EnBW mobility+"
+  },
+  {
+    "name": "Chania Charger 420",
+    "address": "Chania Marina Parking 420, Greece",
+    "lat": 35.498047,
+    "lng": 24.01222,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "IN_USE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Chania Charger 421",
+    "address": "Chania City Hall Lot 421, Greece",
+    "lat": 35.501365,
+    "lng": 24.022932,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Turin Charger 422",
+    "address": "Turin Marina Parking 422, Italy",
+    "lat": 45.065855,
+    "lng": 7.680701,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Warsaw Charger 423",
+    "address": "Warsaw Stadium Lot 423, Poland",
+    "lat": 52.216448,
+    "lng": 21.066287,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "Orlen Charge"
+  },
+  {
+    "name": "Thessaloniki Charger 424",
+    "address": "Thessaloniki Marina Parking 424, Greece",
+    "lat": 40.624506,
+    "lng": 22.922097,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Valencia Charger 425",
+    "address": "Valencia Metro Station 425, Spain",
+    "lat": 39.4694,
+    "lng": -0.377042,
+    "connectorType": "CCS",
+    "maxKW": 75.0,
+    "status": "IN_USE",
+    "providerName": "Iberdrola Public Charging"
+  },
+  {
+    "name": "Rhodes Charger 426",
+    "address": "Rhodes University Lot 426, Greece",
+    "lat": 36.420837,
+    "lng": 28.218166,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Prague Charger 427",
+    "address": "Prague Marina Parking 427, Czechia",
+    "lat": 50.099676,
+    "lng": 14.41393,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "CEZ Charging"
+  },
+  {
+    "name": "Turin Charger 428",
+    "address": "Turin Supermarket Lot 428, Italy",
+    "lat": 45.07474,
+    "lng": 7.687451,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "IN_USE",
+    "providerName": "TotalEnergies Charge"
+  },
+  {
+    "name": "Ioannina Charger 429",
+    "address": "Ioannina Business Park 429, Greece",
+    "lat": 39.631866,
+    "lng": 20.797122,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Rome Charger 430",
+    "address": "Rome Stadium Lot 430, Italy",
+    "lat": 41.938981,
+    "lng": 12.508482,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Enel X Way"
+  },
+  {
+    "name": "Hamburg Charger 431",
+    "address": "Hamburg University Lot 431, Germany",
+    "lat": 53.561829,
+    "lng": 10.006204,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "E.ON Drive"
+  },
+  {
+    "name": "Chania Charger 432",
+    "address": "Chania Business Park 432, Greece",
+    "lat": 35.500333,
+    "lng": 24.051715,
+    "connectorType": "CHADEMO",
+    "maxKW": 62.5,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Heraklion Charger 433",
+    "address": "Heraklion Public Parking 433, Greece",
+    "lat": 35.332842,
+    "lng": 25.156683,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Rome Charger 434",
+    "address": "Rome Supermarket Lot 434, Italy",
+    "lat": 41.899422,
+    "lng": 12.485703,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Kalamata Charger 435",
+    "address": "Kalamata University Lot 435, Greece",
+    "lat": 37.044726,
+    "lng": 22.126827,
+    "connectorType": "SCHUKO",
+    "maxKW": 2.3,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Volos Charger 436",
+    "address": "Volos Shopping Area 436, Greece",
+    "lat": 39.338818,
+    "lng": 22.919471,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Lyon Charger 437",
+    "address": "Lyon Business Park 437, France",
+    "lat": 45.749596,
+    "lng": 4.836131,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "TotalEnergies Charge"
+  },
+  {
+    "name": "Athens Charger 438",
+    "address": "Athens Shopping Area 438, Greece",
+    "lat": 37.992537,
+    "lng": 23.726529,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Turin Charger 439",
+    "address": "Turin Business Park 439, Italy",
+    "lat": 45.1091,
+    "lng": 7.674226,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "OUTAGE",
+    "providerName": "Enel X Way"
+  },
+  {
+    "name": "Munich Charger 440",
+    "address": "Munich University Lot 440, Germany",
+    "lat": 48.127038,
+    "lng": 11.588353,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Heraklion Charger 441",
+    "address": "Heraklion Marina Parking 441, Greece",
+    "lat": 35.344971,
+    "lng": 25.138004,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Ioannina Charger 442",
+    "address": "Ioannina University Lot 442, Greece",
+    "lat": 39.672755,
+    "lng": 20.855776,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Vienna Charger 443",
+    "address": "Vienna City Hall Lot 443, Austria",
+    "lat": 48.233243,
+    "lng": 16.355672,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "IN_USE",
+    "providerName": "SMATRICS"
+  },
+  {
+    "name": "Kalamata Charger 444",
+    "address": "Kalamata University Lot 444, Greece",
+    "lat": 37.040485,
+    "lng": 22.114307,
+    "connectorType": "CCS",
+    "maxKW": 75.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Valencia Charger 445",
+    "address": "Valencia Stadium Lot 445, Spain",
+    "lat": 39.480397,
+    "lng": -0.343666,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Repsol EV"
+  },
+  {
+    "name": "Amsterdam Charger 446",
+    "address": "Amsterdam Park & Ride 446, Netherlands",
+    "lat": 52.33303,
+    "lng": 4.840295,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Allego"
+  },
+  {
+    "name": "Volos Charger 447",
+    "address": "Volos Shopping Area 447, Greece",
+    "lat": 39.366428,
+    "lng": 22.933728,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Rome Charger 448",
+    "address": "Rome Stadium Lot 448, Italy",
+    "lat": 41.886032,
+    "lng": 12.462334,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Paris Charger 449",
+    "address": "Paris Shopping Area 449, France",
+    "lat": 48.870032,
+    "lng": 2.33614,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Thessaloniki Charger 450",
+    "address": "Thessaloniki Park & Ride 450, Greece",
+    "lat": 40.650355,
+    "lng": 22.975772,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Rhodes Charger 451",
+    "address": "Rhodes Business Park 451, Greece",
+    "lat": 36.433503,
+    "lng": 28.250145,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Ioannina Charger 452",
+    "address": "Ioannina Shopping Area 452, Greece",
+    "lat": 39.704609,
+    "lng": 20.798995,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Munich Charger 453",
+    "address": "Munich City Hall Lot 453, Germany",
+    "lat": 48.145328,
+    "lng": 11.54246,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Larisa Charger 454",
+    "address": "Larisa Park & Ride 454, Greece",
+    "lat": 39.63069,
+    "lng": 22.440557,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Ioannina Charger 455",
+    "address": "Ioannina City Hall Lot 455, Greece",
+    "lat": 39.662337,
+    "lng": 20.858714,
+    "connectorType": "SCHUKO",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Valencia Charger 456",
+    "address": "Valencia Business Park 456, Spain",
+    "lat": 39.502,
+    "lng": -0.41177,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "Iberdrola Public Charging"
+  },
+  {
+    "name": "Patras Charger 457",
+    "address": "Patras Business Park 457, Greece",
+    "lat": 38.262023,
+    "lng": 21.720837,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Larisa Charger 458",
+    "address": "Larisa City Hall Lot 458, Greece",
+    "lat": 39.669538,
+    "lng": 22.371872,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Ioannina Charger 459",
+    "address": "Ioannina Business Park 459, Greece",
+    "lat": 39.660975,
+    "lng": 20.860005,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Krakow Charger 460",
+    "address": "Krakow Stadium Lot 460, Poland",
+    "lat": 50.055245,
+    "lng": 19.945879,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Berlin Charger 461",
+    "address": "Berlin Shopping Area 461, Germany",
+    "lat": 52.525066,
+    "lng": 13.430381,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "E.ON Drive"
+  },
+  {
+    "name": "Heraklion Charger 462",
+    "address": "Heraklion Park & Ride 462, Greece",
+    "lat": 35.328802,
+    "lng": 25.130375,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Marseille Charger 463",
+    "address": "Marseille Metro Station 463, France",
+    "lat": 43.288751,
+    "lng": 5.330671,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "TotalEnergies Charge"
+  },
+  {
+    "name": "Thessaloniki Charger 464",
+    "address": "Thessaloniki Shopping Area 464, Greece",
+    "lat": 40.628311,
+    "lng": 22.957888,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Rhodes Charger 465",
+    "address": "Rhodes Business Park 465, Greece",
+    "lat": 36.41902,
+    "lng": 28.236931,
+    "connectorType": "CCS",
+    "maxKW": 100.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Patras Charger 466",
+    "address": "Patras University Lot 466, Greece",
+    "lat": 38.234037,
+    "lng": 21.729673,
+    "connectorType": "CHADEMO",
+    "maxKW": 62.5,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Vienna Charger 467",
+    "address": "Vienna University Lot 467, Austria",
+    "lat": 48.22512,
+    "lng": 16.384486,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Hamburg Charger 468",
+    "address": "Hamburg City Hall Lot 468, Germany",
+    "lat": 53.573204,
+    "lng": 9.992031,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "EnBW mobility+"
+  },
+  {
+    "name": "Athens Charger 469",
+    "address": "Athens Stadium Lot 469, Greece",
+    "lat": 37.98443,
+    "lng": 23.736357,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Prague Charger 470",
+    "address": "Prague Metro Station 470, Czechia",
+    "lat": 50.048967,
+    "lng": 14.431941,
+    "connectorType": "CCS",
+    "maxKW": 120.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Kalamata Charger 471",
+    "address": "Kalamata Shopping Area 471, Greece",
+    "lat": 37.029418,
+    "lng": 22.076196,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Protergia Charge"
+  },
+  {
+    "name": "Heraklion Charger 472",
+    "address": "Heraklion Business Park 472, Greece",
+    "lat": 35.327061,
+    "lng": 25.160297,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "IN_USE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Chania Charger 473",
+    "address": "Chania Public Parking 473, Greece",
+    "lat": 35.493272,
+    "lng": 24.031586,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Thessaloniki Charger 474",
+    "address": "Thessaloniki Metro Station 474, Greece",
+    "lat": 40.627624,
+    "lng": 22.959729,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Larisa Charger 475",
+    "address": "Larisa Public Parking 475, Greece",
+    "lat": 39.683862,
+    "lng": 22.414852,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "IN_USE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Ioannina Charger 476",
+    "address": "Ioannina Shopping Area 476, Greece",
+    "lat": 39.666167,
+    "lng": 20.842521,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Motor Oil Charge"
+  },
+  {
+    "name": "Warsaw Charger 477",
+    "address": "Warsaw University Lot 477, Poland",
+    "lat": 52.254135,
+    "lng": 21.00381,
+    "connectorType": "TYPE2",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "GreenWay Polska"
+  },
+  {
+    "name": "Berlin Charger 478",
+    "address": "Berlin University Lot 478, Germany",
+    "lat": 52.510011,
+    "lng": 13.473286,
+    "connectorType": "TYPE1",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Chania Charger 479",
+    "address": "Chania Marina Parking 479, Greece",
+    "lat": 35.497515,
+    "lng": 24.043734,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Patras Charger 480",
+    "address": "Patras Stadium Lot 480, Greece",
+    "lat": 38.251178,
+    "lng": 21.727429,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Berlin Charger 481",
+    "address": "Berlin Public Parking 481, Germany",
+    "lat": 52.534638,
+    "lng": 13.382678,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "E.ON Drive"
+  },
+  {
+    "name": "Patras Charger 482",
+    "address": "Patras Stadium Lot 482, Greece",
+    "lat": 38.236487,
+    "lng": 21.7254,
+    "connectorType": "SCHUKO",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Paris Charger 483",
+    "address": "Paris University Lot 483, France",
+    "lat": 48.843822,
+    "lng": 2.302185,
+    "connectorType": "CHADEMO",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Berlin Charger 484",
+    "address": "Berlin Business Park 484, Germany",
+    "lat": 52.521572,
+    "lng": 13.394558,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Patras Charger 485",
+    "address": "Patras Business Park 485, Greece",
+    "lat": 38.228192,
+    "lng": 21.707453,
+    "connectorType": "CCS",
+    "maxKW": 50.0,
+    "status": "AVAILABLE",
+    "providerName": "ElpeFuture Charge"
+  },
+  {
+    "name": "Rotterdam Charger 486",
+    "address": "Rotterdam University Lot 486, Netherlands",
+    "lat": 51.917939,
+    "lng": 4.452184,
+    "connectorType": "TYPE1",
+    "maxKW": 7.4,
+    "status": "AVAILABLE",
+    "providerName": "Ionity"
+  },
+  {
+    "name": "Larisa Charger 487",
+    "address": "Larisa Business Park 487, Greece",
+    "lat": 39.634125,
+    "lng": 22.406607,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Amsterdam Charger 488",
+    "address": "Amsterdam Supermarket Lot 488, Netherlands",
+    "lat": 52.367205,
+    "lng": 4.886339,
+    "connectorType": "CCS",
+    "maxKW": 300.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Munich Charger 489",
+    "address": "Munich Shopping Area 489, Germany",
+    "lat": 48.131488,
+    "lng": 11.586291,
+    "connectorType": "CCS",
+    "maxKW": 350.0,
+    "status": "AVAILABLE",
+    "providerName": "EnBW mobility+"
+  },
+  {
+    "name": "Athens Charger 490",
+    "address": "Athens Supermarket Lot 490, Greece",
+    "lat": 37.986936,
+    "lng": 23.757555,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Athens Charger 491",
+    "address": "Athens University Lot 491, Greece",
+    "lat": 37.992839,
+    "lng": 23.713027,
+    "connectorType": "CCS",
+    "maxKW": 200.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Heraklion Charger 492",
+    "address": "Heraklion Supermarket Lot 492, Greece",
+    "lat": 35.341224,
+    "lng": 25.163969,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Chania Charger 493",
+    "address": "Chania University Lot 493, Greece",
+    "lat": 35.548289,
+    "lng": 23.981123,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "DEI Blue"
+  },
+  {
+    "name": "Gothenburg Charger 494",
+    "address": "Gothenburg Park & Ride 494, Sweden",
+    "lat": 57.730656,
+    "lng": 11.979667,
+    "connectorType": "SCHUKO",
+    "maxKW": 3.7,
+    "status": "AVAILABLE",
+    "providerName": "E.ON Drive"
+  },
+  {
+    "name": "Turin Charger 495",
+    "address": "Turin Public Parking 495, Italy",
+    "lat": 45.065798,
+    "lng": 7.689463,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "Shell Recharge"
+  },
+  {
+    "name": "Lyon Charger 496",
+    "address": "Lyon Public Parking 496, France",
+    "lat": 45.764476,
+    "lng": 4.854816,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Marseille Charger 497",
+    "address": "Marseille Park & Ride 497, France",
+    "lat": 43.319155,
+    "lng": 5.370637,
+    "connectorType": "CCS",
+    "maxKW": 250.0,
+    "status": "AVAILABLE",
+    "providerName": "Allego"
+  },
+  {
+    "name": "Larisa Charger 498",
+    "address": "Larisa Metro Station 498, Greece",
+    "lat": 39.660061,
+    "lng": 22.401542,
+    "connectorType": "CCS",
+    "maxKW": 150.0,
+    "status": "AVAILABLE",
+    "providerName": "Tesla Supercharger"
+  },
+  {
+    "name": "Marseille Charger 499",
+    "address": "Marseille Supermarket Lot 499, France",
+    "lat": 43.312333,
+    "lng": 5.345507,
+    "connectorType": "TYPE2",
+    "maxKW": 22.0,
+    "status": "AVAILABLE",
+    "providerName": "TotalEnergies Charge"
+  },
+  {
+    "name": "Berlin Charger 500",
+    "address": "Berlin Shopping Area 500, Germany",
+    "lat": 52.482025,
+    "lng": 13.339251,
+    "connectorType": "TYPE2",
+    "maxKW": 11.0,
+    "status": "AVAILABLE",
+    "providerName": "EnBW mobility+"
   }
 ]

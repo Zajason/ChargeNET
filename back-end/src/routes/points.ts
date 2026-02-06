@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import prisma from "../prisma/client.ts";
 import { makeErrorLog } from "../middleware/errorHandler.ts";
-import { verifyToken } from "../middleware/verifyToken.ts";
+import { optionalToken } from "../middleware/optionalToken.ts";
 import { ChargerStatus, ReservationStatus } from "@prisma/client";
 
 const router = express.Router();
@@ -27,7 +27,7 @@ const getStatusString = (db: ChargerStatus): string => {
 const allowedStatuses = Object.keys(apiToDbStatus).join(", ");
 
 // GET /points
-router.get("/", verifyToken, async (req: Request, res: Response) => {
+router.get("/", optionalToken, async (req, res) => {
   try {
     const currentUserId = req.userId; // Το ID του χρήστη που κάνει το αίτημα
 
@@ -59,15 +59,17 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
     // ------------------------------------------
 
     // --- ΒΗΜΑ 2: Βρες ποιους φορτιστές έχει κλείσει ο ΤΡΕΧΩΝ χρήστης ---
-    const myActiveReservations = await prisma.reservation.findMany({
+    const myActiveReservations = currentUserId ? await prisma.reservation.findMany({
         where: {
             userId: currentUserId,
             status: ReservationStatus.ACTIVE,
             expiresAt: { gt: new Date() } // Που δεν έχουν λήξει
         },
         select: { chargerId: true }
-    });
+ 
+  })
     
+  : [];
     // Φτιάχνουμε ένα Set με τα IDs για γρήγορη αναζήτηση
     const myReservedChargerIds = new Set(myActiveReservations.map(r => r.chargerId));
 
@@ -117,7 +119,7 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
 });
 
 // GET /points/:id
-router.get("/:id", verifyToken, async (req: Request, res: Response) => {
+router.get("/:id", optionalToken, async (req, res) => {
   try {
     const id = Number(req.params.id);
     if (isNaN(id)) return res.status(400).json(makeErrorLog(req, 400, "Invalid ID"));
