@@ -7,17 +7,42 @@ import { Zap } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
+import { signIn } from "../../utils/api";
 
 export function SignInScreen() {
   const router = useRouter(); // Next.js navigation hook
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: Implement actual sign‑in logic / API call
-    console.log("Signing in:", formData);
-    router.push("/"); // redirect to home (map) after successful login
+    setErrorMessage(null);
+    setIsSubmitting(true);
+
+    try {
+      const { token } = await signIn(formData);
+
+      const storage = typeof window === "undefined"
+        ? null
+        : rememberMe
+          ? window.localStorage
+          : window.sessionStorage;
+
+      if (storage) {
+        storage.setItem("authToken", token);
+        const alternateStorage = storage === window.localStorage ? window.sessionStorage : window.localStorage;
+        alternateStorage.removeItem("authToken");
+      }
+
+      router.push("/");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unable to sign in. Please try again.";
+      setErrorMessage(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -37,6 +62,12 @@ export function SignInScreen() {
         {/* Sign‑in form */}
         <div className="bg-white rounded-lg border border-gray-200 p-6 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
+            {errorMessage ? (
+              <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700" aria-live="polite">
+                {errorMessage}
+              </div>
+            ) : null}
+
             <div>
               <Label htmlFor="email">Email Address</Label>
               <Input
@@ -48,6 +79,7 @@ export function SignInScreen() {
                 }
                 placeholder="you@example.com"
                 className="mt-1"
+                autoComplete="username"
                 required
               />
             </div>
@@ -63,6 +95,7 @@ export function SignInScreen() {
                 }
                 placeholder="Enter your password"
                 className="mt-1"
+                autoComplete="current-password"
                 required
               />
             </div>
@@ -93,8 +126,8 @@ export function SignInScreen() {
               </Link>
             </div>
 
-            <Button type="submit" className="w-full">
-              Sign In
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Signing in..." : "Sign In"}
             </Button>
           </form>
 
@@ -123,4 +156,8 @@ export function SignInScreen() {
       </div>
     </div>
   );
+}
+
+export default function Page() {
+  return <SignInScreen />;
 }

@@ -197,7 +197,7 @@ export function MapView() {
       )}
 
       {/* Legend */}
-      <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 lg:bottom-6 lg:right-6 bg-white p-3 sm:p-4 rounded-lg shadow-lg z-[1000] hidden md:block max-w-[200px]">
+      <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 lg:bottom-6 lg:right-6 bg-white p-3 sm:p-4 rounded-lg shadow-lg z-[1000] hidden md:block max-w-[200px] text-slate-900">
         <h3 className="mb-2 text-sm lg:text-base">Legend</h3>
         <div className="space-y-2">
           <div className="flex items-center gap-2">

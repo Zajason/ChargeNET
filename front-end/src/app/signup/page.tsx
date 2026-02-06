@@ -7,6 +7,7 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Zap } from "lucide-react";
+import { signIn, signUp } from "../../utils/api";
 
 export function SignUpScreen() {
   const router = useRouter();
@@ -19,24 +20,46 @@ export function SignUpScreen() {
     confirmPassword: "",
   });
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorMessage(null);
 
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
+      setErrorMessage("Passwords do not match");
       return;
     }
 
     if (!acceptTerms) {
-      alert("Please accept the terms and conditions");
+      setErrorMessage("Please accept the terms and conditions");
       return;
     }
 
-    // TODO: Implement actual sign up logic / API call
-    console.log("Signing up:", formData);
+    setIsSubmitting(true);
 
-    router.push("/"); // redirect to home (map) after successful sign up
+    try {
+      await signUp({ email: formData.email, password: formData.password });
+
+      const { token } = await signIn({ email: formData.email, password: formData.password });
+
+      const storage = typeof window === "undefined"
+        ? null
+        : window.sessionStorage;
+
+      if (storage) {
+        storage.setItem("authToken", token);
+        window.localStorage.removeItem("authToken");
+      }
+
+      router.push("/");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unable to sign up. Please try again.";
+      setErrorMessage(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -56,6 +79,11 @@ export function SignUpScreen() {
         {/* Sign Up Form */}
         <div className="bg-white rounded-lg border border-gray-200 p-6 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
+            {errorMessage ? (
+              <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700" aria-live="polite">
+                {errorMessage}
+              </div>
+            ) : null}
             {/* Name Fields */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -99,6 +127,7 @@ export function SignUpScreen() {
                   }
                   placeholder="you@example.com"
                   className="mt-1"
+                  autoComplete="email"
                   required
                 />
               </div>
@@ -130,6 +159,7 @@ export function SignUpScreen() {
                   }
                   placeholder="Create a password"
                   className="mt-1"
+                  autoComplete="new-password"
                   required
                   minLength={8}
                 />
@@ -151,6 +181,7 @@ export function SignUpScreen() {
                   }
                   placeholder="Confirm your password"
                   className="mt-1"
+                  autoComplete="new-password"
                   required
                 />
               </div>
@@ -178,8 +209,8 @@ export function SignUpScreen() {
               </label>
             </div>
 
-            <Button type="submit" className="w-full">
-              Create Account
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Creating account..." : "Create Account"}
             </Button>
           </form>
 
@@ -208,4 +239,8 @@ export function SignUpScreen() {
       </div>
     </div>
   );
+}
+
+export default function Page() {
+  return <SignUpScreen />;
 }

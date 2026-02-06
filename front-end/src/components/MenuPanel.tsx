@@ -1,7 +1,7 @@
 "use client";
 
-import { X, User, Car, Receipt, AlertCircle, LogOut } from "lucide-react";
-import { useState } from "react";
+import { X, User, Car, Receipt, AlertCircle, LogOut, LogIn } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   AlertDialog,
@@ -22,6 +22,26 @@ interface MenuPanelProps {
 export function MenuPanel({ isOpen, onClose }: MenuPanelProps) {
   const router = useRouter();
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const refreshAuthState = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const token =
+      window.localStorage.getItem("authToken") ||
+      window.sessionStorage.getItem("authToken");
+    setIsAuthenticated(Boolean(token));
+  }, []);
+
+  useEffect(() => {
+    refreshAuthState();
+  }, [refreshAuthState, isOpen]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handler = () => refreshAuthState();
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
+  }, [refreshAuthState]);
 
   const handleSignOut = () => {
     setShowSignOutDialog(true);
@@ -29,10 +49,13 @@ export function MenuPanel({ isOpen, onClose }: MenuPanelProps) {
   };
 
   const confirmSignOut = () => {
-    // TODO: add real sign‑out logic (clear tokens, call API, redirect, etc.)
-    console.log("User signed out");
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem("authToken");
+      window.sessionStorage.removeItem("authToken");
+    }
+    setIsAuthenticated(false);
     setShowSignOutDialog(false);
-    router.push("/"); // redirect to home or login page
+    router.push("/signin");
   };
 
   const goTo = (path: string) => {
@@ -40,13 +63,15 @@ export function MenuPanel({ isOpen, onClose }: MenuPanelProps) {
     onClose();
   };
 
-  const menuItems = [
-    { icon: User, label: "View Profile", onClick: () => goTo("/profile") },
-    { icon: Car, label: "View Personal Vehicles", onClick: () => goTo("/vehicles") },
-    { icon: Receipt, label: "View Billing and History", onClick: () => goTo("/billing") },
-    { icon: AlertCircle, label: "Report a Problem", onClick: () => goTo("/report-problem") },
-    { icon: LogOut, label: "Sign Out", onClick: handleSignOut },
-  ];
+  const menuItems = isAuthenticated
+    ? [
+        { icon: User, label: "View Profile", onClick: () => goTo("/profile") },
+        { icon: Car, label: "View Personal Vehicles", onClick: () => goTo("/vehicles") },
+        { icon: Receipt, label: "View Billing and History", onClick: () => goTo("/billing") },
+        { icon: AlertCircle, label: "Report a Problem", onClick: () => goTo("/report-problem") },
+        { icon: LogOut, label: "Sign Out", onClick: handleSignOut },
+      ]
+    : [{ icon: LogIn, label: "Sign In", onClick: () => goTo("/signin") }];
 
   return (
     <>
@@ -98,14 +123,14 @@ export function MenuPanel({ isOpen, onClose }: MenuPanelProps) {
       <AlertDialog open={showSignOutDialog} onOpenChange={setShowSignOutDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Sign Out</AlertDialogTitle>
+              <AlertDialogTitle>Sign Out</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to sign out of your account?
+                Are you sure you want to sign out of your account?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmSignOut}>Sign Out</AlertDialogAction>
+              <AlertDialogAction onClick={confirmSignOut}>Sign Out</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
