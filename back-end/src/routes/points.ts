@@ -1,26 +1,20 @@
 import express, { Request, Response } from "express";
 import prisma from "../prisma/client.ts";
 import { makeErrorLog } from "../middleware/errorHandler.ts";
+import { optionalToken } from "../middleware/optionalToken.ts";
 import { ChargerStatus, ReservationStatus } from "@prisma/client";
 
 const router = express.Router();
 
-/**
- * Map API query/status -> DB enum
- * Προσθέσαμε συνώνυμα (charging, reserved) για να δουλεύει ευέλικτα το CLI
- */
 const apiToDbStatus: Record<string, ChargerStatus> = {
   available: ChargerStatus.AVAILABLE,
   in_use: ChargerStatus.IN_USE,
-  charging: ChargerStatus.IN_USE, // <--- ΠΡΟΣΘΗΚΗ
-  reserved: ChargerStatus.IN_USE, // <--- ΠΡΟΣΘΗΚΗ
+  charging: ChargerStatus.IN_USE,
+  reserved: ChargerStatus.IN_USE,
   outage: ChargerStatus.OUTAGE,
-  outoforder: ChargerStatus.OUTAGE, // <--- ΠΡΟΣΘΗΚΗ
+  outoforder: ChargerStatus.OUTAGE,
 };
 
-/**
- * Map DB enum -> API status
- */
 const getStatusString = (db: ChargerStatus): string => {
   switch (db) {
     case ChargerStatus.AVAILABLE: return "available";
@@ -32,27 +26,62 @@ const getStatusString = (db: ChargerStatus): string => {
 
 const allowedStatuses = Object.keys(apiToDbStatus).join(", ");
 
-/**
- * GET /points
- */
-router.get("/", async (req: Request, res: Response) => {
+// GET /points
+router.get("/", optionalToken, async (req, res) => {
   try {
-    const { status } = req.query;
+    const currentUserId = req.userId; // Το ID του χρήστη που κάνει το αίτημα
 
+    // --- ΒΗΜΑ 1: Lazy Cleanup ---
+    const now = new Date();
+    const expiredReservations = await prisma.reservation.findMany({
+      where: {
+        status: ReservationStatus.ACTIVE,
+        expiresAt: { lt: now }
+      },
+      select: { id: true, chargerId: true }
+    });
+
+    if (expiredReservations.length > 0) {
+       const reservationIds = expiredReservations.map(r => r.id);
+       const chargerIds = expiredReservations.map(r => r.chargerId);
+       
+       await prisma.$transaction([
+         prisma.reservation.updateMany({
+           where: { id: { in: reservationIds } },
+           data: { status: ReservationStatus.EXPIRED }
+         }),
+         prisma.charger.updateMany({
+           where: { id: { in: chargerIds }, status: ChargerStatus.IN_USE },
+           data: { status: ChargerStatus.AVAILABLE }
+         })
+       ]);
+    }
+    // ------------------------------------------
+
+    // --- ΒΗΜΑ 2: Βρες ποιους φορτιστές έχει κλείσει ο ΤΡΕΧΩΝ χρήστης ---
+    const myActiveReservations = currentUserId ? await prisma.reservation.findMany({
+        where: {
+            userId: currentUserId,
+            status: ReservationStatus.ACTIVE,
+            expiresAt: { gt: new Date() } // Που δεν έχουν λήξει
+        },
+        select: { chargerId: true }
+ 
+  })
+    
+  : [];
+    // Φτιάχνουμε ένα Set με τα IDs για γρήγορη αναζήτηση
+    const myReservedChargerIds = new Set(myActiveReservations.map(r => r.chargerId));
+
+    // --- ΒΗΜΑ 3: Ανάκτηση Φορτιστών ---
+    const { status } = req.query;
     let where: { status?: ChargerStatus } = {};
 
     if (status !== undefined) {
-      const statusStr = String(status).toLowerCase(); // Αφαιρέσαμε το strict casting για ευελιξία
-
+      const statusStr = String(status).toLowerCase();
       if (!(statusStr in apiToDbStatus)) {
-        const errorLog = makeErrorLog(
-          req,
-          400,
-          `Invalid status '${statusStr}'. Allowed values: ${allowedStatuses}`
-        );
-        return res.status(400).json(errorLog);
+        return res.status(400).json(makeErrorLog(req, 400, `Invalid status. Allowed: ${allowedStatuses}`));
       }
-
       where.status = apiToDbStatus[statusStr];
     }
 
@@ -61,21 +90,26 @@ router.get("/", async (req: Request, res: Response) => {
         orderBy: { id: 'asc' }
     });
 
-    // Επιστροφή κενού πίνακα αντί για 204 για να μην σκάει το CLI parsing
     if (chargers.length === 0) return res.status(200).json([]);
 
-    const result = chargers.map((c) => ({
-      pointid: c.id,
-      providerName: c.providerName || "unknown",
-      name: c.name,
-      address: c.address ?? "",
-      connectorType: c.connectorType,
-      lon: String(c.lng),
-      lat: String(c.lat),
-      status: getStatusString(c.status),
-      cap: c.maxKW,
-      kwhprice: c.kwhprice,
-    }));
+    const result = chargers.map((c) => {
+      // Ελέγχουμε αν αυτός ο φορτιστής είναι κρατημένος από ΕΜΑΣ
+      const isMine = myReservedChargerIds.has(c.id);
+
+      return {
+        pointid: c.id,
+        providerName: c.providerName || "unknown",
+        name: c.name,
+        address: c.address ?? "",
+        connectorType: c.connectorType,
+        lon: String(c.lng),
+        lat: String(c.lat),
+        status: getStatusString(c.status),
+        cap: c.maxKW,
+        kwhprice: c.kwhprice,
+        reserved_by_me: isMine 
+      };
+    });
 
     return res.status(200).json(result);
   } catch (err: any) {
@@ -84,38 +118,58 @@ router.get("/", async (req: Request, res: Response) => {
   }
 });
 
-/**
- * GET /points/:id
- */
-router.get("/:id", async (req: Request, res: Response) => {
+// GET /points/:id
+router.get("/:id", optionalToken, async (req, res) => {
   try {
     const id = Number(req.params.id);
+    if (isNaN(id)) return res.status(400).json(makeErrorLog(req, 400, "Invalid ID"));
 
-    if (isNaN(id)) {
-      const errorLog = makeErrorLog(req, 400, `Invalid charger id: '${req.params.id}'`);
-      return res.status(400).json(errorLog);
+    // --- LAZY UPDATE (Specific Charger) ---
+    // Πριν φέρουμε τον φορτιστή, ελέγχουμε αν έχει ληγμένη κράτηση ΚΑΙ ΕΙΝΑΙ ΑΥΤΟΣ
+    const now = new Date();
+    const expiredRes = await prisma.reservation.findFirst({
+        where: {
+            chargerId: id,
+            status: "ACTIVE", // ή ReservationStatus.ACTIVE
+            expiresAt: { lt: now }
+        }
+    });
+
+    if (expiredRes) {
+        // Καθαρισμός ΤΩΡΑ
+        await prisma.$transaction([
+            prisma.reservation.update({
+                where: { id: expiredRes.id },
+                data: { status: "EXPIRED" } // ή ReservationStatus.EXPIRED
+            }),
+            prisma.charger.update({
+                where: { id: id },
+                data: { status: "AVAILABLE" } // ή ChargerStatus.AVAILABLE
+            })
+        ]);
     }
+    // --------------------------------------
 
     const charger = await prisma.charger.findUnique({ where: { id } });
+    if (!charger) return res.status(404).json(makeErrorLog(req, 404, "Not found"));
 
-    if (!charger) {
-      const errorLog = makeErrorLog(req, 404, `Charger with id ${id} not found`);
-      return res.status(404).json(errorLog);
-    }
-
+    // Τώρα φέρνουμε την κράτηση (αν υπάρχει ακόμα ενεργή)
     const activeReservation = await prisma.reservation.findFirst({
       where: {
         chargerId: charger.id,
-        status: ReservationStatus.ACTIVE,
-        expiresAt: { gt: new Date() },
+        status: "ACTIVE", // ή ReservationStatus.ACTIVE
+        expiresAt: { gt: now },
       },
       orderBy: { expiresAt: "desc" },
     });
+    
+    // Έλεγχος αν η κράτηση είναι δική μου
+    const currentUserId = req.userId; // Βεβαιώσου ότι το verifyToken το δίνει αυτό
+    const isMine = activeReservation?.userId === currentUserId;
 
-    const nowStr = new Date().toISOString().replace("T", " ").substring(0, 16);
     const resEndTime = activeReservation
       ? activeReservation.expiresAt.toISOString().replace("T", " ").substring(0, 16)
-      : nowStr;
+      : null;
 
     const result = {
       pointid: charger.id,
@@ -125,16 +179,16 @@ router.get("/:id", async (req: Request, res: Response) => {
       connectorType: charger.connectorType,
       lon: String(charger.lng),
       lat: String(charger.lat),
-      status: getStatusString(charger.status),
+      status: getStatusString(charger.status), // Χρήση της getStatusString που έχουμε πάνω
       cap: charger.maxKW,
       kwhprice: charger.kwhprice,
       reservationendtime: resEndTime,
+      reserved_by_me: isMine
     };
 
     return res.status(200).json(result);
   } catch (err: any) {
-    const errorLog = makeErrorLog(req, 500, "Internal server error", err.message);
-    return res.status(500).json(errorLog);
+    return res.status(500).json(makeErrorLog(req, 500, "Internal Error", err.message));
   }
 });
 
