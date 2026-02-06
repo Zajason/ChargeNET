@@ -45,8 +45,8 @@ export function MapView() {
 
   const { location: userLocation, error: locationError } = useUserLocation();
 
-  // Fallback if user denies location or it hasn't loaded yet
-  const fallback = { lat: 37.7749, lng: -122.4194 };
+  // Fallback to Athens center if user denies location or it hasn't loaded yet
+  const fallback = { lat: 37.9838, lng: 23.7275 };
   const effectiveUserLocation = userLocation ?? fallback;
 
   // Controlled map center + follow mode
@@ -246,13 +246,6 @@ export function MapView() {
             ))}
           </Map>
 
-      {/* Legend */}
-      <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 lg:bottom-6 lg:right-6 bg-white p-3 sm:p-4 rounded-lg shadow-lg z-[1000] hidden md:block max-w-[200px] text-slate-900">
-        <h3 className="mb-2 text-sm lg:text-base">Legend</h3>
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <div className="relative flex items-center justify-center w-4 h-4">
-              <div className="w-2.5 h-2.5 lg:w-3 lg:h-3 rounded-full bg-blue-500 border border-white shadow-sm"></div>
           {selectedCharger && (
             <ChargerDetails
               charger={selectedCharger}
