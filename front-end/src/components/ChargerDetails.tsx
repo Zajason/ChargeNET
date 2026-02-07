@@ -307,41 +307,80 @@ function ChargerContent({
 
       {/* Duration picker modal */}
       {showDurationPicker && (
-        <div className="fixed inset-0 z-[1200] flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setShowDurationPicker(false)} />
-          <div className="relative bg-white rounded-lg p-4 w-[92%] max-w-md shadow-lg">
-            <h3 className="text-lg font-medium mb-2">Select reservation duration</h3>
-            <div className="mb-3">
-              <input
-                type="range"
-                min={10}
-                max={60}
-                step={10}
-                value={selectedMinutes}
-                onChange={(e) => setSelectedMinutes(Number(e.target.value))}
-                className="w-full"
-              />
-              <div className="text-sm text-gray-600 mt-2">{selectedMinutes} minutes</div>
-            </div>
-            <div className="flex gap-2 justify-end">
-              <button
-                className="px-3 py-2 rounded bg-gray-100"
-                onClick={() => setShowDurationPicker(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-3 py-2 rounded bg-blue-600 text-white"
-                onClick={() => {
-                  setShowDurationPicker(false);
-                  onReserve(charger.id, selectedMinutes);
-                }}
-              >
-                Confirm ({selectedMinutes}m)
-              </button>
+        <>
+          {/* Mobile: centered modal (unchanged) */}
+          <div className="md:hidden fixed inset-0 z-[1200] flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowDurationPicker(false)} />
+            <div className="relative bg-white rounded-xl p-4 w-[92%] max-w-md shadow-2xl ring-1 ring-gray-100 border border-gray-200">
+              <h3 className="text-lg font-medium mb-2">Select reservation duration</h3>
+              <div className="mb-3">
+                <input
+                  type="range"
+                  min={10}
+                  max={60}
+                  step={10}
+                  value={selectedMinutes}
+                  onChange={(e) => setSelectedMinutes(Number(e.target.value))}
+                  className="w-full"
+                />
+                <div className="text-sm text-gray-600 mt-2">{selectedMinutes} minutes</div>
+              </div>
+              <div className="flex gap-2 justify-end">
+                <button
+                  className="px-3 py-2 rounded bg-gray-100"
+                  onClick={() => setShowDurationPicker(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="px-3 py-2 rounded bg-blue-600 text-white"
+                  onClick={() => {
+                    setShowDurationPicker(false);
+                    onReserve(charger.id, selectedMinutes);
+                  }}
+                >
+                  Confirm ({selectedMinutes}m)
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+
+          {/* Desktop: anchored to left, slightly lower so it's above the Reserve button */}
+          <div className="hidden md:block absolute left-4 top-28 z-[1300]">
+            <div className="bg-white rounded-xl p-4 w-80 shadow-2xl ring-1 ring-gray-100 border border-gray-200">
+              <h3 className="text-lg font-medium mb-2">Select reservation duration</h3>
+              <div className="mb-3">
+                <input
+                  type="range"
+                  min={10}
+                  max={60}
+                  step={10}
+                  value={selectedMinutes}
+                  onChange={(e) => setSelectedMinutes(Number(e.target.value))}
+                  className="w-full"
+                />
+                <div className="text-sm text-gray-600 mt-2">{selectedMinutes} minutes</div>
+              </div>
+              <div className="flex gap-2 justify-end">
+                <button
+                  className="px-3 py-2 rounded bg-gray-100"
+                  onClick={() => setShowDurationPicker(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="px-3 py-2 rounded bg-blue-600 text-white"
+                  onClick={() => {
+                    setShowDurationPicker(false);
+                    onReserve(charger.id, selectedMinutes);
+                  }}
+                >
+                  Confirm ({selectedMinutes}m)
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
       )}
 
       {isReserved && reservationEndTime && (
