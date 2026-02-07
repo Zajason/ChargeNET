@@ -1,6 +1,6 @@
 "use client";
 
-import { X, User, Car, Receipt, AlertCircle, LogOut, LogIn } from "lucide-react";
+import { X, User, Car, Receipt, AlertCircle, LogOut, LogIn, MapIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -65,13 +65,17 @@ export function MenuPanel({ isOpen, onClose }: MenuPanelProps) {
 
   const menuItems = isAuthenticated
     ? [
+        { icon: MapIcon, label: "Back to Map", onClick: () => goTo("/") },
         { icon: User, label: "View Profile", onClick: () => goTo("/profile") },
         { icon: Car, label: "View Personal Vehicles", onClick: () => goTo("/vehicles") },
         { icon: Receipt, label: "View Billing and History", onClick: () => goTo("/billing") },
         { icon: AlertCircle, label: "Report a Problem", onClick: () => goTo("/report-problem") },
         { icon: LogOut, label: "Sign Out", onClick: handleSignOut },
       ]
-    : [{ icon: LogIn, label: "Sign In", onClick: () => goTo("/signin") }];
+    : [
+        { icon: MapIcon, label: "Back to Map", onClick: () => goTo("/") },
+        { icon: LogIn, label: "Sign In", onClick: () => goTo("/signin") },
+      ];
 
   return (
     <>

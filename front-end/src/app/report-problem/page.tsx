@@ -1,5 +1,6 @@
 "use client";
 import { SideMenu } from '../../components/SideMenu';
+import { MenuPanel } from '../../components/MenuPanel';
 import { useState } from 'react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -12,9 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../components/ui/select';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Menu } from 'lucide-react';
 
 export default function ReportProblemScreen() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     category: '',
@@ -24,23 +26,59 @@ export default function ReportProblemScreen() {
     email: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement problem report submission
-    console.log('Submitting problem report:', formData);
-    setSubmitted(true);
-    
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({
-        category: '',
-        location: '',
-        subject: '',
-        description: '',
-        email: '',
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY || 'YOUR_ACCESS_KEY_HERE',
+          subject: `[EV Charger App] ${formData.subject}`,
+          from_name: 'EV Charger App - Problem Report',
+          replyto: formData.email,
+          category: formData.category,
+          location: formData.location,
+          message: formData.description,
+          email: formData.email,
+          // Auto-response to sender
+          autoresponse: true,
+          autoresponse_subject: 'We received your problem report - EV Charger App',
+          autoresponse_message: `Hi,\n\nThank you for reporting an issue with the EV Charger App.\n\nWe have received your report regarding: "${formData.subject}"\n\nOur team will review it and get back to you as soon as possible.\n\nBest regards,\nEV Charger App Team`,
+        }),
       });
-    }, 9876);
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitted(true);
+        // Reset form after showing success
+        setTimeout(() => {
+          setSubmitted(false);
+          setFormData({
+            category: '',
+            location: '',
+            subject: '',
+            description: '',
+            email: '',
+          });
+        }, 5000);
+      } else {
+        setError('Failed to submit report. Please try again.');
+      }
+    } catch (err) {
+      setError('Network error. Please check your connection.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {
@@ -55,8 +93,17 @@ export default function ReportProblemScreen() {
 
   if (submitted) {
     return (
-      <div className="flex h-screen w-full">
-        {/* Main Content Area - 3/4 of screen */}
+      <div className="flex flex-col sm:flex-row h-screen w-full">
+        {/* Mobile header */}
+        <div className="sm:hidden flex items-center gap-3 p-3 bg-white border-b border-gray-200">
+          <button onClick={() => setIsMenuOpen(true)} className="p-2 hover:bg-gray-100 rounded-lg">
+            <Menu className="w-5 h-5 text-gray-700" />
+          </button>
+          <h1 className="text-lg font-medium text-gray-900">Report a Problem</h1>
+        </div>
+        <MenuPanel isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+
+        {/* Main Content Area */}
         <div className="flex-1 overflow-auto bg-gray-50 flex items-center justify-center">
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
@@ -69,8 +116,8 @@ export default function ReportProblemScreen() {
           </div>
         </div>
 
-        {/* Side Menu - 1/4 of screen */}
-        <div className="w-full sm:w-80 lg:w-96 flex-shrink-0">
+        {/* Side Menu - hidden on mobile, visible on sm+ */}
+        <div className="hidden sm:block sm:w-80 lg:w-96 flex-shrink-0">
           <SideMenu />
         </div>
       </div>
@@ -78,12 +125,21 @@ export default function ReportProblemScreen() {
   }
 
   return (
-    <div className="flex h-screen w-full">
-      {/* Main Content Area - 3/4 of screen */}
+    <div className="flex flex-col sm:flex-row h-screen w-full">
+      {/* Mobile header */}
+      <div className="sm:hidden flex items-center gap-3 p-3 bg-white border-b border-gray-200">
+        <button onClick={() => setIsMenuOpen(true)} className="p-2 hover:bg-gray-100 rounded-lg">
+          <Menu className="w-5 h-5 text-gray-700" />
+        </button>
+        <h1 className="text-lg font-medium text-gray-900">Report a Problem</h1>
+      </div>
+      <MenuPanel isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+
+      {/* Main Content Area */}
       <div className="flex-1 overflow-auto bg-gray-50">
         <div className="max-w-3xl mx-auto p-6 sm:p-8 lg:p-12">
           <div className="mb-8">
-            <h1 className="text-2xl sm:text-3xl text-gray-900 mb-2">Report a Problem</h1>
+            <h1 className="hidden sm:block text-2xl sm:text-3xl text-gray-900 mb-2">Report a Problem</h1>
             <p className="text-sm text-gray-500">
               Let us know about any issues you're experiencing
             </p>
@@ -169,12 +225,22 @@ export default function ReportProblemScreen() {
                 </p>
               </div>
 
+              {/* Error message */}
+              {error && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                  {error}
+                </div>
+              )}
+
               {/* Submit Buttons */}
               <div className="flex gap-3 pt-4">
-                <Button type="submit" disabled={!formData.category || !formData.subject || !formData.description || !formData.email}>
-                  Submit Report
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting || !formData.category || !formData.subject || !formData.description || !formData.email}
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit Report'}
                 </Button>
-                <Button type="button" variant="outline" onClick={handleReset}>
+                <Button type="button" variant="outline" onClick={handleReset} disabled={isSubmitting}>
                   Reset
                 </Button>
               </div>
@@ -195,8 +261,8 @@ export default function ReportProblemScreen() {
         </div>
       </div>
 
-      {/* Side Menu - 1/4 of screen */}
-      <div className="w-full sm:w-80 lg:w-96 flex-shrink-0">
+      {/* Side Menu - hidden on mobile, visible on sm+ */}
+      <div className="hidden sm:block sm:w-80 lg:w-96 flex-shrink-0">
         <SideMenu />
       </div>
     </div>

@@ -160,7 +160,7 @@ export function MapView() {
       {viewMode === "map" && (
         <button
           onClick={recenter}
-          className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 lg:bottom-6 lg:left-6 bg-white px-3 py-2 rounded-lg shadow-lg z-[1000] hover:bg-gray-50 active:bg-gray-100 transition-colors flex items-center gap-2 text-sm"
+          className="absolute bottom-16 left-3 sm:bottom-4 sm:left-4 lg:bottom-6 lg:left-6 bg-white px-3 py-2 rounded-lg shadow-lg z-[1000] hover:bg-gray-50 active:bg-gray-100 transition-colors flex items-center gap-2 text-sm"
           aria-label="Recenter"
           title={followUser ? "Following your location" : "Recenter to your location"}
         >
