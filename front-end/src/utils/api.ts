@@ -179,5 +179,5 @@ async function fetchJson(path: string, init?: RequestInit & { auth?: boolean }) 
 
 export async function fetchCarOwnerships() {
   // If your backend is mounted elsewhere, change the path here
-  return fetchJson("/api/car-ownership", { auth: true });
+  return fetchJson("/car-ownership", { auth: true });
 }

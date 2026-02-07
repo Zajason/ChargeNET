@@ -34,9 +34,7 @@ export function ChargerDetails({
 }: ChargerDetailsProps) {
   const router = useRouter();
 
-  const [timeRemaining, setTimeRemaining] = useState(
-    charger.timeRemaining ?? 0
-  );
+  const [timeRemaining, setTimeRemaining] = useState(charger.timeRemaining ?? 0);
 
   const {
     vehicles,
@@ -46,8 +44,7 @@ export function ChargerDetails({
     hasNoCars,
   } = useUserVehicles();
 
-  const [selectedVehicle, setSelectedVehicle] =
-    useState<Vehicle | null>(null);
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
 
   useEffect(() => {
     if (!selectedVehicle && vehicles.length > 0) {
@@ -182,17 +179,12 @@ export function ChargerDetails({
   );
 }
 
-function Header({
-  title,
-  onClose,
-}: {
-  title: string;
-  onClose: () => void;
-}) {
+function Header({ title, onClose }: { title: string; onClose: () => void }) {
   return (
     <div className="flex justify-between items-start mb-4">
       <h2 className="text-xl">{title}</h2>
       <button
+        type="button"
         onClick={onClose}
         className="p-2 hover:bg-gray-100 rounded-full transition-colors"
       >
@@ -246,25 +238,23 @@ function ChargerContent({
 }: ChargerContentProps) {
   const [showVehicleMenu, setShowVehicleMenu] = useState(false);
 
+  // Close the dropdown if selection changes or vehicles refresh
+  useEffect(() => {
+    setShowVehicleMenu(false);
+  }, [selectedVehicle?.id, vehicles.length]);
+
   const chargerPowerKW = charger.maxKW ?? 0;
-  const pricePerKwh =
-    typeof charger.kwhprice === "number" ? charger.kwhprice : 0;
+  const pricePerKwh = typeof charger.kwhprice === "number" ? charger.kwhprice : 0;
 
   const estimates = useMemo(() => {
     if (!selectedVehicle || chargerPowerKW <= 0) return null;
 
     const target = 80;
     const energyNeeded =
-      (selectedVehicle.batteryCapacity *
-        (target - selectedVehicle.currentBatteryLevel)) /
-      100;
+      (selectedVehicle.batteryCapacity * (target - selectedVehicle.currentBatteryLevel)) / 100;
 
-    const speed = Math.min(
-      chargerPowerKW,
-      selectedVehicle.maxChargingSpeed
-    );
-
-    const timeMinutes = Math.round((energyNeeded / speed) * 60);
+    const speed = Math.min(chargerPowerKW, selectedVehicle.maxChargingSpeed);
+    const timeMinutes = Math.max(0, Math.round((energyNeeded / speed) * 60));
     const cost = energyNeeded * pricePerKwh;
 
     return {
@@ -278,26 +268,21 @@ function ChargerContent({
   return (
     <div className="space-y-4">
       {/* Status */}
-      <div
-        className={`inline-flex items-center gap-2 px-3 py-2 rounded-full ${getStatusColor()}`}
-      >
+      <div className={`inline-flex items-center gap-2 px-3 py-2 rounded-full ${getStatusColor()}`}>
         {getStatusIcon()}
         <span>{getStatusText()}</span>
       </div>
 
       {/* Vehicle / Estimates */}
       {charger.status === "available" && (
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3">
-          {vehiclesLoading && (
-            <p className="text-sm text-gray-600">Loading your cars…</p>
-          )}
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4 space-y-3">
+          {vehiclesLoading && <p className="text-sm text-gray-600">Loading your cars…</p>}
 
           {!vehiclesLoading && notLoggedIn && (
             <>
-              <p className="text-sm text-gray-700">
-                Sign in to see charging estimates.
-              </p>
+              <p className="text-sm text-gray-700">Sign in to see charging estimates.</p>
               <button
+                type="button"
                 onClick={goToProfile}
                 className="w-full py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
               >
@@ -308,10 +293,9 @@ function ChargerContent({
 
           {!vehiclesLoading && !notLoggedIn && hasNoCars && (
             <>
-              <p className="text-sm text-gray-700">
-                You haven’t linked a car yet.
-              </p>
+              <p className="text-sm text-gray-700">You haven’t linked a car yet.</p>
               <button
+                type="button"
                 onClick={goToProfile}
                 className="w-full py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
               >
@@ -320,49 +304,130 @@ function ChargerContent({
             </>
           )}
 
-          {!vehiclesLoading &&
-            !notLoggedIn &&
-            !hasNoCars &&
-            selectedVehicle && (
-              <>
-                <div className="flex items-center gap-3">
-                  <CartoonCar
-                    color={selectedVehicle.color}
-                    className="w-16 h-16"
-                  />
-                  <div>
-                    <p className="text-gray-900">
-                      {selectedVehicle.brand}{" "}
-                      {selectedVehicle.model}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Battery:{" "}
-                      {selectedVehicle.currentBatteryLevel}%
-                    </p>
-                  </div>
-                </div>
+          {!vehiclesLoading && !notLoggedIn && !hasNoCars && vehiclesError && (
+            <p className="text-sm text-red-600">Failed to load cars: {vehiclesError}</p>
+          )}
 
-                {estimates && (
-                  <div className="space-y-2 pt-2 border-t">
-                    <Row
-                      icon={<Clock className="w-4 h-4" />}
-                      label="Estimated Time"
-                      value={`${estimates.timeMinutes} min`}
-                    />
-                    <Row
-                      icon={<DollarSign className="w-4 h-4" />}
-                      label="Estimated Cost"
-                      value={`€${estimates.cost}`}
-                    />
-                    <Row
-                      icon={<Zap className="w-4 h-4" />}
-                      label={`To ${estimates.target}%`}
-                      value={`${estimates.energyNeeded} kWh`}
-                    />
+          {/* ✅ Logged in + cars */}
+          {!vehiclesLoading && !notLoggedIn && !hasNoCars && !vehiclesError && (
+            <>
+              {!selectedVehicle ? (
+                <p className="text-sm text-gray-700">Selecting your car…</p>
+              ) : (
+                <>
+                  {/* ✅ Title row is the dropdown trigger */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (vehicles.length > 1) setShowVehicleMenu((v) => !v);
+                      }}
+                      className={`w-full flex items-center justify-between gap-3 rounded-lg px-2.5 py-2 ${
+                        vehicles.length > 1 ? "hover:bg-white/60 cursor-pointer" : "cursor-default"
+                      } transition-colors`}
+                      aria-haspopup={vehicles.length > 1 ? "listbox" : undefined}
+                      aria-expanded={vehicles.length > 1 ? showVehicleMenu : undefined}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <CartoonCar color={selectedVehicle.color} className="w-14 h-14 shrink-0" />
+                        <div className="min-w-0 text-left">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <p className="text-gray-900 font-medium truncate">
+                              {selectedVehicle.brand} {selectedVehicle.model}
+                              {selectedVehicle.variant ? ` ${selectedVehicle.variant}` : ""}
+                            </p>
+                            {selectedVehicle.year ? (
+                              <span className="text-gray-500 text-sm shrink-0">
+                                ({selectedVehicle.year})
+                              </span>
+                            ) : null}
+                          </div>
+                          <p className="text-sm text-gray-500">
+                            Battery: {selectedVehicle.currentBatteryLevel}%
+                          </p>
+                        </div>
+                      </div>
+
+                      {vehicles.length > 1 ? (
+                        <ChevronDown
+                          className={`w-5 h-5 text-gray-500 shrink-0 transition-transform ${
+                            showVehicleMenu ? "rotate-180" : ""
+                          }`}
+                        />
+                      ) : null}
+                    </button>
+
+                    {/* Dropdown menu */}
+                    {vehicles.length > 1 && showVehicleMenu && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => setShowVehicleMenu(false)}
+                          className="fixed inset-0 z-0 cursor-default"
+                          aria-label="Close vehicle menu"
+                        />
+                        <div
+                          role="listbox"
+                          className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-56 overflow-y-auto"
+                        >
+                          {vehicles.map((vehicle) => {
+                            const active = vehicle.id === selectedVehicle.id;
+                            return (
+                              <button
+                                type="button"
+                                key={vehicle.id}
+                                role="option"
+                                aria-selected={active}
+                                onClick={() => {
+                                  setSelectedVehicle(vehicle);
+                                  setShowVehicleMenu(false);
+                                }}
+                                className={`w-full px-3 py-2 text-left text-sm transition-colors flex items-center gap-2 ${
+                                  active ? "bg-blue-50" : "hover:bg-gray-50"
+                                }`}
+                              >
+                                <div
+                                  className="w-4 h-4 rounded-full border border-gray-300 shrink-0"
+                                  style={{ backgroundColor: vehicle.color }}
+                                />
+                                <div className="min-w-0">
+                                  <p className="text-gray-900 truncate">
+                                    {vehicle.brand} {vehicle.model}
+                                    {vehicle.variant ? ` ${vehicle.variant}` : ""}
+                                  </p>
+                                  {vehicle.year ? <p className="text-xs text-gray-500">{vehicle.year}</p> : null}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </>
+                    )}
                   </div>
-                )}
-              </>
-            )}
+
+                  {estimates && (
+                    <div className="space-y-2 pt-2 border-t">
+                      <Row
+                        icon={<Clock className="w-4 h-4" />}
+                        label="Estimated Time"
+                        value={`${estimates.timeMinutes} min`}
+                      />
+                      <Row
+                        icon={<DollarSign className="w-4 h-4" />}
+                        label="Estimated Cost"
+                        value={`€${estimates.cost}`}
+                      />
+                      <Row
+                        icon={<Zap className="w-4 h-4" />}
+                        label={`To ${estimates.target}%`}
+                        value={`${estimates.energyNeeded} kWh`}
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+            </>
+          )}
         </div>
       )}
 
@@ -375,20 +440,14 @@ function ChargerContent({
       {/* Charger Details */}
       <InfoRow
         icon={<Zap className="w-5 h-5 text-gray-400" />}
-        text={`${chargerPowerKW} kW • ${connectorLabel(
-          charger.connectorType
-        )}`}
+        text={`${chargerPowerKW} kW • ${connectorLabel(charger.connectorType)}`}
       />
 
       {/* Timer */}
       {charger.status === "in_use" && (
         <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-          <p className="text-orange-900 mb-1">
-            Estimated Time Remaining
-          </p>
-          <p className="text-3xl text-orange-600">
-            {formatTime(timeRemaining)}
-          </p>
+          <p className="text-orange-900 mb-1">Estimated Time Remaining</p>
+          <p className="text-3xl text-orange-600">{formatTime(timeRemaining)}</p>
         </div>
       )}
 
@@ -396,18 +455,18 @@ function ChargerContent({
       {charger.status === "available" && (
         <div className="space-y-2">
           <button
+            type="button"
             onClick={() => onReserve(charger.id)}
             disabled={isReserved}
             className={`w-full py-3 rounded-lg ${
-              isReserved
-                ? "bg-green-500 text-white"
-                : "bg-blue-600 text-white hover:bg-blue-700"
+              isReserved ? "bg-green-500 text-white" : "bg-blue-600 text-white hover:bg-blue-700"
             }`}
           >
             {isReserved ? "Reserved!" : "Reserve Charger"}
           </button>
 
           <button
+            type="button"
             onClick={() =>
               window.open(
                 `https://www.google.com/maps/dir/?api=1&destination=${charger.lat},${charger.lng}`,
@@ -425,21 +484,13 @@ function ChargerContent({
       {/* Pricing */}
       <div className="pt-4 border-t">
         <p className="text-sm text-gray-500">Pricing</p>
-        <p className="text-gray-900">
-          €{pricePerKwh.toFixed(2)}/kWh
-        </p>
+        <p className="text-gray-900">€{pricePerKwh.toFixed(2)}/kWh</p>
       </div>
     </div>
   );
 }
 
-function InfoRow({
-  icon,
-  text,
-}: {
-  icon: React.ReactNode;
-  text: string;
-}) {
+function InfoRow({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
     <div className="flex items-start gap-3">
       {icon}
@@ -448,15 +499,7 @@ function InfoRow({
   );
 }
 
-function Row({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
+function Row({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2 text-gray-600">
