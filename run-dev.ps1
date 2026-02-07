@@ -126,3 +126,5 @@ if (Test-Cmd npm) {
 
 Write-Host "== Done. Front-end: http://localhost:3000  |  Back-end: http://localhost:$backendPort (unless you changed PORT) =="
 Write-Host "To stop Docker services: docker-compose down (or 'docker compose down')"
+
+# Random push to trigger workflow run
