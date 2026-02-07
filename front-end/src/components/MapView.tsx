@@ -39,7 +39,8 @@ export function MapView() {
 
   const { location: userLocation, error: locationError } = useUserLocation();
 
-  const fallback = { lat: 37.7749, lng: -122.4194 };
+  // Fallback to Athens center if user denies location or it hasn't loaded yet
+  const fallback = { lat: 37.9838, lng: 23.7275 };
   const effectiveUserLocation = userLocation ?? fallback;
 
   const [mapCenter, setMapCenter] = useState<[number, number]>([fallback.lat, fallback.lng]);
