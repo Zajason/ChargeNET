@@ -1,15 +1,23 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { X, MapPin, Zap, AlertCircle, CheckCircle, Clock } from "lucide-react";
+import { fetchCharger } from "../utils/api";
 import type { Charger } from "../types/charger";
 
 interface ChargerDetailsProps {
   charger: Charger;
   onClose: () => void;
-  onReserve: (chargerId: string) => void;
+  onReserve: (chargerId: string, minutes?: number) => void;
+  onCancel: (chargerId: string) => void;
   isReserved: boolean;
+  isReserving: boolean;
+  hasActiveReservation: boolean;
+  error: string | null;
+  onErrorClose: () => void;
 }
 
-export function ChargerDetails({ charger, onClose, onReserve, isReserved }: ChargerDetailsProps) {
+export function ChargerDetails({ charger, onClose, onReserve, onCancel, isReserved, isReserving, hasActiveReservation, error, onErrorClose }: ChargerDetailsProps) {
   const getStatusColor = () => {
     switch (charger.status) {
       case "available":
@@ -74,7 +82,12 @@ export function ChargerDetails({ charger, onClose, onReserve, isReserved }: Char
             getStatusIcon={getStatusIcon}
             getStatusText={getStatusText}
             onReserve={onReserve}
+            onCancel={onCancel}
             isReserved={isReserved}
+            isReserving={isReserving}
+            hasActiveReservation={hasActiveReservation}
+            error={error}
+            onErrorClose={onErrorClose}
             connectorLabel={connectorLabel}
           />
         </div>
@@ -90,7 +103,12 @@ export function ChargerDetails({ charger, onClose, onReserve, isReserved }: Char
             getStatusIcon={getStatusIcon}
             getStatusText={getStatusText}
             onReserve={onReserve}
+            onCancel={onCancel}
             isReserved={isReserved}
+            isReserving={isReserving}
+            hasActiveReservation={hasActiveReservation}
+            error={error}
+            onErrorClose={onErrorClose}
             connectorLabel={connectorLabel}
           />
         </div>
@@ -119,8 +137,13 @@ interface ChargerContentProps {
   getStatusColor: () => string;
   getStatusIcon: () => React.ReactElement;
   getStatusText: () => string;
-  onReserve: (chargerId: string) => void;
+  onReserve: (chargerId: string, minutes?: number) => void;
+  onCancel: (chargerId: string) => void;
   isReserved: boolean;
+  isReserving: boolean;
+  hasActiveReservation: boolean;
+  error: string | null;
+  onErrorClose: () => void;
   connectorLabel: (t?: Charger["connectorType"]) => string;
 }
 
@@ -130,10 +153,35 @@ function ChargerContent({
   getStatusIcon,
   getStatusText,
   onReserve,
+  onCancel,
   isReserved,
+  isReserving,
+  hasActiveReservation,
+  error,
+  onErrorClose,
   connectorLabel,
 }: ChargerContentProps) {
   const price = typeof charger.kwhprice === "number" ? charger.kwhprice : 0; // ✅ prevents toFixed crash
+  const [reservationEndTime, setReservationEndTime] = useState<string | null>(null);
+  const [showDurationPicker, setShowDurationPicker] = useState(false);
+  const [selectedMinutes, setSelectedMinutes] = useState<number>(30);
+
+  useEffect(() => {
+    let mounted = true;
+    async function loadDetails() {
+      try {
+        const data = await fetchCharger(String(charger.id));
+        // backend returns reservationendtime formatted or null
+        if (mounted && data?.reservationendtime) setReservationEndTime(String(data.reservationendtime));
+      } catch (e) {
+        // ignore - non-fatal for UI
+      }
+    }
+
+    // Only fetch details if this charger is reserved by me (or to be safe, always)
+    loadDetails();
+    return () => { mounted = false; };
+  }, [charger.id]);
 
   return (
     <div className="space-y-4">
@@ -178,19 +226,53 @@ function ChargerContent({
         </div>
       )}
 
+      {/* Active reservation warning */}
+      {hasActiveReservation && !isReserved && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 text-yellow-600" />
+            <span className="text-yellow-900">You already have an active reservation</span>
+          </div>
+        </div>
+      )}
+
+      {/* Error message */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-start justify-between">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <span className="text-red-900 text-sm">{error}</span>
+            </div>
+            <button
+              onClick={onErrorClose}
+              className="text-red-600 hover:text-red-800 ml-2"
+              aria-label="Close error"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Reserve + Navigate */}
-      {charger.status === "available" && (
+      {(charger.status === "available" || isReserved) && (
         <div className="space-y-2">
           <button
-            onClick={() => onReserve(charger.id)}
-            disabled={isReserved}
-            className={`w-full py-3 rounded-lg transition-colors ${
+            onClick={() => setShowDurationPicker(true)}
+            disabled={isReserved || isReserving || hasActiveReservation}
+            className={`w-full py-3 rounded-lg transition-colors flex items-center justify-center gap-2 ${
               isReserved
                 ? "bg-green-500 text-white cursor-default"
-                : "bg-blue-600 text-white hover:bg-blue-700"
+                : isReserving || hasActiveReservation
+                  ? "bg-gray-400 text-white cursor-not-allowed"
+                  : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
             }`}
           >
-            {isReserved ? "Reserved!" : "Reserve Charger"}
+            {isReserving && (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            )}
+            {isReserved ? "Reserved!" : isReserving ? "Reserving..." : hasActiveReservation ? "Cannot Reserve" : "Reserve Charger"}
           </button>
 
           <button
@@ -203,6 +285,68 @@ function ChargerContent({
             <MapPin className="w-4 h-4" />
             Navigate
           </button>
+        </div>
+      )}
+
+      {/* Cancel button for user's reservation */}
+      {isReserved && (
+        <div className="pt-2">
+          <button
+            onClick={() => {
+              // confirm before cancelling
+              if (!confirm("Cancel your reservation?")) return;
+              // call onCancel passed from parent
+              onCancel(charger.id);
+            }}
+            className="w-full py-2 rounded-md bg-red-600 text-white"
+          >
+            Cancel Reservation
+          </button>
+        </div>
+      )}
+
+      {/* Duration picker modal */}
+      {showDurationPicker && (
+        <div className="fixed inset-0 z-[1200] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowDurationPicker(false)} />
+          <div className="relative bg-white rounded-lg p-4 w-[92%] max-w-md shadow-lg">
+            <h3 className="text-lg font-medium mb-2">Select reservation duration</h3>
+            <div className="mb-3">
+              <input
+                type="range"
+                min={10}
+                max={60}
+                step={10}
+                value={selectedMinutes}
+                onChange={(e) => setSelectedMinutes(Number(e.target.value))}
+                className="w-full"
+              />
+              <div className="text-sm text-gray-600 mt-2">{selectedMinutes} minutes</div>
+            </div>
+            <div className="flex gap-2 justify-end">
+              <button
+                className="px-3 py-2 rounded bg-gray-100"
+                onClick={() => setShowDurationPicker(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-3 py-2 rounded bg-blue-600 text-white"
+                onClick={() => {
+                  setShowDurationPicker(false);
+                  onReserve(charger.id, selectedMinutes);
+                }}
+              >
+                Confirm ({selectedMinutes}m)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isReserved && reservationEndTime && (
+        <div className="text-sm text-gray-600">
+          Reservation ends: {reservationEndTime}
         </div>
       )}
 

@@ -1,7 +1,7 @@
 // hooks/useFetchChargers.ts
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import type { Charger } from "../types/charger";
 import { fetchChargers } from "../utils/api";
 
@@ -18,6 +18,7 @@ type ApiPoint = {
   address?: string;
   providerName?: string;
   connectorType?: string; // "CCS" | "CHADEMO" | "TYPE2"
+  reserved_by_me?: boolean; // ✅ Added: whether current user has reserved this charger
 };
 
 function toNumber(value: unknown): number {
@@ -50,60 +51,63 @@ export function useFetchChargers() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function load() {
-      try {
-        setLoading(true);
-        setError(null);
+  const load = useCallback(async (): Promise<Charger[]> => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        const data = await fetchChargers();
+      const data = await fetchChargers();
 
-        // ✅ backend might return [] OR { points: [] }
-        const points: ApiPoint[] = Array.isArray(data) ? data : (data?.points ?? []);
+      // ✅ backend might return [] OR { points: [] }
+      const points: ApiPoint[] = Array.isArray(data) ? data : (data?.points ?? []);
 
-        const normalized: Charger[] = points
-          .filter((p) => {
-            const rawLng = p.lng ?? p.lon;
-            const lat = toNumber(p.lat);
-            const lng = toNumber(rawLng);
-            return Number.isFinite(lat) && Number.isFinite(lng);
-          })
-          .map((p) => {
-            // ✅ accept both lng and lon (lon has priority fallback)
-            const rawLng = p.lng ?? p.lon;
+      const normalized: Charger[] = points
+        .filter((p) => {
+          const rawLng = p.lng ?? p.lon;
+          const lat = toNumber(p.lat);
+          const lng = toNumber(rawLng);
+          return Number.isFinite(lat) && Number.isFinite(lng);
+        })
+        .map((p) => {
+          // ✅ accept both lng and lon (lon has priority fallback)
+          const rawLng = p.lng ?? p.lon;
 
-            const lat = toNumber(p.lat);
-            const lng = toNumber(rawLng);
+          const lat = toNumber(p.lat);
+          const lng = toNumber(rawLng);
 
-            return {
-              id: String(p.pointid),
-              lat,
-              lng,
-              status: normalizeStatus(p.status),
+          return {
+            id: String(p.pointid),
+            lat,
+            lng,
+            status: normalizeStatus(p.status),
 
-              name: p.name ?? "Unknown charger",
-              address: p.address ?? "",
-              providerName: p.providerName ?? "Unknown",
+            name: p.name ?? "Unknown charger",
+            address: p.address ?? "",
+            providerName: p.providerName ?? "Unknown",
 
-              connectorType: normalizeConnector(p.connectorType),
-              maxKW: Number(p.cap ?? 0),
-              kwhprice: Number(p.kwhprice ?? 0.25),
-            } satisfies Charger;
-          });
+            connectorType: normalizeConnector(p.connectorType),
+            maxKW: Number(p.cap ?? 0),
+            kwhprice: Number(p.kwhprice ?? 0.25),
+            reserved_by_me: p.reserved_by_me ?? false,
+          } satisfies Charger;
+        });
 
-        console.log("normalized chargers:", normalized.length, normalized[0]);
+      console.log("normalized chargers:", normalized.length, normalized[0]);
 
-        setChargers(normalized);
-      } catch (err: any) {
-        console.error(err);
-        setError(err?.message ?? "Failed to load chargers");
-      } finally {
-        setLoading(false);
-      }
+      setChargers(normalized);
+      return normalized;
+    } catch (err: any) {
+      console.error(err);
+      setError(err?.message ?? "Failed to load chargers");
+      return [];
+    } finally {
+      setLoading(false);
     }
-
-    load();
   }, []);
 
-  return { chargers, loading, error };
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  return { chargers, loading, error, reload: load } as const;
 }

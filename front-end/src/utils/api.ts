@@ -28,7 +28,15 @@ function getErrorMessage(body: unknown, fallback: string) {
 
 export async function fetchChargers() {
   const baseUrl = getBaseUrl();
-  const res = await fetch(`${baseUrl}/points`, { cache: "no-store" });
+  // attach auth token if present so backend can mark `reserved_by_me`
+  const token = typeof window !== "undefined"
+    ? window.localStorage.getItem("authToken") ?? window.sessionStorage.getItem("authToken")
+    : null;
+
+  const headers: Record<string, string> = { "Accept": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(`${baseUrl}/points`, { cache: "no-store", headers });
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
@@ -73,6 +81,80 @@ export async function signUp(payload: { email: string; password: string }) {
   if (!res.ok) {
     const body = await parseJsonSafe(res);
     const message = getErrorMessage(body, `Sign-up failed (${res.status})`);
+    throw new Error(message);
+  }
+
+  return res.json();
+}
+
+export async function reserveCharger(chargerId: string, minutes?: number) {
+  const baseUrl = getBaseUrl();
+  
+  // Get token from localStorage or sessionStorage
+  const token = typeof window !== "undefined"
+    ? window.localStorage.getItem("authToken") ?? window.sessionStorage.getItem("authToken")
+    : null;
+
+  if (!token) {
+    throw new Error("Authentication token not found. Please sign in again.");
+  }
+
+  const endpoint = minutes ? `${baseUrl}/reserve/${chargerId}/${minutes}` : `${baseUrl}/reserve/${chargerId}`;
+  
+  const res = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const body = await parseJsonSafe(res);
+    const message = getErrorMessage(body, `Reservation failed (${res.status})`);
+    throw new Error(message);
+  }
+
+  return res.json();
+}
+
+export async function fetchCharger(id: string) {
+  const baseUrl = getBaseUrl();
+  const token = typeof window !== "undefined"
+    ? window.localStorage.getItem("authToken") ?? window.sessionStorage.getItem("authToken")
+    : null;
+
+  const headers: Record<string, string> = { "Accept": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(`${baseUrl}/points/${id}`, { cache: "no-store", headers });
+  if (!res.ok) {
+    const body = await parseJsonSafe(res);
+    const message = getErrorMessage(body, `Failed to fetch charger (${res.status})`);
+    throw new Error(message);
+  }
+
+  return res.json();
+}
+
+export async function cancelReservation(chargerId: string) {
+  const baseUrl = getBaseUrl();
+  const token = typeof window !== "undefined"
+    ? window.localStorage.getItem("authToken") ?? window.sessionStorage.getItem("authToken")
+    : null;
+
+  if (!token) throw new Error("Authentication token not found. Please sign in again.");
+
+  const res = await fetch(`${baseUrl}/reserve/${chargerId}/cancel`, {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${token}`, "Accept": "application/json" },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const body = await parseJsonSafe(res);
+    const message = getErrorMessage(body, `Cancel failed (${res.status})`);
     throw new Error(message);
   }
 

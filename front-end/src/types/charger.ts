@@ -11,4 +11,5 @@ export type Charger = {
   connectorType: "CCS" | "CHADEMO" | "TYPE2";
   maxKW: number;
   kwhprice: number;
+  reserved_by_me?: boolean;
 };

@@ -1,18 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `baseRate` on the `Charger` table. All the data in the column will be lost.
-  - You are about to drop the column `max_kW` on the `Charger` table. All the data in the column will be lost.
-  - You are about to alter the column `lat` on the `Charger` table. The data in that column could be lost. The data in that column will be cast from `DoublePrecision` to `Decimal(9,6)`.
-  - You are about to alter the column `lng` on the `Charger` table. The data in that column could be lost. The data in that column will be cast from `DoublePrecision` to `Decimal(9,6)`.
-  - The `status` column on the `Charger` table would be dropped and recreated. This will lead to data loss if there is data in the column.
-  - The `role` column on the `User` table would be dropped and recreated. This will lead to data loss if there is data in the column.
-  - Added the required column `connectorType` to the `Charger` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `maxKW` to the `Charger` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `updatedAt` to the `Charger` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `updatedAt` to the `User` table without a default value. This is not possible if the table is not empty.
-
-*/
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('USER', 'ADMIN');
 
@@ -20,7 +5,7 @@ CREATE TYPE "Role" AS ENUM ('USER', 'ADMIN');
 CREATE TYPE "ChargerStatus" AS ENUM ('AVAILABLE', 'IN_USE', 'OUTAGE');
 
 -- CreateEnum
-CREATE TYPE "ConnectorType" AS ENUM ('CCS', 'CHADEMO', 'TYPE2');
+CREATE TYPE "ConnectorType" AS ENUM ('CCS', 'CHADEMO', 'TYPE2', 'TYPE1', 'SCHUKO');
 
 -- CreateEnum
 CREATE TYPE "ReservationStatus" AS ENUM ('ACTIVE', 'EXPIRED', 'CANCELLED');
@@ -31,34 +16,71 @@ CREATE TYPE "SessionStatus" AS ENUM ('RUNNING', 'COMPLETED', 'AUTO_STOPPED', 'US
 -- CreateEnum
 CREATE TYPE "PaymentStatus" AS ENUM ('PREAUTHORIZED', 'CAPTURED', 'CANCELLED', 'FAILED');
 
--- AlterTable
-ALTER TABLE "Charger" DROP COLUMN "baseRate",
-DROP COLUMN "max_kW",
-ADD COLUMN     "connectorType" "ConnectorType" NOT NULL,
-ADD COLUMN     "maxKW" DOUBLE PRECISION NOT NULL,
-ADD COLUMN     "pricingProfileId" INTEGER,
-ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL,
-ALTER COLUMN "lat" SET DATA TYPE DECIMAL(9,6),
-ALTER COLUMN "lng" SET DATA TYPE DECIMAL(9,6),
-DROP COLUMN "status",
-ADD COLUMN     "status" "ChargerStatus" NOT NULL DEFAULT 'AVAILABLE';
-
--- AlterTable
-ALTER TABLE "User" ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL,
-DROP COLUMN "role",
-ADD COLUMN     "role" "Role" NOT NULL DEFAULT 'USER';
+-- CreateEnum
+CREATE TYPE "CarColor" AS ENUM ('RED', 'BLUE', 'YELLOW', 'WHITE', 'BLACK', 'SILVER', 'GREY', 'GREEN', 'ORANGE', 'PURPLE');
 
 -- CreateTable
-CREATE TABLE "Vehicle" (
+CREATE TABLE "User" (
+    "id" SERIAL NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'USER',
+    "stripeCustomerId" TEXT,
+    "preferences" JSONB,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Car" (
+    "id" SERIAL NOT NULL,
+    "brand" TEXT NOT NULL,
+    "model" TEXT NOT NULL,
+    "variant" TEXT,
+    "usableBatteryKWh" DOUBLE PRECISION NOT NULL,
+    "acMaxKW" DOUBLE PRECISION NOT NULL,
+    "dcMaxKW" DOUBLE PRECISION NOT NULL,
+    "dcChargingCurve" JSONB NOT NULL,
+    "dcCurveIsDefault" BOOLEAN NOT NULL DEFAULT true,
+    "dcPorts" "ConnectorType"[],
+    "acPorts" "ConnectorType"[],
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Car_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "CarOwnership" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
-    "make" TEXT NOT NULL,
-    "model" TEXT NOT NULL,
-    "batteryKWh" DOUBLE PRECISION NOT NULL,
-    "maxKW" DOUBLE PRECISION NOT NULL,
+    "carId" INTEGER NOT NULL,
+    "color" "CarColor" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Vehicle_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "CarOwnership_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Charger" (
+    "id" SERIAL NOT NULL,
+    "providerName" TEXT NOT NULL DEFAULT 'Unknown',
+    "name" TEXT NOT NULL,
+    "address" TEXT,
+    "lat" DECIMAL(9,6) NOT NULL,
+    "lng" DECIMAL(9,6) NOT NULL,
+    "connectorType" "ConnectorType" NOT NULL,
+    "maxKW" DOUBLE PRECISION NOT NULL,
+    "status" "ChargerStatus" NOT NULL DEFAULT 'AVAILABLE',
+    "pricingProfileId" INTEGER,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "kwhprice" DOUBLE PRECISION NOT NULL DEFAULT 0.25,
+
+    CONSTRAINT "Charger_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -118,6 +140,7 @@ CREATE TABLE "PaymentMethod" (
     "userId" INTEGER NOT NULL,
     "provider" TEXT NOT NULL,
     "tokenLast4" TEXT NOT NULL,
+    "stripePaymentMethodId" TEXT,
     "status" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -190,6 +213,24 @@ CREATE TABLE "AuditEvent" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_stripeCustomerId_key" ON "User"("stripeCustomerId");
+
+-- CreateIndex
+CREATE INDEX "CarOwnership_userId_idx" ON "CarOwnership"("userId");
+
+-- CreateIndex
+CREATE INDEX "CarOwnership_carId_idx" ON "CarOwnership"("carId");
+
+-- CreateIndex
+CREATE INDEX "Charger_status_idx" ON "Charger"("status");
+
+-- CreateIndex
+CREATE INDEX "Charger_lat_lng_idx" ON "Charger"("lat", "lng");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "PricingProfile_name_key" ON "PricingProfile"("name");
 
 -- CreateIndex
@@ -208,6 +249,9 @@ CREATE INDEX "Session_userId_status_idx" ON "Session"("userId", "status");
 CREATE INDEX "Session_chargerId_status_idx" ON "Session"("chargerId", "status");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "PaymentMethod_stripePaymentMethodId_key" ON "PaymentMethod"("stripePaymentMethodId");
+
+-- CreateIndex
 CREATE INDEX "PaymentMethod_userId_idx" ON "PaymentMethod"("userId");
 
 -- CreateIndex
@@ -216,14 +260,11 @@ CREATE UNIQUE INDEX "PaymentAuth_sessionId_key" ON "PaymentAuth"("sessionId");
 -- CreateIndex
 CREATE UNIQUE INDEX "Invoice_sessionId_key" ON "Invoice"("sessionId");
 
--- CreateIndex
-CREATE INDEX "Charger_status_idx" ON "Charger"("status");
-
--- CreateIndex
-CREATE INDEX "Charger_lat_lng_idx" ON "Charger"("lat", "lng");
+-- AddForeignKey
+ALTER TABLE "CarOwnership" ADD CONSTRAINT "CarOwnership_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Vehicle" ADD CONSTRAINT "Vehicle_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "CarOwnership" ADD CONSTRAINT "CarOwnership_carId_fkey" FOREIGN KEY ("carId") REFERENCES "Car"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Charger" ADD CONSTRAINT "Charger_pricingProfileId_fkey" FOREIGN KEY ("pricingProfileId") REFERENCES "PricingProfile"("id") ON DELETE SET NULL ON UPDATE CASCADE;

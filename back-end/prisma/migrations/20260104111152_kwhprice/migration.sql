@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Charger" ADD COLUMN     "kwhprice" DOUBLE PRECISION NOT NULL DEFAULT 0.25;

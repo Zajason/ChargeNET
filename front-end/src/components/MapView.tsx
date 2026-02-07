@@ -12,6 +12,7 @@ import { ListView } from "./ListView";
 
 import { useUserLocation } from "../hooks/useUserLocation";
 import { useFetchChargers } from "../hooks/useFetchChargers";
+import { reserveCharger, cancelReservation } from "../utils/api";
 import type { Charger } from "../types/charger";
 
 // Custom grayscale map provider
@@ -27,12 +28,32 @@ type Filters = {
 };
 
 export function MapView() {
-  const { chargers, loading, error } = useFetchChargers();
+  const { chargers, loading, error, reload } = useFetchChargers();
 
   const [selectedCharger, setSelectedCharger] = useState<Charger | null>(null);
   const [reservedChargers, setReservedChargers] = useState<Set<string>>(new Set());
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isReserving, setIsReserving] = useState(false);
+  const [hasActiveReservation, setHasActiveReservation] = useState(false);
+  const [reservationError, setReservationError] = useState<string | null>(null);
+
+  // Initialize reservation state from backend-provided flags
+  useEffect(() => {
+    if (!chargers || chargers.length === 0) {
+      setReservedChargers(new Set());
+      setHasActiveReservation(false);
+      return;
+    }
+
+    const mine = new Set<string>();
+    for (const c of chargers) {
+      if ((c as any).reserved_by_me) mine.add(String(c.id));
+    }
+
+    setReservedChargers(mine);
+    setHasActiveReservation(mine.size > 0);
+  }, [chargers]);
 
   // ✅ NEW: view mode toggle (map/list)
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
@@ -88,11 +109,9 @@ export function MapView() {
     });
   }, [chargers, filters]);
 
-  // ✅ Ensure ListView always receives the fields it expects
   const listChargers = useMemo(() => {
-    return filteredChargers.map((c: any) => ({
+    const mapped = filteredChargers.map((c: any) => ({
       ...c,
-      // ListView expects these (based on your Figma Make code):
       address: c.address ?? c.location?.address ?? c.streetAddress ?? "Unknown address",
       power:
         typeof c.power === "string"
@@ -112,14 +131,68 @@ export function MapView() {
               ? c.price
               : 0,
     })) as Charger[];
+
+    // Sort: reserved by current user first
+    return mapped.sort((a, b) => {
+      if (a.reserved_by_me && !b.reserved_by_me) return -1;
+      if (!a.reserved_by_me && b.reserved_by_me) return 1;
+      return 0;
+    });
   }, [filteredChargers]);
 
-  const handleReserve = (chargerId: string) => {
-    setReservedChargers((prev) => new Set(prev).add(chargerId));
-    setTimeout(() => setSelectedCharger(null), 500);
+  const handleReserve = async (chargerId: string, minutes?: number) => {
+    setReservationError(null);
+    setIsReserving(true);
+
+    try {
+      await reserveCharger(chargerId, minutes);
+      // refresh authoritative state from backend and update selected popup
+      const newList = await reload();
+      const updated = newList.find((c) => c.id === chargerId) ?? null;
+      setSelectedCharger(updated);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Reservation failed. Please try again.";
+      setReservationError(message);
+    } finally {
+      setIsReserving(false);
+    }
   };
 
-  const getMarkerColor = (status: Charger["status"]) => {
+  const handleCancel = async (chargerId: string) => {
+    setReservationError(null);
+    try {
+      await cancelReservation(chargerId);
+      // refresh authoritative state from backend and update selected popup
+      const newList = await reload();
+      const updated = newList.find((c) => c.id === chargerId) ?? null;
+      setSelectedCharger(updated);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Cancel failed";
+      setReservationError(message);
+    }
+  };
+
+  // Keep the open details panel in sync with the latest charger data
+  useEffect(() => {
+    if (!selectedCharger) return;
+    const updated = chargers.find((c) => c.id === selectedCharger.id);
+    if (!updated) return; // charger no longer in list
+
+    // shallow check for changes we care about (status / reserved_by_me)
+    if (
+      updated.status !== selectedCharger.status ||
+      Boolean((updated as any).reserved_by_me) !== Boolean((selectedCharger as any).reserved_by_me)
+    ) {
+      setSelectedCharger(updated);
+    }
+  }, [chargers, selectedCharger]);
+
+  const getMarkerColor = (status: Charger["status"], reserved_by_me?: boolean) => {
+    // If reserved by current user, show purple/violet
+    if (reserved_by_me) {
+      return "#A855F7"; // purple-500
+    }
+    
     switch (status) {
       case "available":
         return "#3B82F6";
@@ -240,30 +313,29 @@ export function MapView() {
               <Marker
                 key={charger.id}
                 anchor={[charger.lat, charger.lng]}
-                color={getMarkerColor(charger.status)}
+                color={getMarkerColor(charger.status, charger.reserved_by_me)}
                 onClick={() => setSelectedCharger(charger)}
               />
             ))}
           </Map>
 
-      {/* Legend */}
-      <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 lg:bottom-6 lg:right-6 bg-white p-3 sm:p-4 rounded-lg shadow-lg z-[1000] hidden md:block max-w-[200px] text-slate-900">
-        <h3 className="mb-2 text-sm lg:text-base">Legend</h3>
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <div className="relative flex items-center justify-center w-4 h-4">
-              <div className="w-2.5 h-2.5 lg:w-3 lg:h-3 rounded-full bg-blue-500 border border-white shadow-sm"></div>
+          {/* Charger Details Modal */}
           {selectedCharger && (
             <ChargerDetails
               charger={selectedCharger}
               onClose={() => setSelectedCharger(null)}
               onReserve={handleReserve}
-              isReserved={reservedChargers.has(selectedCharger.id)}
+              isReserved={(selectedCharger as any).reserved_by_me ?? reservedChargers.has(selectedCharger.id)}
+              isReserving={isReserving}
+              hasActiveReservation={hasActiveReservation}
+              error={reservationError}
+              onErrorClose={() => setReservationError(null)}
+              onCancel={handleCancel}
             />
           )}
 
           {/* Legend */}
-          <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 lg:bottom-6 lg:right-6 bg-white p-3 sm:p-4 rounded-lg shadow-lg z-[1000] hidden md:block max-w-[200px]">
+          <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 lg:bottom-6 lg:right-6 bg-white p-3 sm:p-4 rounded-lg shadow-lg z-[1000] hidden md:block max-w-[200px] text-slate-900">
             <h3 className="mb-2 text-sm lg:text-base">Legend</h3>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
@@ -275,6 +347,10 @@ export function MapView() {
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-blue-500 flex-shrink-0"></div>
                 <span className="text-xs lg:text-sm">Available</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-purple-500 flex-shrink-0"></div>
+                <span className="text-xs lg:text-sm">Your Reservation</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-orange-500 flex-shrink-0"></div>

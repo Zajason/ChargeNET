@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { MapPin, Zap, Navigation } from "lucide-react";
+import { MapPin, Zap, Navigation, Badge } from "lucide-react";
 import type { Charger } from "../types/charger";
 
 interface ListViewProps {
@@ -29,12 +29,21 @@ function formatDistance(km: number): string {
 
 export function ListView({ chargers, userLocation, onChargerSelect }: ListViewProps) {
   const sortedChargers = useMemo(() => {
+    // First sort by reserved_by_me (reserved first), then by distance
     const chargersWithDistance = chargers.map((charger) => ({
       ...charger,
       distance: calculateDistance(userLocation.lat, userLocation.lng, charger.lat, charger.lng),
     }));
 
-    return chargersWithDistance.sort((a, b) => a.distance - b.distance).slice(0, 20);
+    return chargersWithDistance
+      .sort((a, b) => {
+        // Reserved by current user comes first
+        if (a.reserved_by_me && !b.reserved_by_me) return -1;
+        if (!a.reserved_by_me && b.reserved_by_me) return 1;
+        // Then sort by distance
+        return a.distance - b.distance;
+      })
+      .slice(0, 20);
   }, [chargers, userLocation]);
 
   const getStatusColor = (status: Charger["status"]) => {
@@ -83,7 +92,11 @@ export function ListView({ chargers, userLocation, onChargerSelect }: ListViewPr
             <button
               key={charger.id}
               onClick={() => onChargerSelect(charger)}
-              className="w-full bg-white border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md hover:border-gray-300 transition-all text-left"
+              className={`w-full rounded-lg p-3 sm:p-4 hover:shadow-md transition-all text-left ${
+                charger.reserved_by_me
+                  ? "bg-purple-50 border-2 border-purple-500 hover:border-purple-600"
+                  : "bg-white border border-gray-200 hover:border-gray-300"
+              }`}
             >
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0 flex flex-col items-center min-w-[60px] sm:min-w-[70px]">
@@ -96,9 +109,17 @@ export function ListView({ chargers, userLocation, onChargerSelect }: ListViewPr
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className="font-medium text-sm sm:text-base text-gray-900 truncate">
-                      {charger.name}
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-medium text-sm sm:text-base text-gray-900 truncate">
+                        {charger.name}
+                      </h3>
+                      {charger.reserved_by_me && (
+                        <span className="flex-shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-500 text-white whitespace-nowrap">
+                          <Badge className="w-3 h-3" />
+                          Reserved
+                        </span>
+                      )}
+                    </div>
                     <span
                       className={`flex-shrink-0 flex items-center gap-1.5 px-2 py-1 rounded-full text-xs border ${getStatusColor(
                         charger.status
