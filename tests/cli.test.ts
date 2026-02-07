@@ -111,7 +111,7 @@ TestStation_CLI,38.00,23.70,TYPE2,22,AVAILABLE,Test Address`;
     });
 
     // 6. GET SPECIFIC POINT
-    it('should return details for specific point', async () => {
+    it('should return details for specific point', async function () {
         if (!dynamicPointId) this.skip();
 
         const output = await runCommand(`point --id ${dynamicPointId} --format json`);
@@ -126,7 +126,7 @@ TestStation_CLI,38.00,23.70,TYPE2,22,AVAILABLE,Test Address`;
     });
 
     // 7. RESERVE SPOT
-    it('should reserve the charging point', async () => {
+    it('should reserve the charging point', async function () {
         if (!dynamicPointId) this.skip();
 
         const output = await runCommand(`reserve --id ${dynamicPointId} --minutes 30 --format json`);
@@ -146,7 +146,7 @@ TestStation_CLI,38.00,23.70,TYPE2,22,AVAILABLE,Test Address`;
     });
 
     // 8. UPDATE POINT
-    it('should update point price', async () => {
+    it('should update point price', async function () {
         if (!dynamicPointId) this.skip();
 
         const output = await runCommand(`updpoint --id ${dynamicPointId} --price 0.55 --format json`);
