@@ -7,10 +7,10 @@ import { Zap } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
-import { signIn } from "../../utils/api";
+import { signIn, setAuthToken } from "../../utils/api"; // ✅ changed
 
 export function SignInScreen() {
-  const router = useRouter(); // Next.js navigation hook
+  const router = useRouter();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -20,30 +20,30 @@ export function SignInScreen() {
     e.preventDefault();
     setErrorMessage(null);
     setIsSubmitting(true);
-
+  
     try {
-      const { token } = await signIn(formData);
-
-      const storage = typeof window === "undefined"
-        ? null
-        : rememberMe
-          ? window.localStorage
-          : window.sessionStorage;
-
-      if (storage) {
-        storage.setItem("authToken", token);
-        const alternateStorage = storage === window.localStorage ? window.sessionStorage : window.localStorage;
-        alternateStorage.removeItem("authToken");
+      const data = await signIn(formData);
+      const token = data.token;
+  
+      // ✅ TS + runtime guard
+      if (!token) {
+        throw new Error("Authentication succeeded but token is missing.");
       }
-
+  
+      setAuthToken(token, rememberMe);
+  
       router.push("/");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unable to sign in. Please try again.";
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Unable to sign in. Please try again.";
       setErrorMessage(message);
     } finally {
       setIsSubmitting(false);
     }
   };
+  
 
   return (
     <div className="min-h-screen w-full bg-gray-50 flex items-center justify-center p-4">
@@ -59,11 +59,14 @@ export function SignInScreen() {
           <p className="text-sm text-gray-500">Sign in to your account</p>
         </div>
 
-        {/* Sign‑in form */}
+        {/* Sign-in form */}
         <div className="bg-white rounded-lg border border-gray-200 p-6 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
             {errorMessage ? (
-              <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700" aria-live="polite">
+              <div
+                className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+                aria-live="polite"
+              >
                 {errorMessage}
               </div>
             ) : null}
@@ -74,9 +77,7 @@ export function SignInScreen() {
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="you@example.com"
                 className="mt-1"
                 autoComplete="username"
@@ -109,15 +110,11 @@ export function SignInScreen() {
                   onChange={(e) => setRememberMe(e.target.checked)}
                   className="w-4 h-4 rounded border-gray-300"
                 />
-                <label
-                  htmlFor="remember"
-                  className="text-sm text-gray-700 select-none"
-                >
+                <label htmlFor="remember" className="text-sm text-gray-700 select-none">
                   Remember me
                 </label>
               </div>
 
-              {/* Link to forgot‑password route */}
               <Link
                 href="/forgot-password"
                 className="text-sm text-gray-600 hover:text-gray-900"
@@ -134,11 +131,8 @@ export function SignInScreen() {
           <div className="mt-6 pt-6 border-t border-gray-200 text-center">
             <p className="text-sm text-gray-600">
               Don’t have an account?{" "}
-              <Link
-                href="/signup"
-                className="text-gray-900 hover:underline font-medium"
-              >
-                Sign up
+              <Link href="/signup" className="text-gray-900 hover:underline font-medium">
+                Sign up
               </Link>
             </p>
           </div>
@@ -146,11 +140,8 @@ export function SignInScreen() {
 
         {/* Guest Access */}
         <div className="mt-4 text-center">
-          <Link
-            href="/"
-            className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            Continue as guest
+          <Link href="/" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+            Continue as guest
           </Link>
         </div>
       </div>
