@@ -155,6 +155,7 @@ jobs:
           REDIS_URL: redis://localhost:6379
           JWT_SECRET: test-secret
           PORT: 9876
+          STRIPE_SECRET_KEY: sk_test_dummy_key_for_ci
         run: |
           npx tsx src/index.ts &
           echo "Waiting for backend to start..."
