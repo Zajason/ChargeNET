@@ -252,7 +252,6 @@ function ChargerContent({
   hasActiveReservation,
   error,
   onErrorClose,
-  connectorLabel,
   vehicles,
   vehiclesLoading,
   vehiclesError,

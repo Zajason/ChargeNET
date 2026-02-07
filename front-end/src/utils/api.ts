@@ -247,4 +247,3 @@ export async function fetchCarOwnerships() {
   // adjust if your backend is /api/v1/car-ownership etc.
   return fetchJson(`/car-ownership`, { auth: true });
 }
-}
