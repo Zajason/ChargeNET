@@ -156,11 +156,14 @@ jobs:
           JWT_SECRET: test-secret
           PORT: 9876
         run: |
-          npm run build
-          node dist/index.js &
+          npx tsx src/index.ts &
           sleep 5
 
-      - name: Install CLI client
+      - name: Install CLI dependencies
+        working-directory: cli-client
+        run: npm ci
+
+      - name: Install CLI client globally
         working-directory: cli-client
         run: npm install -g .
 
