@@ -56,4 +56,33 @@ jobs:
         env:
           VITE_API_URL: http://localhost:9876
         run: npm run build
+
+      # CLI
+      - name: Install CLI dependencies
+        working-directory: cli-client
+        run: npm ci
+      - name: Link CLI globally
+        working-directory: cli-client
+        run: npm link
+
+      # CLI Tests
+      - name: Install root test dependencies
+        run: npm ci
+      - name: Seed database
+        working-directory: back-end
+        env:
+          DATABASE_URL: postgresql://user:pass@localhost:5432/ev_app
+        run: npx prisma db seed
+      - name: Start backend for CLI tests
+        working-directory: back-end
+        env:
+          DATABASE_URL: postgresql://user:pass@localhost:5432/ev_app
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: testsecret
+          PORT: 9876
+        run: npm run dev &
+      - name: Wait for backend
+        run: sleep 5
+      - name: Run CLI tests
+        run: npm run test:cli
         
