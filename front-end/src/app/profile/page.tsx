@@ -1,12 +1,15 @@
 "use client";
 import { SideMenu } from '../../components/SideMenu';
+import { MenuPanel } from '../../components/MenuPanel';
 import { useState } from 'react';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Button } from '../../components/ui/button';
 import { Switch } from '../../components/ui/switch';
+import { Menu } from 'lucide-react';
 
 export default function ProfileScreen() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     firstName: 'John',
@@ -38,12 +41,21 @@ export default function ProfileScreen() {
   };
 
   return (
-    <div className="flex h-screen w-full">
-      {/* Main Content Area - 3/4 of screen */}
+    <div className="flex flex-col sm:flex-row h-screen w-full">
+      {/* Mobile header */}
+      <div className="sm:hidden flex items-center gap-3 p-3 bg-white border-b border-gray-200">
+        <button onClick={() => setIsMenuOpen(true)} className="p-2 hover:bg-gray-100 rounded-lg">
+          <Menu className="w-5 h-5 text-gray-700" />
+        </button>
+        <h1 className="text-lg font-medium text-gray-900">Profile</h1>
+      </div>
+      <MenuPanel isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+
+      {/* Main Content Area */}
       <div className="flex-1 overflow-auto bg-gray-50">
         <div className="max-w-4xl mx-auto p-6 sm:p-8 lg:p-12">
           <div className="mb-8">
-            <h1 className="text-2xl sm:text-3xl text-gray-900 mb-2">Profile</h1>
+            <h1 className="hidden sm:block text-2xl sm:text-3xl text-gray-900 mb-2">Profile</h1>
             <p className="text-sm text-gray-500">Manage your account information and preferences</p>
           </div>
 
@@ -229,8 +241,8 @@ export default function ProfileScreen() {
         </div>
       </div>
 
-      {/* Side Menu - 1/4 of screen */}
-      <div className="w-full sm:w-80 lg:w-96 flex-shrink-0">
+      {/* Side Menu - hidden on mobile, visible on sm+ */}
+      <div className="hidden sm:block sm:w-80 lg:w-96 flex-shrink-0">
         <SideMenu />
       </div>
     </div>

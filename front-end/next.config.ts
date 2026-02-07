@@ -3,7 +3,7 @@ const nextConfig = {
   allowedDevOrigins: [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
-    'http://192.168.178.86:3000', // phone accessing your PC
+    'http://192.168.1.8:3000', // phone accessing your PC
   ],
 };
 
