@@ -19,23 +19,115 @@ function getErrorMessage(body: unknown, fallback: string) {
   if (!body) return fallback;
   if (typeof body === "string" && body.trim().length > 0) return body.trim();
   if (typeof body === "object" && body !== null) {
-    const maybeMsg = (body as { error?: unknown; message?: unknown }).error ??
+    const maybeMsg =
+      (body as { error?: unknown; message?: unknown }).error ??
       (body as { message?: unknown }).message;
     if (typeof maybeMsg === "string" && maybeMsg.trim().length > 0) return maybeMsg.trim();
   }
   return fallback;
 }
 
-export async function fetchChargers() {
+/** ---------------------------
+ *  Auth token utilities
+ *  --------------------------*/
+
+export class AuthError extends Error {
+  name = "AuthError";
+}
+
+export const AUTH_CHANGED_EVENT = "auth-changed";
+export const AUTH_TOKEN_KEY = "authToken";
+
+/**
+ * Reads token from sessionStorage first (non-remember),
+ * then localStorage (remember me).
+ */
+export function getAuthToken(): string | null {
+  if (typeof window === "undefined") return null;
+
+  const sessionToken = window.sessionStorage.getItem(AUTH_TOKEN_KEY);
+  if (sessionToken && sessionToken.trim().length > 0) return sessionToken;
+
+  const localToken = window.localStorage.getItem(AUTH_TOKEN_KEY);
+  if (localToken && localToken.trim().length > 0) return localToken;
+
+  return null;
+}
+
+export function isLoggedIn(): boolean {
+  return !!getAuthToken();
+}
+
+/**
+ * Store token consistently with SignInScreen behavior.
+ */
+export function setAuthToken(token: string, rememberMe: boolean) {
+  if (typeof window === "undefined") return;
+
+  const storage = rememberMe ? window.localStorage : window.sessionStorage;
+  const other = rememberMe ? window.sessionStorage : window.localStorage;
+
+  storage.setItem(AUTH_TOKEN_KEY, token);
+  other.removeItem(AUTH_TOKEN_KEY);
+
+  window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+}
+
+export function clearAuthToken() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(AUTH_TOKEN_KEY);
+  window.sessionStorage.removeItem(AUTH_TOKEN_KEY);
+  window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+}
+
+/** ---------------------------
+ *  Internal fetch helper (supports auth)
+ *  --------------------------*/
+
+async function fetchJson(path: string, init?: RequestInit & { auth?: boolean }) {
   const baseUrl = getBaseUrl();
-  // attach auth token if present so backend can mark `reserved_by_me`
-  const token = typeof window !== "undefined"
-    ? window.localStorage.getItem("authToken") ?? window.sessionStorage.getItem("authToken")
-    : null;
+  const auth = init?.auth ?? false;
 
-  const headers: Record<string, string> = { "Accept": "application/json" };
-  if (token) headers["Authorization"] = `Bearer ${token}`;
+  const headers: Record<string, string> = {
+    ...(init?.headers as Record<string, string> | undefined),
+    Accept: "application/json",
+  };
 
+  if (auth) {
+    const token = getAuthToken();
+    if (!token) throw new AuthError("You must be signed in to do that.");
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${baseUrl}${path}`, {
+    ...init,
+    headers,
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    if (res.status === 401) {
+      throw new AuthError("Your session expired. Please sign in again.");
+    }
+    const body = await parseJsonSafe(res);
+    const message = getErrorMessage(body, `API request failed (${res.status})`);
+    throw new Error(message);
+  }
+
+  return res.json();
+}
+
+/** ---------------------------
+ *  Public (no-auth) endpoints
+ *  --------------------------*/
+
+export async function fetchChargers() {
+  // Attach token if present so backend can mark `reserved_by_me`
+  const token = getAuthToken();
+  const headers: Record<string, string> = { Accept: "application/json" };
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/points`, { cache: "no-store", headers });
 
   if (!res.ok) {
@@ -66,7 +158,7 @@ export async function signIn(credentials: { email: string; password: string }) {
     throw new Error("Sign-in succeeded but token is missing in the response");
   }
 
-  return data;
+  return data; // { token }
 }
 
 export async function signUp(payload: { email: string; password: string }) {
@@ -87,25 +179,25 @@ export async function signUp(payload: { email: string; password: string }) {
   return res.json();
 }
 
+/** ---------------------------
+ *  Reservation endpoints (auth)
+ *  --------------------------*/
+
 export async function reserveCharger(chargerId: string, minutes?: number) {
+  const token = getAuthToken();
+  if (!token) throw new AuthError("You must be signed in to reserve a charger.");
+
   const baseUrl = getBaseUrl();
-  
-  // Get token from localStorage or sessionStorage
-  const token = typeof window !== "undefined"
-    ? window.localStorage.getItem("authToken") ?? window.sessionStorage.getItem("authToken")
-    : null;
+  const endpoint = minutes
+    ? `${baseUrl}/reserve/${chargerId}/${minutes}`
+    : `${baseUrl}/reserve/${chargerId}`;
 
-  if (!token) {
-    throw new Error("Authentication token not found. Please sign in again.");
-  }
-
-  const endpoint = minutes ? `${baseUrl}/reserve/${chargerId}/${minutes}` : `${baseUrl}/reserve/${chargerId}`;
-  
   const res = await fetch(endpoint, {
     method: "POST",
     headers: {
+      Accept: "application/json",
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     },
     cache: "no-store",
   });
@@ -119,16 +211,25 @@ export async function reserveCharger(chargerId: string, minutes?: number) {
   return res.json();
 }
 
+export async function cancelReservation(chargerId: string) {
+  const token = getAuthToken();
+  if (!token) throw new AuthError("You must be signed in to cancel a reservation.");
+
+  return fetchJson(`/reserve/${chargerId}/cancel`, {
+    method: "POST",
+    auth: true,
+  });
+}
+
 export async function fetchCharger(id: string) {
+  // include auth if present so you can see reservationendtime if backend restricts it
+  const token = getAuthToken();
+  const headers: Record<string, string> = { Accept: "application/json" };
+  if (token) headers.Authorization = `Bearer ${token}`;
+
   const baseUrl = getBaseUrl();
-  const token = typeof window !== "undefined"
-    ? window.localStorage.getItem("authToken") ?? window.sessionStorage.getItem("authToken")
-    : null;
-
-  const headers: Record<string, string> = { "Accept": "application/json" };
-  if (token) headers["Authorization"] = `Bearer ${token}`;
-
   const res = await fetch(`${baseUrl}/points/${id}`, { cache: "no-store", headers });
+
   if (!res.ok) {
     const body = await parseJsonSafe(res);
     const message = getErrorMessage(body, `Failed to fetch charger (${res.status})`);
@@ -138,25 +239,12 @@ export async function fetchCharger(id: string) {
   return res.json();
 }
 
-export async function cancelReservation(chargerId: string) {
-  const baseUrl = getBaseUrl();
-  const token = typeof window !== "undefined"
-    ? window.localStorage.getItem("authToken") ?? window.sessionStorage.getItem("authToken")
-    : null;
+/** ---------------------------
+ * Authenticated endpoints
+ * --------------------------*/
 
-  if (!token) throw new Error("Authentication token not found. Please sign in again.");
-
-  const res = await fetch(`${baseUrl}/reserve/${chargerId}/cancel`, {
-    method: "POST",
-    headers: { "Authorization": `Bearer ${token}`, "Accept": "application/json" },
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    const body = await parseJsonSafe(res);
-    const message = getErrorMessage(body, `Cancel failed (${res.status})`);
-    throw new Error(message);
-  }
-
-  return res.json();
+export async function fetchCarOwnerships() {
+  // adjust if your backend is /api/v1/car-ownership etc.
+  return fetchJson(`/car-ownership`, { auth: true });
+}
 }
