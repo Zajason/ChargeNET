@@ -35,11 +35,19 @@ jobs:
       - name: Install backend
         working-directory: back-end
         run: npm ci
+      - name: Generate Prisma Client
+        working-directory: back-end
+        run: npx prisma generate
       - name: Prisma migrate (CI)
         working-directory: back-end
         env:
           DATABASE_URL: postgresql://user:pass@localhost:5432/ev_app
         run: npx prisma migrate deploy
+      - name: Seed database
+        working-directory: back-end
+        env:
+          DATABASE_URL: postgresql://user:pass@localhost:5432/ev_app
+        run: npx prisma db seed
       - name: Build backend
         working-directory: back-end
         run: npm run build
@@ -68,11 +76,6 @@ jobs:
       # CLI Tests
       - name: Install root test dependencies
         run: npm ci
-      - name: Seed database
-        working-directory: back-end
-        env:
-          DATABASE_URL: postgresql://user:pass@localhost:5432/ev_app
-        run: npx prisma db seed
       - name: Start backend for CLI tests
         working-directory: back-end
         env:
