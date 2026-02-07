@@ -157,7 +157,17 @@ jobs:
           PORT: 9876
         run: |
           npx tsx src/index.ts &
-          sleep 5
+          echo "Waiting for backend to start..."
+          for i in {1..30}; do
+            if curl -s http://localhost:9876/api/v1/admin/healthcheck > /dev/null 2>&1; then
+              echo "Backend is ready!"
+              exit 0
+            fi
+            echo "Attempt $i: Backend not ready yet..."
+            sleep 2
+          done
+          echo "Backend failed to start!"
+          exit 1
 
       - name: Install CLI dependencies
         working-directory: cli-client
