@@ -43,6 +43,10 @@ jobs:
         working-directory: back-end
         run: npm ci
 
+      - name: Generate Prisma Client
+        working-directory: back-end
+        run: npx prisma generate
+
       - name: Run Prisma migrations
         working-directory: back-end
         env:
@@ -127,6 +131,10 @@ jobs:
       - name: Install backend dependencies
         working-directory: back-end
         run: npm ci
+
+      - name: Generate Prisma Client
+        working-directory: back-end
+        run: npx prisma generate
 
       - name: Run Prisma migrations
         working-directory: back-end

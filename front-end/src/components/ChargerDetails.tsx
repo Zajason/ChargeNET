@@ -49,7 +49,7 @@ export function ChargerDetails({
 }: ChargerDetailsProps) {
   const router = useRouter();
 
-  const [timeRemaining, setTimeRemaining] = useState(charger.timeRemaining ?? 0);
+  const [timeRemaining, setTimeRemaining] = useState(0);
 
   // Logic για τα οχήματα (από main)
   const {
@@ -204,7 +204,7 @@ interface ChargerContentProps {
   timeRemaining: number;
   formatTime: (seconds: number) => string;
   getStatusColor: () => string;
-  getStatusIcon: () => JSX.Element;
+  getStatusIcon: () => React.JSX.Element;
   getStatusText: () => string;
   onReserve: (chargerId: string, minutes?: number) => void;
   onCancel: (chargerId: string) => void;
@@ -214,16 +214,6 @@ interface ChargerContentProps {
   error: string | null;
   onErrorClose: () => void;
   connectorLabel: (t?: Charger["connectorType"]) => string;
-
-  onReserve: (chargerId: string, minutes?: number) => void;
-  onCancel: (chargerId: string) => void;
-
-  isReserved: boolean;
-  isReserving: boolean;
-  hasActiveReservation: boolean;
-
-  error: string | null;
-  onErrorClose: () => void;
 
   vehicles: Vehicle[];
   vehiclesLoading: boolean;
@@ -389,7 +379,6 @@ function ChargerContent({
                         <div className="min-w-0 text-left">
                           <p className="text-gray-900 font-medium truncate">
                             {selectedVehicle.brand} {selectedVehicle.model}
-                            {selectedVehicle.variant ? ` ${selectedVehicle.variant}` : ""}
                             {selectedVehicle.year ? ` (${selectedVehicle.year})` : ""}
                           </p>
                           <p className="text-sm text-gray-500">
@@ -442,7 +431,6 @@ function ChargerContent({
                                 <div className="min-w-0">
                                   <p className="text-gray-900 truncate">
                                     {vehicle.brand} {vehicle.model}
-                                    {vehicle.variant ? ` ${vehicle.variant}` : ""}
                                   </p>
                                 </div>
                               </button>

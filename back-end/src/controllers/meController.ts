@@ -14,11 +14,11 @@ const changePasswordSchema = z.object({
     newPassword: z.string().min(8),
 });
 
-const vehicleSchema = z.object({
-  make: z.string(),
-  model: z.string(),
-  batteryKWh: z.number().positive(),
-  maxKW: z.number().positive(),
+import { CarColor } from '@prisma/client';
+
+const carOwnershipSchema = z.object({
+  carId: z.number().int().positive(),
+  color: z.enum(['RED', 'BLUE', 'YELLOW', 'WHITE', 'BLACK', 'SILVER', 'GREY', 'GREEN', 'ORANGE', 'PURPLE']),
 });
 
 const paymentMethodSchema = z.object({
@@ -80,40 +80,61 @@ export const changePassword = async (req: Request, res: Response) => {
     }
 };
 
-// Vehicle Controllers
+// Vehicle Controllers (using CarOwnership model)
 export const listVehicles = async (req: Request, res: Response) => {
-    const vehicles = await prisma.vehicle.findMany({ where: { userId: req.userId } });
-    res.json(vehicles);
+    const ownerships = await prisma.carOwnership.findMany({ 
+        where: { userId: req.userId },
+        include: { car: true }
+    });
+    res.json(ownerships);
 };
 
 export const addVehicle = async (req: Request, res: Response) => {
-    const parsed = vehicleSchema.safeParse(req.body);
+    const parsed = carOwnershipSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: z.treeifyError(parsed.error) });
 
-    const vehicle = await prisma.vehicle.create({
-        data: { ...parsed.data, userId: req.userId! },
+    // Check if car exists
+    const car = await prisma.car.findUnique({ where: { id: parsed.data.carId } });
+    if (!car) return res.status(404).json({ error: "Car not found" });
+
+    // Check for existing ownership
+    const existing = await prisma.carOwnership.findFirst({
+        where: { userId: req.userId, carId: parsed.data.carId }
     });
-    res.status(201).json(vehicle);
+    if (existing) return res.status(409).json({ error: "You already own this car" });
+
+    const ownership = await prisma.carOwnership.create({
+        data: { 
+            userId: req.userId!, 
+            carId: parsed.data.carId,
+            color: parsed.data.color as CarColor
+        },
+        include: { car: true }
+    });
+    res.status(201).json(ownership);
 };
 
 export const getVehicle = async (req: Request, res: Response) => {
     const id = Number(req.params.id);
-    const vehicle = await prisma.vehicle.findFirst({ where: { id, userId: req.userId } });
-    if (!vehicle) return res.status(404).json({ error: "Vehicle not found" });
-    res.json(vehicle);
+    const ownership = await prisma.carOwnership.findFirst({ 
+        where: { id, userId: req.userId },
+        include: { car: true }
+    });
+    if (!ownership) return res.status(404).json({ error: "Vehicle not found" });
+    res.json(ownership);
 };
 
 export const updateVehicle = async (req: Request, res: Response) => {
     const id = Number(req.params.id);
-    const parsed = vehicleSchema.partial().safeParse(req.body);
+    const parsed = carOwnershipSchema.partial().safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: z.treeifyError(parsed.error) });
 
     try {
-        const vehicle = await prisma.vehicle.updateMany({
+        const ownership = await prisma.carOwnership.updateMany({
             where: { id, userId: req.userId },
-            data: parsed.data,
+            data: parsed.data.color ? { color: parsed.data.color as CarColor } : {},
         });
-        if (vehicle.count === 0) return res.status(404).json({ error: "Vehicle not found" });
+        if (ownership.count === 0) return res.status(404).json({ error: "Vehicle not found" });
         res.status(200).json({ message: "Vehicle updated successfully" });
     } catch(e) {
         res.status(500).json({ error: "Failed to update vehicle" });
@@ -122,7 +143,7 @@ export const updateVehicle = async (req: Request, res: Response) => {
 
 export const deleteVehicle = async (req: Request, res: Response) => {
     const id = Number(req.params.id);
-    const result = await prisma.vehicle.deleteMany({ where: { id, userId: req.userId } });
+    const result = await prisma.carOwnership.deleteMany({ where: { id, userId: req.userId } });
     if (result.count === 0) return res.status(404).json({ error: "Vehicle not found" });
     res.status(204).send();
 };

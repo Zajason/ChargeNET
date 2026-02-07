@@ -48,7 +48,7 @@ export function SignUpScreen() {
         ? null
         : window.sessionStorage;
 
-      if (storage) {
+      if (storage && token) {
         storage.setItem("authToken", token);
         window.localStorage.removeItem("authToken");
       }

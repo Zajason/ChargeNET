@@ -102,7 +102,7 @@ router.get("/:id", verifyToken, requireAdmin, async (req, res) => {
       where: { id },
       select: {
         id: true, email: true, role: true, createdAt: true, updatedAt: true,
-        vehicles: { select: { id: true, make: true, model: true, batteryKWh: true, maxKW: true } },
+        carOwnerships: { select: { id: true, color: true, car: { select: { brand: true, model: true, usableBatteryKWh: true, dcMaxKW: true } } } },
         // don’t include password
       },
     });
