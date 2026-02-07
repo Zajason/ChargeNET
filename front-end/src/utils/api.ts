@@ -240,8 +240,8 @@ export async function fetchCharger(id: string) {
 }
 
 /** ---------------------------
- *  Authenticated endpoints
- *  --------------------------*/
+ * Authenticated endpoints
+ * --------------------------*/
 
 export async function fetchCarOwnerships() {
   // adjust if your backend is /api/v1/car-ownership etc.

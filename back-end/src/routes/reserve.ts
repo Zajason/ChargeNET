@@ -9,6 +9,7 @@ const router = express.Router();
 
 const handleReserve = async (req: Request, res: Response) => {
   try {
+    console.log("[reserve] incoming request", { path: req.path, params: req.params });
     const id = Number(req.params.id);
     if (isNaN(id)) {
       const err = makeErrorLog(req, 400, `Invalid charger id '${req.params.id}'`);
@@ -40,6 +41,23 @@ const handleReserve = async (req: Request, res: Response) => {
     }
 
     const now = new Date();
+    // Έχει ο χρήστης ήδη ενεργή κράτηση;
+    const existingReservation = await prisma.reservation.findFirst({
+        where: {
+            userId: userId,
+            status: ReservationStatus.ACTIVE, // Πρέπει να είναι ενεργή
+            expiresAt: { gt: now }            // ΚΑΙ να μην έχει λήξει ο χρόνος της
+        }
+    });
+
+    if (existingReservation) {
+        const err = makeErrorLog(
+            req, 
+            400, 
+            "User already has an active reservation. You cannot reserve multiple points simultaneously."
+        );
+        return res.status(400).json(err);
+    }
     const expiresAt = new Date(now.getTime() + minutes * 60_000);
 
     const [reservation, updatedCharger] = await prisma.$transaction([
@@ -71,7 +89,51 @@ const handleReserve = async (req: Request, res: Response) => {
   }
 };
 
-router.post("/:id", verifyToken, handleReserve);
+
+// Cancel reservation for charger id (only owner can cancel)
+// Define handler before registering routes so it can be referenced safely
+const handleCancel = async (req: Request, res: Response) => {
+  try {
+    console.log("[cancel] incoming request", { path: req.path, params: req.params });
+    const id = Number(req.params.id);
+    if (isNaN(id)) {
+      const err = makeErrorLog(req, 400, `Invalid charger id '${req.params.id}'`);
+      return res.status(400).json(err);
+    }
+
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    // Find an active reservation for this charger that belongs to the user
+    const reservation = await prisma.reservation.findFirst({
+      where: {
+        chargerId: id,
+        userId,
+        status: ReservationStatus.ACTIVE,
+        expiresAt: { gt: new Date() }
+      }
+    });
+
+    if (!reservation) {
+      const err = makeErrorLog(req, 404, `Active reservation not found for charger ${id} and user`);
+      return res.status(404).json(err);
+    }
+
+    const [updatedRes, updatedCharger] = await prisma.$transaction([
+      prisma.reservation.update({ where: { id: reservation.id }, data: { status: ReservationStatus.CANCELLED } }),
+      prisma.charger.update({ where: { id }, data: { status: ChargerStatus.AVAILABLE } }),
+    ]);
+
+    return res.status(200).json({ ok: true, chargerId: id });
+  } catch (err: any) {
+    const errorLog = makeErrorLog(req, 500, "Internal server error", err.message);
+    return res.status(500).json(errorLog);
+  }
+};
+
+// Register routes - ensure '/:id/cancel' is checked before '/:id/:minutes'
+router.post("/:id/cancel", verifyToken, handleCancel);
 router.post("/:id/:minutes", verifyToken, handleReserve);
+router.post("/:id", verifyToken, handleReserve);
 
 export default router;

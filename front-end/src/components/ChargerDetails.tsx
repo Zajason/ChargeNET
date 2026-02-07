@@ -12,18 +12,16 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-
+import { fetchCharger } from "../utils/api"; // Η δική σου προσθήκη
 import type { Charger } from "../types/charger";
-import { CartoonCar } from "./ui/CartoonCar";
+import { CartoonCar } from "./ui/CartoonCar"; // Του συναδέλφου
 
-import { useUserVehicles } from "../hooks/useUserVehicles";
+import { useUserVehicles } from "../hooks/useUserVehicles"; // Του συναδέλφου
 import type { Vehicle } from "../utils/vehicleMapper";
-import { fetchCharger } from "../utils/api"; // must exist and return reservationendtime
 
 interface ChargerDetailsProps {
   charger: Charger;
   onClose: () => void;
-
   // reservation actions
   onReserve: (chargerId: string, minutes?: number) => void;
   onCancel: (chargerId: string) => void;
@@ -53,6 +51,7 @@ export function ChargerDetails({
 
   const [timeRemaining, setTimeRemaining] = useState(charger.timeRemaining ?? 0);
 
+  // Logic για τα οχήματα (από main)
   const {
     vehicles,
     loading: vehiclesLoading,
@@ -69,7 +68,7 @@ export function ChargerDetails({
     }
   }, [vehicles, selectedVehicle]);
 
-  // Timer when charger is in use
+  // Timer logic (από main)
   useEffect(() => {
     if (charger.status === "in_use" && timeRemaining > 0) {
       const interval = setInterval(() => {
@@ -137,37 +136,40 @@ export function ChargerDetails({
     }
   };
 
+  // Εδώ συνδυάζουμε τα props για το Mobile και το Desktop view
+  const contentProps = {
+    charger,
+    timeRemaining,
+    formatTime,
+    getStatusColor,
+    getStatusIcon,
+    getStatusText,
+    connectorLabel, // Περνάμε το label function που έφτιαξε ο συνάδελφος
+    onReserve,
+    onCancel,
+    isReserved,
+    isReserving,
+    hasActiveReservation,
+    error,
+    onErrorClose,
+    // Props οχημάτων (από main)
+    vehicles,
+    vehiclesLoading,
+    vehiclesError,
+    notLoggedIn,
+    hasNoCars,
+    selectedVehicle,
+    setSelectedVehicle,
+    goToProfile: () => router.push("/profile"),
+  };
+
   return (
     <>
       {/* Mobile */}
       <div className="md:hidden absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl z-[1000] max-h-[75vh] overflow-y-auto">
         <div className="p-4 sm:p-6">
           <Header title={charger.name ?? "Charger"} onClose={onClose} />
-
-          <ChargerContent
-            charger={charger}
-            timeRemaining={timeRemaining}
-            formatTime={formatTime}
-            getStatusColor={getStatusColor}
-            getStatusIcon={getStatusIcon}
-            getStatusText={getStatusText}
-            connectorLabel={connectorLabel}
-            onReserve={onReserve}
-            onCancel={onCancel}
-            isReserved={isReserved}
-            isReserving={isReserving}
-            hasActiveReservation={hasActiveReservation}
-            error={error}
-            onErrorClose={onErrorClose}
-            vehicles={vehicles}
-            vehiclesLoading={vehiclesLoading}
-            vehiclesError={vehiclesError}
-            notLoggedIn={notLoggedIn}
-            hasNoCars={hasNoCars}
-            selectedVehicle={selectedVehicle}
-            setSelectedVehicle={setSelectedVehicle}
-            goToProfile={() => router.push("/profile")}
-          />
+          <ChargerContent {...contentProps} />
         </div>
       </div>
 
@@ -175,31 +177,7 @@ export function ChargerDetails({
       <div className="hidden md:block absolute top-4 left-4 bg-white rounded-lg shadow-2xl z-[1000] w-96 max-h-[calc(100vh-2rem)] overflow-y-auto">
         <div className="p-6">
           <Header title={charger.name ?? "Charger"} onClose={onClose} />
-
-          <ChargerContent
-            charger={charger}
-            timeRemaining={timeRemaining}
-            formatTime={formatTime}
-            getStatusColor={getStatusColor}
-            getStatusIcon={getStatusIcon}
-            getStatusText={getStatusText}
-            connectorLabel={connectorLabel}
-            onReserve={onReserve}
-            onCancel={onCancel}
-            isReserved={isReserved}
-            isReserving={isReserving}
-            hasActiveReservation={hasActiveReservation}
-            error={error}
-            onErrorClose={onErrorClose}
-            vehicles={vehicles}
-            vehiclesLoading={vehiclesLoading}
-            vehiclesError={vehiclesError}
-            notLoggedIn={notLoggedIn}
-            hasNoCars={hasNoCars}
-            selectedVehicle={selectedVehicle}
-            setSelectedVehicle={setSelectedVehicle}
-            goToProfile={() => router.push("/profile")}
-          />
+          <ChargerContent {...contentProps} />
         </div>
       </div>
     </>
@@ -228,6 +206,13 @@ interface ChargerContentProps {
   getStatusColor: () => string;
   getStatusIcon: () => JSX.Element;
   getStatusText: () => string;
+  onReserve: (chargerId: string, minutes?: number) => void;
+  onCancel: (chargerId: string) => void;
+  isReserved: boolean;
+  isReserving: boolean;
+  hasActiveReservation: boolean;
+  error: string | null;
+  onErrorClose: () => void;
   connectorLabel: (t?: Charger["connectorType"]) => string;
 
   onReserve: (chargerId: string, minutes?: number) => void;
@@ -276,14 +261,17 @@ function ChargerContent({
   setSelectedVehicle,
   goToProfile,
 }: ChargerContentProps) {
+  // State για το μενού οχημάτων
   const [showVehicleMenu, setShowVehicleMenu] = useState(false);
+
+  const price = typeof charger.kwhprice === "number" ? charger.kwhprice : 0;
 
   // reservation UI state
   const [reservationEndTime, setReservationEndTime] = useState<string | null>(null);
   const [showDurationPicker, setShowDurationPicker] = useState(false);
   const [selectedMinutes, setSelectedMinutes] = useState<number>(30);
 
-  // Close the dropdown if selection changes or vehicles refresh
+// Close the dropdown if selection changes or vehicles refresh
   useEffect(() => {
     setShowVehicleMenu(false);
   }, [selectedVehicle?.id, vehicles.length]);
@@ -305,7 +293,6 @@ function ChargerContent({
       }
     }
 
-    // If you want: only load when reserved or hasActiveReservation. Keeping simple:
     loadDetails();
 
     return () => {
@@ -532,6 +519,35 @@ function ChargerContent({
             </div>
             <button
               type="button"
+              onClick={onErrorClose}
+              className="text-red-600 hover:text-red-800 ml-2"
+              aria-label="Close error"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Active reservation warning */}
+      {hasActiveReservation && !isReserved && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 text-yellow-600" />
+            <span className="text-yellow-900">You already have an active reservation</span>
+          </div>
+        </div>
+      )}
+
+      {/* Error message */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-start justify-between">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <span className="text-red-900 text-sm">{error}</span>
+            </div>
+            <button
               onClick={onErrorClose}
               className="text-red-600 hover:text-red-800 ml-2"
               aria-label="Close error"
