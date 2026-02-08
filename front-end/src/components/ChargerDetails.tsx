@@ -12,7 +12,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { fetchCharger } from "../utils/api";
+import { fetchCharger, isLoggedIn } from "../utils/api";
 import type { Charger } from "../types/charger";
 import { CartoonCar } from "./ui/CartoonCar";
 
@@ -176,6 +176,7 @@ export function ChargerDetails({
     selectedVehicle,
     setSelectedVehicle,
     goToProfile: () => router.push("/profile"),
+    goToSignIn: () => router.push("/signin"),
   };
 
   return (
@@ -237,6 +238,7 @@ interface ChargerContentProps {
   selectedVehicle: Vehicle | null;
   setSelectedVehicle: (v: Vehicle | null) => void;
   goToProfile: () => void;
+  goToSignIn: () => void;
 }
 
 function ChargerContent({
@@ -262,6 +264,7 @@ function ChargerContent({
   selectedVehicle,
   setSelectedVehicle,
   goToProfile,
+  goToSignIn,
 }: ChargerContentProps) {
   // State για το μενού οχημάτων
   const [showVehicleMenu, setShowVehicleMenu] = useState(false);
@@ -272,6 +275,9 @@ function ChargerContent({
   const [reservationEndTime, setReservationEndTime] = useState<string | null>(null);
   const [showDurationPicker, setShowDurationPicker] = useState(false);
   const [selectedMinutes, setSelectedMinutes] = useState<number>(30);
+
+  const isGuest = notLoggedIn || !isLoggedIn();
+  const reserveDisabled = isGuest || isReserved || isReserving || hasActiveReservation;
 
 // Close the dropdown if selection changes or vehicles refresh
   useEffect(() => {
@@ -342,7 +348,7 @@ function ChargerContent({
               <p className="text-sm text-gray-700">Sign in to see charging estimates.</p>
               <button
                 type="button"
-                onClick={goToProfile}
+                onClick={goToSignIn}
                 className="w-full py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
               >
                 Go to Profile / Sign in
@@ -534,14 +540,26 @@ function ChargerContent({
       {/* Reserve + Navigate */}
       {(charger.status === "available" || isReserved) && (
         <div className="space-y-2">
+          {isGuest && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-900">
+              <p>Sign in to reserve chargers.</p>
+              <button
+                type="button"
+                onClick={goToSignIn}
+                className="mt-2 w-full py-2 rounded-md border border-blue-600 text-blue-700 hover:bg-blue-50"
+              >
+                Go to Sign in
+              </button>
+            </div>
+          )}
           <button
             type="button"
             onClick={() => setShowDurationPicker(true)}
-            disabled={isReserved || isReserving || hasActiveReservation}
+            disabled={reserveDisabled}
             className={`w-full py-3 rounded-lg transition-colors flex items-center justify-center gap-2 ${
               isReserved
                 ? "bg-green-500 text-white cursor-default"
-                : isReserving || hasActiveReservation
+                : reserveDisabled
                 ? "bg-gray-400 text-white cursor-not-allowed"
                 : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
             }`}
@@ -555,6 +573,8 @@ function ChargerContent({
               ? "Reserving..."
               : hasActiveReservation
               ? "Cannot Reserve"
+              : isGuest
+              ? "Sign in to reserve"
               : "Reserve Charger"}
           </button>
 

@@ -2,6 +2,7 @@
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-slot": "^1.2.4",
+    "@radix-ui/react-switch": "^1.2.6",
     "class-variance-authority": "^0.7.1",
     "csv-parse": "^6.1.0",
     "multer": "^2.0.2",
@@ -19,5 +20,5 @@
   },
   "scripts": {
     "test:cli": "mocha -r ts-node/register tests/cli.test.ts"
-}
+  }
 }
