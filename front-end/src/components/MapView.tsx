@@ -31,6 +31,8 @@ export function MapView() {
   const [isReserving, setIsReserving] = useState(false);
   const [hasActiveReservation, setHasActiveReservation] = useState(false);
   const [reservationError, setReservationError] = useState<string | null>(null);
+  const [lastReservationDuration, setLastReservationDuration] = useState<number>(0);
+  const [lastReservationStartTime, setLastReservationStartTime] = useState<number | null>(null);
 
   // Initialize reservation state from backend-provided flags
   useEffect(() => {
@@ -120,11 +122,18 @@ export function MapView() {
   }, [filteredChargers]);
 
   const handleReserve = async (chargerId: string, minutes?: number) => {
+    console.log('[MapView handleReserve] minutes:', minutes);
     setReservationError(null);
     setIsReserving(true);
 
     try {
       await reserveCharger(chargerId, minutes);
+      // Store duration in seconds for the timer
+      if (minutes) {
+        setLastReservationDuration(minutes * 60);
+        setLastReservationStartTime(Date.now());
+        console.log('[MapView] Set duration to:', minutes * 60, 'seconds, startTime:', Date.now());
+      }
       // refresh authoritative state from backend and update selected popup
       const newList = await reload();
       const updated = newList.find((c) => c.id === chargerId) ?? null;
@@ -318,6 +327,8 @@ export function MapView() {
               error={reservationError}
               onErrorClose={() => setReservationError(null)}
               onCancel={handleCancel}
+              lastReservationDuration={lastReservationDuration}
+              lastReservationStartTime={lastReservationStartTime}
             />
           )}
 

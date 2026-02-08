@@ -12,11 +12,11 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { fetchCharger } from "../utils/api"; // Η δική σου προσθήκη
+import { fetchCharger } from "../utils/api";
 import type { Charger } from "../types/charger";
-import { CartoonCar } from "./ui/CartoonCar"; // Του συναδέλφου
+import { CartoonCar } from "./ui/CartoonCar";
 
-import { useUserVehicles } from "../hooks/useUserVehicles"; // Του συναδέλφου
+import { useUserVehicles } from "../hooks/useUserVehicles";
 import type { Vehicle } from "../utils/vehicleMapper";
 
 interface ChargerDetailsProps {
@@ -34,6 +34,10 @@ interface ChargerDetailsProps {
   // error state from parent
   error: string | null;
   onErrorClose: () => void;
+
+  // timer related
+  lastReservationDuration: number;
+  lastReservationStartTime: number | null;
 }
 
 export function ChargerDetails({
@@ -46,10 +50,12 @@ export function ChargerDetails({
   hasActiveReservation,
   error,
   onErrorClose,
+  lastReservationDuration,
+  lastReservationStartTime,
 }: ChargerDetailsProps) {
   const router = useRouter();
 
-  const [timeRemaining, setTimeRemaining] = useState(charger.timeRemaining ?? 0);
+  const [timeRemaining, setTimeRemaining] = useState(0);
 
   // Logic για τα οχήματα (από main)
   const {
@@ -68,19 +74,29 @@ export function ChargerDetails({
     }
   }, [vehicles, selectedVehicle]);
 
-  // Timer logic (από main)
+  // Timer logic - calculate remaining time based on start time from parent
   useEffect(() => {
-    if (charger.status === "in_use" && timeRemaining > 0) {
+    if (isReserved && lastReservationStartTime !== null && lastReservationDuration > 0) {
       const interval = setInterval(() => {
-        setTimeRemaining((prev) => Math.max(0, prev - 1));
+        const elapsed = (Date.now() - lastReservationStartTime) / 1000;
+        const remaining = Math.max(0, lastReservationDuration - elapsed);
+        setTimeRemaining(remaining);
       }, 1000);
       return () => clearInterval(interval);
     }
-  }, [charger.status, timeRemaining]);
+  }, [isReserved, lastReservationStartTime, lastReservationDuration]);
+
+  // Reset timer when reservation is cancelled or charger changes
+  useEffect(() => {
+    if (!isReserved) {
+      setTimeRemaining(0);
+    }
+  }, [isReserved, charger.id]);
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
+    const rounded = Math.max(0, Math.round(seconds));
+    const mins = Math.floor(rounded / 60);
+    const secs = rounded % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
@@ -144,7 +160,7 @@ export function ChargerDetails({
     getStatusColor,
     getStatusIcon,
     getStatusText,
-    connectorLabel, // Περνάμε το label function που έφτιαξε ο συνάδελφος
+    connectorLabel,
     onReserve,
     onCancel,
     isReserved,
@@ -152,7 +168,6 @@ export function ChargerDetails({
     hasActiveReservation,
     error,
     onErrorClose,
-    // Props οχημάτων (από main)
     vehicles,
     vehiclesLoading,
     vehiclesError,
@@ -204,36 +219,23 @@ interface ChargerContentProps {
   timeRemaining: number;
   formatTime: (seconds: number) => string;
   getStatusColor: () => string;
-  getStatusIcon: () => JSX.Element;
+  getStatusIcon: () => React.ReactNode;
   getStatusText: () => string;
-  onReserve: (chargerId: string, minutes?: number) => void;
-  onCancel: (chargerId: string) => void;
-  isReserved: boolean;
-  isReserving: boolean;
-  hasActiveReservation: boolean;
-  error: string | null;
-  onErrorClose: () => void;
   connectorLabel: (t?: Charger["connectorType"]) => string;
-
   onReserve: (chargerId: string, minutes?: number) => void;
   onCancel: (chargerId: string) => void;
-
   isReserved: boolean;
   isReserving: boolean;
   hasActiveReservation: boolean;
-
   error: string | null;
   onErrorClose: () => void;
-
   vehicles: Vehicle[];
   vehiclesLoading: boolean;
   vehiclesError: string | null;
   notLoggedIn: boolean;
   hasNoCars: boolean;
-
   selectedVehicle: Vehicle | null;
   setSelectedVehicle: (v: Vehicle | null) => void;
-
   goToProfile: () => void;
 }
 
@@ -492,7 +494,7 @@ function ChargerContent({
       />
 
       {/* Timer */}
-      {charger.status === "in_use" && (
+      {isReserved && (
         <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
           <p className="text-orange-900 mb-1">Estimated Time Remaining</p>
           <p className="text-3xl text-orange-600">{formatTime(timeRemaining)}</p>
@@ -519,35 +521,6 @@ function ChargerContent({
             </div>
             <button
               type="button"
-              onClick={onErrorClose}
-              className="text-red-600 hover:text-red-800 ml-2"
-              aria-label="Close error"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Active reservation warning */}
-      {hasActiveReservation && !isReserved && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-yellow-600" />
-            <span className="text-yellow-900">You already have an active reservation</span>
-          </div>
-        </div>
-      )}
-
-      {/* Error message */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex items-start justify-between">
-            <div className="flex items-start gap-2">
-              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <span className="text-red-900 text-sm">{error}</span>
-            </div>
-            <button
               onClick={onErrorClose}
               className="text-red-600 hover:text-red-800 ml-2"
               aria-label="Close error"
