@@ -16,6 +16,7 @@ import paymentRouter from "./routes/payment.ts";
 import { schedulePricingUpdates } from "./pricing/scheduler.ts";
 import carsRouter from './routes/cars.ts'
 import carOwnershipRouter from "./routes/carOwnership.ts"
+import mockRouter from "./routes/mock.ts";
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use("/api/v1/pointstatus", pointStatusRouter);
 app.use("/api/v1/payments", paymentRouter);
 app.use('/api/v1/cars', carsRouter)
 app.use("/api/v1/car-ownership", carOwnershipRouter)
+app.use("/api/v1/mock", mockRouter);
 
 // simple generic system health
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
