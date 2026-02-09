@@ -397,7 +397,6 @@ function ChargerContent({
                         <div className="min-w-0 text-left">
                           <p className="text-gray-900 font-medium truncate">
                             {selectedVehicle.brand} {selectedVehicle.model}
-                            {selectedVehicle.variant ? ` ${selectedVehicle.variant}` : ""}
                             {selectedVehicle.year ? ` (${selectedVehicle.year})` : ""}
                           </p>
                           <p className="text-sm text-gray-500">
@@ -450,7 +449,6 @@ function ChargerContent({
                                 <div className="min-w-0">
                                   <p className="text-gray-900 truncate">
                                     {vehicle.brand} {vehicle.model}
-                                    {vehicle.variant ? ` ${vehicle.variant}` : ""}
                                   </p>
                                 </div>
                               </button>

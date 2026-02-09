@@ -161,7 +161,7 @@ export async function signIn(credentials: { email: string; password: string }) {
   return data; // { token }
 }
 
-export async function signUp(payload: { email: string; password: string }) {
+export async function signUp(payload: { email: string; password: string; firstName?: string; lastName?: string; phone?: string }) {
   const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/auth/signup`, {
     method: "POST",
@@ -246,4 +246,27 @@ export async function fetchCharger(id: string) {
 export async function fetchCarOwnerships() {
   // adjust if your backend is /api/v1/car-ownership etc.
   return fetchJson(`/car-ownership`, { auth: true });
+}
+
+export async function fetchUserProfile() {
+  return fetchJson(`/me`, { auth: true });
+}
+
+export async function updateUserProfile(data: {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  preferences?: Record<string, unknown>;
+}) {
+  return fetchJson(`/me`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+    auth: true,
+  });
 }

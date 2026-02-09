@@ -17,6 +17,15 @@ const Query = z.object({
   order: z.enum(["asc","desc"]).optional().default("desc"),
 });
 
+type UserListItem = {
+  id: number;
+  email: string;
+  role: "USER" | "ADMIN";
+  createdAt: Date;
+  updatedAt: Date;
+  sessions: { id: number }[];
+};
+
 /**
  * GET /api/v1/admin/users
  * Filters:
@@ -73,7 +82,7 @@ router.get("/", async (req, res) => {
 
     // Add counts efficiently (optional)
     // For simplicity here, derive hasSessions from fetched relation length
-    const items = users.map(u => ({
+    const items = users.map((u: UserListItem) => ({
       id: u.id,
       email: u.email,
       role: u.role,
@@ -100,10 +109,8 @@ router.get("/:id", verifyToken, requireAdmin, async (req, res) => {
 
     const user = await prisma.user.findUnique({
       where: { id },
-      select: {
-        id: true, email: true, role: true, createdAt: true, updatedAt: true,
-        vehicles: { select: { id: true, make: true, model: true, batteryKWh: true, maxKW: true } },
-        // don’t include password
+      include: {
+        carOwnerships: { include: { car: { select: { id: true, brand: true, model: true, usableBatteryKWh: true, acMaxKW: true, dcMaxKW: true } } } },
       },
     });
     if (!user) return res.status(404).json({ error: "Not found" });
