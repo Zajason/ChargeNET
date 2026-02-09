@@ -28,4 +28,8 @@ rm -rf front-end/node_modules
 rm -rf front-end/.next
 rm -f front-end/.env.local
 
+echo "Removing CLI node_modules..."
+rm -rf cli/node_modules 2>/dev/null
+rm -rf cli-client/node_modules 2>/dev/null
+
 echo "✅ Reset complete! Now run: ./setup.sh"
