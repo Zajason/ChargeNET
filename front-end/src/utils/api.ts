@@ -274,6 +274,17 @@ export async function deleteCarOwnership(ownershipId: number) {
   });
 }
 
+export async function fetchPaymentMethods() {
+  return fetchJson(`/me/payment-methods`, { auth: true });
+}
+
+export async function deletePaymentMethod(methodId: number) {
+  return fetchJson(`/me/payment-methods/${methodId}`, {
+    method: "DELETE",
+    auth: true,
+  });
+}
+
 export async function fetchUserProfile() {
   return fetchJson(`/me`, { auth: true });
 }
@@ -294,5 +305,41 @@ export async function updateUserProfile(data: {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
     auth: true,
+  });
+}
+
+export async function fetchBillingHistory() {
+  return fetchJson(`/payments/history`, { auth: true });
+}
+
+export async function createPaymentSetupIntent() {
+  return fetchJson(`/payments/create-setup-intent`, {
+    method: "POST",
+    auth: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({}),
+  });
+}
+
+export async function savePaymentMethodToken(paymentMethodId: string) {
+  return fetchJson(`/payments/save-method`, {
+    method: "POST",
+    auth: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ paymentMethodId }),
+  });
+}
+
+export async function runMockCharge(payload?: {
+  chargerId?: number;
+  amountEur?: number;
+  kWh?: number;
+  durationMinutes?: number;
+}) {
+  return fetchJson(`/mock/session`, {
+    method: "POST",
+    auth: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload ?? {}),
   });
 }

@@ -1,11 +1,15 @@
 "use client";
-import { SideMenu } from '../../components/SideMenu';
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { CardElement, Elements, useElements, useStripe } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import { CreditCard, FileText, Loader2, MapPin, Menu, Plus, Trash2, Zap } from 'lucide-react';
+
 import { MenuPanel } from '../../components/MenuPanel';
-import { useState } from 'react';
+import { SideMenu } from '../../components/SideMenu';
+import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
-import { Plus, CreditCard, Trash2, Menu } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -22,117 +26,203 @@ import {
   TableHeader,
   TableRow,
 } from '../../components/ui/table';
+import {
+  AuthError,
+  createPaymentSetupIntent,
+  deletePaymentMethod,
+  fetchBillingHistory,
+  fetchPaymentMethods,
+  savePaymentMethodToken,
+  runMockCharge,
+} from '../../utils/api';
 
-interface PaymentMethod {
-  id: string;
-  type: 'card' | 'bank';
-  last4: string;
-  brand?: string;
-  expiry?: string;
-  isDefault: boolean;
+type PaymentMethod = {
+  id: number;
+  provider: string;
+  tokenLast4: string;
+  status: string;
+  createdAt: string;
+};
+
+type PaymentStatus = 'PREAUTHORIZED' | 'CAPTURED' | 'CANCELLED' | 'FAILED';
+
+type BillingHistoryEntry = {
+  id: number;
+  sessionId: number;
+  status: PaymentStatus;
+  amountEur: number;
+  providerRef: string | null;
+  createdAt: string;
+  session: {
+    startedAt: string;
+    endedAt: string | null;
+    energyKWh: number;
+    costEur: number | null;
+    chargerName: string | null;
+    chargerAddress: string | null;
+    invoice: {
+      id: number;
+      pdfUrl: string;
+      totalEur: number;
+      createdAt: string;
+    } | null;
+  } | null;
+};
+
+const statusVariant: Record<PaymentStatus, 'default' | 'secondary' | 'outline' | 'destructive'> = {
+  CAPTURED: 'default',
+  PREAUTHORIZED: 'secondary',
+  CANCELLED: 'outline',
+  FAILED: 'destructive',
+};
+
+const stripePromise = (() => {
+  const pk = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+  return pk ? loadStripe(pk) : null;
+})();
+
+function formatDate(iso: string | null | undefined) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleString();
 }
 
-interface ChargingSession {
-  id: string;
-  date: string;
-  location: string;
-  duration: string;
-  energy: string;
-  cost: string;
-  status: 'completed' | 'pending';
+function formatAmount(amount: number | null | undefined) {
+  if (amount === null || amount === undefined || Number.isNaN(amount)) return '—';
+  return `EUR ${amount.toFixed(2)}`;
 }
 
 export default function BillingScreen() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([
-    {
-      id: '1',
-      type: 'card',
-      last4: '4242',
-      brand: 'Visa',
-      expiry: '12/25',
-      isDefault: true,
-    },
-    {
-      id: '2',
-      type: 'card',
-      last4: '5555',
-      brand: 'Mastercard',
-      expiry: '08/26',
-      isDefault: false,
-    },
-  ]);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [history, setHistory] = useState<BillingHistoryEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [addOpen, setAddOpen] = useState(false);
+  const [setupSecret, setSetupSecret] = useState<string | null>(null);
+  const [setupLoading, setSetupLoading] = useState(false);
+  const demoEnabled = process.env.NEXT_PUBLIC_ENABLE_MOCK_SESSION === '1';
+  const [mockChargerId, setMockChargerId] = useState('1');
+  const [mockAmount, setMockAmount] = useState('3.75');
+  const [mockEnergy, setMockEnergy] = useState('12.34');
+  const [mockLoading, setMockLoading] = useState(false);
+  const [mockMessage, setMockMessage] = useState<string | null>(null);
 
-  const [chargingSessions] = useState<ChargingSession[]>([
-    {
-      id: '1',
-      date: 'Jan 30, 2026',
-      location: 'Downtown Charging Station',
-      duration: '1h 23m',
-      energy: '42.5 kWh',
-      cost: '$12.75',
-      status: 'completed',
-    },
-    {
-      id: '2',
-      date: 'Jan 28, 2026',
-      location: 'Shopping Mall Charger',
-      duration: '2h 15m',
-      energy: '58.3 kWh',
-      cost: '$17.49',
-      status: 'completed',
-    },
-    {
-      id: '3',
-      date: 'Jan 25, 2026',
-      location: 'Airport Parking',
-      duration: '45m',
-      energy: '28.1 kWh',
-      cost: '$8.43',
-      status: 'completed',
-    },
-    {
-      id: '4',
-      date: 'Jan 23, 2026',
-      location: 'City Center Station',
-      duration: '1h 05m',
-      energy: '35.7 kWh',
-      cost: '$10.71',
-      status: 'completed',
-    },
-  ]);
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [methods, historyResponse] = await Promise.all([
+        fetchPaymentMethods(),
+        fetchBillingHistory(),
+      ]);
 
-  const [isAddPaymentOpen, setIsAddPaymentOpen] = useState(false);
-  const [newCard, setNewCard] = useState({
-    cardNumber: '',
-    expiry: '',
-    cvc: '',
-    name: '',
-  });
+      setPaymentMethods(methods as PaymentMethod[]);
+      setHistory((historyResponse as { history?: BillingHistoryEntry[] }).history ?? []);
+    } catch (err: any) {
+      if (err instanceof AuthError) {
+        setError('Please sign in to view your billing history.');
+      } else {
+        setError(err?.message ?? 'Unable to load billing history.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  const handleAddPayment = () => {
-    // TODO: Implement payment method addition logic
-    console.log('Adding payment method:', newCard);
-    setIsAddPaymentOpen(false);
-    setNewCard({ cardNumber: '', expiry: '', cvc: '', name: '' });
+  useEffect(() => {
+    void loadData();
+  }, [loadData]);
+
+  const totalThisMonth = useMemo(() => {
+    const now = new Date();
+    return history
+      .filter((entry) => {
+        const created = new Date(entry.createdAt);
+        return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
+      })
+      .reduce((sum, entry) => sum + (entry.amountEur ?? 0), 0);
+  }, [history]);
+
+  const triggerMockCharge = useCallback(async () => {
+    if (!demoEnabled) return;
+
+    setMockLoading(true);
+    setMockMessage(null);
+    setError(null);
+
+    const parsedChargerId = Number(mockChargerId);
+    const parsedAmount = Number(mockAmount);
+    const parsedEnergy = Number(mockEnergy);
+
+    try {
+      const response = await runMockCharge({
+        chargerId: Number.isFinite(parsedChargerId) ? parsedChargerId : undefined,
+        amountEur: Number.isFinite(parsedAmount) ? parsedAmount : undefined,
+        kWh: Number.isFinite(parsedEnergy) ? parsedEnergy : undefined,
+      });
+
+      const sessionId = (response as { sessionId?: number }).sessionId;
+      const paymentStatus = (response as { paymentStatus?: string }).paymentStatus ?? 'created';
+      const amount = (response as { amountEur?: number }).amountEur ?? (Number.isFinite(parsedAmount) ? parsedAmount : undefined);
+      const amountText = amount !== undefined && !Number.isNaN(amount) ? amount.toFixed(2) : 'n/a';
+
+      setMockMessage(`Session ${sessionId ?? 'new'} • status ${paymentStatus} • EUR ${amountText}`);
+      await loadData();
+    } catch (err: any) {
+      setError(err?.message ?? 'Mock charge failed.');
+    } finally {
+      setMockLoading(false);
+    }
+  }, [demoEnabled, mockAmount, mockChargerId, mockEnergy, loadData]);
+
+  const handleRemovePayment = async (id: number) => {
+    setDeletingId(id);
+    setError(null);
+    try {
+      await deletePaymentMethod(id);
+      setPaymentMethods((prev) => prev.filter((m) => m.id !== id));
+    } catch (err: any) {
+      setError(err?.message ?? 'Failed to delete payment method.');
+    } finally {
+      setDeletingId(null);
+    }
   };
 
-  const handleRemovePayment = (id: string) => {
-    setPaymentMethods(paymentMethods.filter((pm) => pm.id !== id));
+  const openAddCard = async () => {
+    setAddOpen(true);
+    setError(null);
+
+    if (!stripePromise) {
+      setError('Stripe publishable key is not configured.');
+      return;
+    }
+
+    setSetupLoading(true);
+    try {
+      const response = await createPaymentSetupIntent();
+      const clientSecret = (response as { clientSecret?: string }).clientSecret;
+      if (!clientSecret) {
+        throw new Error('Setup intent missing client secret');
+      }
+      setSetupSecret(clientSecret);
+    } catch (err: any) {
+      setError(err?.message ?? 'Unable to start card setup.');
+      setAddOpen(false);
+    } finally {
+      setSetupLoading(false);
+    }
   };
 
-  const handleSetDefault = (id: string) => {
-    setPaymentMethods(
-      paymentMethods.map((pm) => ({
-        ...pm,
-        isDefault: pm.id === id,
-      }))
-    );
+  const handleSavedMethod = (method: PaymentMethod) => {
+    setPaymentMethods((prev) => [method, ...prev]);
+    setAddOpen(false);
+    setSetupSecret(null);
   };
 
   return (
     <div className="flex flex-col sm:flex-row h-screen w-full">
-      {/* Mobile header */}
       <div className="sm:hidden flex items-center gap-3 p-3 bg-white border-b border-gray-200">
         <button onClick={() => setIsMenuOpen(true)} className="p-2 hover:bg-gray-100 rounded-lg">
           <Menu className="w-5 h-5 text-gray-700" />
@@ -141,191 +231,354 @@ export default function BillingScreen() {
       </div>
       <MenuPanel isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
 
-      {/* Main Content Area */}
       <div className="flex-1 overflow-auto bg-gray-50">
         <div className="max-w-6xl mx-auto p-6 sm:p-8 lg:p-12">
           <div className="mb-8">
             <h1 className="hidden sm:block text-2xl sm:text-3xl text-gray-900 mb-2">Billing & History</h1>
-            <p className="text-sm text-gray-500">Manage payment methods and view charging history</p>
+            <p className="text-sm text-gray-500">Review your payments and saved methods</p>
           </div>
 
-          {/* Payment Methods */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-medium text-gray-900">Payment Methods</h2>
-              <Button onClick={() => setIsAddPaymentOpen(true)} size="sm">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Payment
-              </Button>
+          {error && (
+            <div className="mb-4 rounded border border-red-200 bg-red-50 text-red-800 px-4 py-3 text-sm flex items-start gap-2">
+              <span className="font-semibold">Heads up:</span>
+              <span>{error}</span>
             </div>
+          )}
 
-            <div className="space-y-3">
-              {paymentMethods.map((method) => (
-                <div
-                  key={method.id}
-                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                      <CreditCard className="w-5 h-5 text-gray-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">
-                        {method.brand} •••• {method.last4}
-                      </p>
-                      <p className="text-xs text-gray-500">Expires {method.expiry}</p>
-                    </div>
-                    {method.isDefault && (
-                      <span className="px-2 py-1 bg-gray-100 text-xs text-gray-700 rounded">
-                        Default
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex gap-2">
-                    {!method.isDefault && (
+          {demoEnabled && (
+            <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-5">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="flex items-center gap-2 text-sm font-semibold text-blue-900">
+                    <Zap className="w-4 h-4" /> Demo charge (dev only)
+                  </p>
+                  <p className="text-xs text-blue-900">
+                    Creates a mock charging session for the signed-in user using Stripe test data.
+                  </p>
+                </div>
+                {mockMessage && (
+                  <Badge variant="secondary" className="justify-start whitespace-nowrap">
+                    {mockMessage}
+                  </Badge>
+                )}
+              </div>
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <div className="space-y-2">
+                  <Label htmlFor="mock-charger">Charger ID</Label>
+                  <Input
+                    id="mock-charger"
+                    value={mockChargerId}
+                    onChange={(e) => setMockChargerId(e.target.value)}
+                    inputMode="numeric"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="mock-amount">Amount (EUR)</Label>
+                  <Input
+                    id="mock-amount"
+                    value={mockAmount}
+                    onChange={(e) => setMockAmount(e.target.value)}
+                    inputMode="decimal"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="mock-energy">Energy (kWh)</Label>
+                  <Input
+                    id="mock-energy"
+                    value={mockEnergy}
+                    onChange={(e) => setMockEnergy(e.target.value)}
+                    inputMode="decimal"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <Button onClick={triggerMockCharge} disabled={mockLoading}>
+                  {mockLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create mock session'}
+                </Button>
+                <p className="text-xs text-blue-900">
+                  Uses Stripe test token (tok_visa). Disabled automatically when NEXT_PUBLIC_ENABLE_MOCK_SESSION is not set.
+                </p>
+              </div>
+            </div>
+          )}
+
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="bg-white rounded-lg border border-gray-200 p-6 lg:col-span-1">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-medium text-gray-900">Payment Methods</h2>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary">{paymentMethods.length}</Badge>
+                  <Button size="sm" onClick={openAddCard}>
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add
+                  </Button>
+                </div>
+              </div>
+              {loading ? (
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Loading methods...
+                </div>
+              ) : paymentMethods.length === 0 ? (
+                <p className="text-sm text-gray-500">No payment methods saved.</p>
+              ) : (
+                <div className="space-y-3">
+                  {paymentMethods.map((method) => (
+                    <div
+                      key={method.id}
+                      className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <CreditCard className="w-5 h-5 text-gray-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            {method.provider} •••• {method.tokenLast4}
+                          </p>
+                          <p className="text-xs text-gray-500">Added {formatDate(method.createdAt)}</p>
+                          <Badge variant={method.status === 'valid' ? 'secondary' : 'outline'} className="mt-1">
+                            {method.status}
+                          </Badge>
+                        </div>
+                      </div>
                       <Button
-                        onClick={() => handleSetDefault(method.id)}
                         variant="outline"
                         size="sm"
+                        onClick={() => handleRemovePayment(method.id)}
+                        disabled={deletingId === method.id}
                       >
-                        Set Default
+                        {deletingId === method.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        )}
                       </Button>
-                    )}
-                    <Button
-                      onClick={() => handleRemovePayment(method.id)}
-                      variant="outline"
-                      size="sm"
-                      disabled={method.isDefault}
-                    >
-                      <Trash2 className="w-4 h-4 text-red-600" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Charging History */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-6">Charging History</h2>
-
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Location</TableHead>
-                    <TableHead>Duration</TableHead>
-                    <TableHead>Energy</TableHead>
-                    <TableHead>Cost</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {chargingSessions.map((session) => (
-                    <TableRow key={session.id}>
-                      <TableCell className="text-sm">{session.date}</TableCell>
-                      <TableCell className="text-sm">{session.location}</TableCell>
-                      <TableCell className="text-sm">{session.duration}</TableCell>
-                      <TableCell className="text-sm">{session.energy}</TableCell>
-                      <TableCell className="text-sm font-medium">{session.cost}</TableCell>
-                      <TableCell>
-                        <span
-                          className={`inline-flex items-center px-2 py-1 rounded text-xs ${
-                            session.status === 'completed'
-                              ? 'bg-green-50 text-green-700'
-                              : 'bg-yellow-50 text-yellow-700'
-                          }`}
-                        >
-                          {session.status === 'completed' ? 'Completed' : 'Pending'}
-                        </span>
-                      </TableCell>
-                    </TableRow>
+                    </div>
                   ))}
-                </TableBody>
-              </Table>
+                </div>
+              )}
+              <p className="text-xs text-gray-500 mt-4">
+                Payment methods are managed via your provider. Contact support if you need to add a new card.
+              </p>
             </div>
 
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <div className="flex justify-between items-center">
-                <p className="text-sm text-gray-500">Total this month</p>
-                <p className="text-lg font-medium text-gray-900">$49.38</p>
+            <div className="bg-white rounded-lg border border-gray-200 p-6 lg:col-span-2">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-medium text-gray-900">Billing History</h2>
+                <div className="text-right text-sm text-gray-600">
+                  <p>Total this month</p>
+                  <p className="text-lg font-semibold text-gray-900">{formatAmount(totalThisMonth)}</p>
+                </div>
               </div>
+
+              {loading ? (
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Loading billing history...
+                </div>
+              ) : history.length === 0 ? (
+                <div className="text-sm text-gray-500">No payments yet.</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Charger</TableHead>
+                        <TableHead>Energy</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Invoice</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {history.map((entry) => (
+                        <TableRow key={entry.id}>
+                          <TableCell className="text-sm">{formatDate(entry.createdAt)}</TableCell>
+                          <TableCell className="text-sm">
+                            <div className="flex items-center gap-2">
+                              <MapPin className="w-4 h-4 text-gray-500" />
+                              <div>
+                                <div className="font-medium text-gray-900">
+                                  {entry.session?.chargerName ?? `Session #${entry.sessionId}`}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  {entry.session?.chargerAddress ?? '—'}
+                                </div>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            {entry.session ? `${entry.session.energyKWh.toFixed(2)} kWh` : '—'}
+                          </TableCell>
+                          <TableCell className="text-sm font-medium">{formatAmount(entry.amountEur)}</TableCell>
+                          <TableCell>
+                            <Badge variant={statusVariant[entry.status]}>{entry.status}</Badge>
+                            {entry.providerRef && (
+                              <div className="text-[11px] text-gray-500 mt-1">Ref: {entry.providerRef}</div>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {entry.session?.invoice ? (
+                              entry.session.invoice.pdfUrl && entry.session.invoice.pdfUrl !== 'pending' ? (
+                                <Button variant="ghost" size="sm" asChild>
+                                  <a href={entry.session.invoice.pdfUrl} target="_blank" rel="noreferrer">
+                                    <FileText className="w-4 h-4 mr-1" /> View
+                                  </a>
+                                </Button>
+                              ) : (
+                                <Badge variant="outline">Pending</Badge>
+                              )
+                            ) : (
+                              <span className="text-xs text-gray-500">Not issued</span>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Side Menu - hidden on mobile, visible on sm+ */}
+      <Dialog open={addOpen} onOpenChange={(v) => {
+        setAddOpen(v);
+        if (!v) setSetupSecret(null);
+      }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add a card</DialogTitle>
+            <DialogDescription>Save a card for automatic charging payments.</DialogDescription>
+          </DialogHeader>
+
+          {setupLoading && (
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <Loader2 className="w-4 h-4 animate-spin" /> Preparing secure form...
+            </div>
+          )}
+
+          {!setupLoading && setupSecret && stripePromise && (
+            <Elements stripe={stripePromise}>
+              <AddCardForm
+                clientSecret={setupSecret}
+                onSaved={handleSavedMethod}
+                onError={(msg) => setError(msg)}
+              />
+            </Elements>
+          )}
+
+          {!stripePromise && (
+            <p className="text-sm text-red-700">Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.</p>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <div className="hidden sm:block sm:w-80 lg:w-96 flex-shrink-0">
         <SideMenu />
       </div>
-
-      {/* Add Payment Method Dialog */}
-      <Dialog open={isAddPaymentOpen} onOpenChange={setIsAddPaymentOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add Payment Method</DialogTitle>
-            <DialogDescription>
-              Add a new credit or debit card to your account
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 py-4">
-            <div>
-              <Label htmlFor="cardNumber">Card Number</Label>
-              <Input
-                id="cardNumber"
-                value={newCard.cardNumber}
-                onChange={(e) => setNewCard({ ...newCard, cardNumber: e.target.value })}
-                placeholder="1234 5678 9012 3456"
-                className="mt-1"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="name">Cardholder Name</Label>
-              <Input
-                id="name"
-                value={newCard.name}
-                onChange={(e) => setNewCard({ ...newCard, name: e.target.value })}
-                placeholder="John Doe"
-                className="mt-1"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="expiry">Expiry Date</Label>
-                <Input
-                  id="expiry"
-                  value={newCard.expiry}
-                  onChange={(e) => setNewCard({ ...newCard, expiry: e.target.value })}
-                  placeholder="MM/YY"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="cvc">CVC</Label>
-                <Input
-                  id="cvc"
-                  value={newCard.cvc}
-                  onChange={(e) => setNewCard({ ...newCard, cvc: e.target.value })}
-                  placeholder="123"
-                  className="mt-1"
-                />
-              </div>
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddPaymentOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleAddPayment}>Add Card</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
+  );
+}
+
+function AddCardForm({ clientSecret, onSaved, onError }: {
+  clientSecret: string;
+  onSaved: (method: PaymentMethod) => void;
+  onError: (msg: string) => void;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [cardholder, setCardholder] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setLocalError(null);
+
+    if (!stripe || !elements) {
+      setLocalError('Stripe is not ready yet.');
+      return;
+    }
+
+    const card = elements.getElement(CardElement);
+    if (!card) {
+      setLocalError('Card element not available.');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const result = await stripe.confirmCardSetup(clientSecret, {
+        payment_method: {
+          card,
+          billing_details: cardholder ? { name: cardholder } : undefined,
+        },
+      });
+
+      if (result.error) {
+        throw new Error(result.error.message ?? 'Failed to save card.');
+      }
+
+      const paymentMethodId = result.setupIntent.payment_method;
+      if (!paymentMethodId || typeof paymentMethodId !== 'string') {
+        throw new Error('Missing payment method from Stripe.');
+      }
+
+      const saved = await savePaymentMethodToken(paymentMethodId);
+      const pm = (saved as { paymentMethod?: PaymentMethod }).paymentMethod ?? (saved as PaymentMethod);
+      onSaved(pm);
+    } catch (err: any) {
+      const msg = err?.message ?? 'Could not add card.';
+      setLocalError(msg);
+      onError(msg);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="cardholder">Cardholder Name</Label>
+        <Input
+          id="cardholder"
+          value={cardholder}
+          onChange={(e) => setCardholder(e.target.value)}
+          placeholder="Jane Doe"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Card Details</Label>
+        <div className="border rounded-md px-3 py-2 bg-gray-50">
+          <CardElement
+            options={{
+              style: {
+                base: {
+                  fontSize: '16px',
+                  color: '#111827',
+                  '::placeholder': { color: '#9CA3AF' },
+                },
+                invalid: { color: '#dc2626' },
+              },
+            }}
+          />
+        </div>
+      </div>
+
+      {localError && <p className="text-sm text-red-700">{localError}</p>}
+
+      <DialogFooter>
+        <Button type="submit" disabled={saving || !stripe}>
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save Card'}
+        </Button>
+      </DialogFooter>
+    </form>
   );
 }

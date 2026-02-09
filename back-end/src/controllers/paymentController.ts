@@ -125,6 +125,7 @@ export const chargeSession = async (sessionId: number, amountEur: number, expect
           },
         },
       },
+      invoice: true,
     },
   });
 
@@ -176,6 +177,19 @@ export const chargeSession = async (sessionId: number, amountEur: number, expect
         status,
       },
     });
+
+    if (status === PaymentStatus.CAPTURED) {
+      await prisma.invoice.upsert({
+        where: { sessionId },
+        update: { totalEur: amountEur },
+        create: {
+          userId: session.user.id,
+          sessionId,
+          pdfUrl: 'pending',
+          totalEur: amountEur,
+        },
+      });
+    }
 
     return intent;
   } catch (error) {
@@ -236,5 +250,71 @@ export const executePayment = async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error('executePayment error:', error);
     return res.status(502).json({ error: 'Payment attempt failed', details: error?.message });
+  }
+};
+
+export const listBillingHistory = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId!;
+
+    const records = await prisma.paymentAuth.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        session: {
+          select: {
+            id: true,
+            startedAt: true,
+            endedAt: true,
+            kWh: true,
+            costEur: true,
+            charger: { select: { name: true, address: true } },
+            invoice: {
+              select: {
+                id: true,
+                pdfUrl: true,
+                totalEur: true,
+                createdAt: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const history = records.map((record) => ({
+      id: record.id,
+      sessionId: record.sessionId,
+      status: record.status,
+      amountEur: Number(record.amountEur),
+      providerRef: record.providerRef ?? null,
+      createdAt: record.createdAt.toISOString(),
+      session: record.session
+        ? {
+            startedAt: record.session.startedAt.toISOString(),
+            endedAt: record.session.endedAt ? record.session.endedAt.toISOString() : null,
+            energyKWh: Number(record.session.kWh),
+            costEur:
+              record.session.costEur !== null && record.session.costEur !== undefined
+                ? Number(record.session.costEur)
+                : null,
+            chargerName: record.session.charger?.name ?? null,
+            chargerAddress: record.session.charger?.address ?? null,
+            invoice: record.session.invoice
+              ? {
+                  id: record.session.invoice.id,
+                  pdfUrl: record.session.invoice.pdfUrl,
+                  totalEur: Number(record.session.invoice.totalEur),
+                  createdAt: record.session.invoice.createdAt.toISOString(),
+                }
+              : null,
+          }
+        : null,
+    }));
+
+    return res.json({ history });
+  } catch (error) {
+    console.error('listBillingHistory error:', error);
+    return res.status(500).json({ error: 'Failed to load billing history' });
   }
 };
