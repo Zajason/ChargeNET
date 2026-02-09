@@ -107,6 +107,82 @@ export const savePaymentMethod = async (req: Request, res: Response) => {
   }
 };
 
+/* ── Pre-auth helpers for reservation flow ── */
+
+export const preAuthorize = async (userId: number, amountEur: number = 3) => {
+  const customerId = await ensureStripeCustomer(userId);
+
+  const methods = await prisma.paymentMethod.findMany({
+    where: { userId, provider: 'stripe', status: 'valid', stripePaymentMethodId: { not: null } },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  const defaultMethod = methods[0];
+  if (!defaultMethod?.stripePaymentMethodId) {
+    throw new Error('No valid payment method found');
+  }
+
+  const intent = await stripe.paymentIntents.create({
+    customer: customerId,
+    payment_method: defaultMethod.stripePaymentMethodId,
+    amount: Math.round(amountEur * 100),
+    currency: 'eur',
+    capture_method: 'manual',
+    confirm: true,
+    off_session: true,
+  });
+
+  return intent;
+};
+
+export const cancelPreAuth = async (paymentIntentId: string) => {
+  try {
+    await stripe.paymentIntents.cancel(paymentIntentId);
+  } catch (err: any) {
+    // Already cancelled or captured — safe to ignore
+    if (err.code !== 'payment_intent_unexpected_state') throw err;
+  }
+};
+
+export const captureOrRecharge = async (
+  paymentIntentId: string,
+  finalAmountEur: number,
+  sessionId: number,
+  userId: number,
+) => {
+  const PRE_AUTH_AMOUNT = 3;
+  const chargeAmount = Math.max(finalAmountEur, PRE_AUTH_AMOUNT);
+
+  if (chargeAmount <= PRE_AUTH_AMOUNT) {
+    // Capture the existing pre-auth for the minimum amount
+    const intent = await stripe.paymentIntents.capture(paymentIntentId, {
+      amount_to_capture: Math.round(chargeAmount * 100),
+    });
+
+    const status = intent.status === 'succeeded' ? PaymentStatus.CAPTURED : PaymentStatus.PREAUTHORIZED;
+
+    await prisma.paymentAuth.upsert({
+      where: { sessionId },
+      update: { userId, amountEur: chargeAmount, providerRef: intent.id, status },
+      create: { userId, sessionId, amountEur: chargeAmount, providerRef: intent.id, status },
+    });
+
+    if (status === PaymentStatus.CAPTURED) {
+      await prisma.invoice.upsert({
+        where: { sessionId },
+        update: { totalEur: chargeAmount },
+        create: { userId, sessionId, pdfUrl: 'pending', totalEur: chargeAmount },
+      });
+    }
+
+    return intent;
+  }
+
+  // Amount exceeds pre-auth — cancel the hold and create a full charge
+  await cancelPreAuth(paymentIntentId);
+  return chargeSession(sessionId, chargeAmount, userId);
+};
+
 export const chargeSession = async (sessionId: number, amountEur: number, expectedUserId?: number) => {
   const session = await prisma.session.findUnique({
     where: { id: sessionId },

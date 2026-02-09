@@ -21,6 +21,16 @@ import { CartoonCar } from "./ui/CartoonCar";
 import { useUserVehicles } from "../hooks/useUserVehicles";
 import type { Vehicle } from "../utils/vehicleMapper";
 
+interface ChargingStatusData {
+  kWh: number;
+  costSoFar: number;
+  elapsedSeconds: number;
+  maxKW: number;
+  maxKWh?: number | null;
+  pricePerKWh: number;
+  status: string;
+}
+
 interface ChargerDetailsProps {
   charger: Charger;
   onClose: () => void;
@@ -42,7 +52,14 @@ interface ChargerDetailsProps {
   lastReservationDuration: number; // seconds
   lastReservationStartTime: number | null; // ms epoch
 
-  // ✅ cluster navigation (your version)
+  // charging session state
+  activeReservationId?: number | null;
+  activeSessionId?: number | null;
+  chargingStatus?: ChargingStatusData | null;
+  onStartCharging?: (reservationId: number, battery?: { batteryCapacityKWh: number; currentBatteryLevel: number }) => void;
+  onStopCharging?: (sessionId: number) => void;
+
+  // cluster navigation
   clusterIndex?: number | null;
   clusterCount?: number | null;
   onPrevCharger?: () => void;
@@ -61,6 +78,13 @@ export function ChargerDetails({
   onErrorClose,
   lastReservationDuration,
   lastReservationStartTime,
+
+  // charging
+  activeReservationId = null,
+  activeSessionId = null,
+  chargingStatus = null,
+  onStartCharging,
+  onStopCharging,
 
   // cluster nav
   clusterIndex = null,
@@ -187,6 +211,11 @@ export function ChargerDetails({
     setSelectedVehicle,
     goToProfile: () => router.push("/profile"),
     goToSignIn: () => router.push("/signin"),
+    activeReservationId,
+    activeSessionId,
+    chargingStatus,
+    onStartCharging,
+    onStopCharging,
   };
 
   return (
@@ -315,6 +344,11 @@ interface ChargerContentProps {
   setSelectedVehicle: (v: Vehicle | null) => void;
   goToProfile: () => void;
   goToSignIn: () => void;
+  activeReservationId?: number | null;
+  activeSessionId?: number | null;
+  chargingStatus?: ChargingStatusData | null;
+  onStartCharging?: (reservationId: number, battery?: { batteryCapacityKWh: number; currentBatteryLevel: number }) => void;
+  onStopCharging?: (sessionId: number) => void;
 }
 
 function ChargerContent({
@@ -341,6 +375,11 @@ function ChargerContent({
   setSelectedVehicle,
   goToProfile,
   goToSignIn,
+  activeReservationId,
+  activeSessionId,
+  chargingStatus,
+  onStartCharging,
+  onStopCharging,
 }: ChargerContentProps) {
   const [showVehicleMenu, setShowVehicleMenu] = useState(false);
 
@@ -545,14 +584,95 @@ function ChargerContent({
         text={`${chargerPowerKW} kW • ${connectorLabel(charger.connectorType)}`}
       />
 
-      {isReserved && (
-        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-          <p className="text-orange-900 mb-1">Estimated Time Remaining</p>
-          <p className="text-3xl text-orange-600">{formatTime(timeRemaining)}</p>
+      {/* Active charging session display */}
+      {activeSessionId && chargingStatus && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            {chargingStatus.status === "AUTO_STOPPED" ? (
+              <>
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <p className="text-green-900 font-medium">Battery Full — Charging Complete</p>
+              </>
+            ) : (
+              <>
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+                <p className="text-green-900 font-medium">Charging in Progress</p>
+              </>
+            )}
+          </div>
+
+          {/* Battery progress bar */}
+          {chargingStatus.maxKWh && chargingStatus.maxKWh > 0 && (
+            <div>
+              <div className="flex justify-between text-xs text-gray-500 mb-1">
+                <span>{chargingStatus.kWh.toFixed(1)} kWh</span>
+                <span>{chargingStatus.maxKWh.toFixed(1)} kWh</span>
+              </div>
+              <div className="w-full h-2.5 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-green-500 rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min(100, (chargingStatus.kWh / chargingStatus.maxKWh) * 100)}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <p className="text-sm text-gray-500">Energy</p>
+              <p className="text-2xl font-semibold text-gray-900">{chargingStatus.kWh.toFixed(2)} <span className="text-sm font-normal">kWh</span></p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Cost</p>
+              <p className="text-2xl font-semibold text-gray-900">&euro;{Math.max(chargingStatus.costSoFar, 3).toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Elapsed</p>
+              <p className="text-lg text-gray-900">{formatTime(chargingStatus.elapsedSeconds)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Power</p>
+              <p className="text-lg text-gray-900">{chargingStatus.maxKW} kW</p>
+            </div>
+          </div>
+          <p className="text-xs text-gray-500">Min. charge: &euro;3.00 &bull; &euro;{chargingStatus.pricePerKWh.toFixed(2)}/kWh</p>
+
+          {chargingStatus.status !== "AUTO_STOPPED" && (
+            <button
+              type="button"
+              onClick={() => onStopCharging?.(activeSessionId)}
+              className="w-full py-3 rounded-lg bg-red-600 text-white hover:bg-red-700 active:bg-red-800 transition-colors font-medium"
+            >
+              Stop Charging
+            </button>
+          )}
         </div>
       )}
 
-      {hasActiveReservation && !isReserved && (
+      {/* Reserved state with timer and start button */}
+      {isReserved && !activeSessionId && (
+        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 space-y-3">
+          <div>
+            <p className="text-orange-900 mb-1">Reservation Time Remaining</p>
+            <p className="text-3xl text-orange-600">{formatTime(timeRemaining)}</p>
+          </div>
+          {activeReservationId && onStartCharging && (
+            <button
+              type="button"
+              onClick={() => onStartCharging(activeReservationId, selectedVehicle ? {
+                batteryCapacityKWh: selectedVehicle.batteryCapacity,
+                currentBatteryLevel: selectedVehicle.currentBatteryLevel,
+              } : undefined)}
+              className="w-full py-3 rounded-lg bg-green-600 text-white hover:bg-green-700 active:bg-green-800 transition-colors font-medium flex items-center justify-center gap-2"
+            >
+              <Zap className="w-5 h-5" />
+              Start Charging
+            </button>
+          )}
+        </div>
+      )}
+
+      {hasActiveReservation && !isReserved && !activeSessionId && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-5 h-5 text-yellow-600" />
@@ -580,7 +700,7 @@ function ChargerContent({
         </div>
       )}
 
-      {(charger.status === "available" || isReserved) && (
+      {(charger.status === "available" || isReserved) && !activeSessionId && (
         <div className="space-y-2">
           {isGuest && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-900">
@@ -637,12 +757,12 @@ function ChargerContent({
         </div>
       )}
 
-      {isReserved && (
+      {isReserved && !activeSessionId && (
         <div className="pt-2">
           <button
             type="button"
             onClick={() => {
-              if (!confirm("Cancel your reservation?")) return;
+              if (!confirm("Cancel your reservation? The €3 hold will be released.")) return;
               onCancel(charger.id);
             }}
             className="w-full py-2 rounded-md bg-red-600 text-white"

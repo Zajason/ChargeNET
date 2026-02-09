@@ -343,3 +343,33 @@ export async function runMockCharge(payload?: {
     body: JSON.stringify(payload ?? {}),
   });
 }
+
+/** ---------------------------
+ *  Charging session endpoints
+ *  --------------------------*/
+
+export async function startCharging(reservationId: number, battery?: { batteryCapacityKWh: number; currentBatteryLevel: number }) {
+  return fetchJson(`/charging/start`, {
+    method: "POST",
+    auth: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ reservationId, ...battery }),
+  });
+}
+
+export async function stopCharging(sessionId: number) {
+  return fetchJson(`/charging/stop`, {
+    method: "POST",
+    auth: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sessionId }),
+  });
+}
+
+export async function getChargingStatus(sessionId: number) {
+  return fetchJson(`/charging/status/${sessionId}`, { auth: true });
+}
+
+export async function getActiveSession() {
+  return fetchJson(`/charging/active`, { auth: true });
+}
