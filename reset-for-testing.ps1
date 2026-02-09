@@ -28,4 +28,8 @@ if (Test-Path "front-end\node_modules") { Remove-Item -Recurse -Force "front-end
 if (Test-Path "front-end\.next") { Remove-Item -Recurse -Force "front-end\.next" }
 if (Test-Path "front-end\.env.local") { Remove-Item -Force "front-end\.env.local" }
 
+Write-Host "Removing CLI node_modules..." -ForegroundColor Yellow
+if (Test-Path "cli\node_modules") { Remove-Item -Recurse -Force "cli\node_modules" }
+if (Test-Path "cli-client\node_modules") { Remove-Item -Recurse -Force "cli-client\node_modules" }
+
 Write-Host "`n✅ Reset complete! Now run: .\setup.ps1" -ForegroundColor Green

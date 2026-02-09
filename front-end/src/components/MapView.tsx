@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Map, Overlay } from "pigeon-maps";
 import { Menu, Filter, LocateFixed, List, MapIcon } from "lucide-react";
 
@@ -13,7 +13,7 @@ import { ListView } from "./ListView";
 
 import { useUserLocation } from "../hooks/useUserLocation";
 import { useFetchChargers } from "../hooks/useFetchChargers";
-import { reserveCharger, cancelReservation } from "../utils/api";
+import { reserveCharger, cancelReservation, startCharging, stopCharging, getChargingStatus, getActiveSession, isLoggedIn, AUTH_CHANGED_EVENT } from "../utils/api";
 import type { Charger } from "../types/charger";
 
 function cartoPositronProvider(x: number, y: number, z: number) {
@@ -124,6 +124,19 @@ export function MapView() {
   const [lastReservationDuration, setLastReservationDuration] = useState<number>(0); // seconds
   const [lastReservationStartTime, setLastReservationStartTime] = useState<number | null>(null); // ms
 
+  // Charging session state
+  const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
+  const [activeReservationId, setActiveReservationId] = useState<number | null>(null);
+  const [chargingStatus, setChargingStatus] = useState<{
+    kWh: number;
+    costSoFar: number;
+    elapsedSeconds: number;
+    maxKW: number;
+    maxKWh?: number | null;
+    pricePerKWh: number;
+    status: string;
+  } | null>(null);
+
   // Cluster navigation context
   const [clusterContext, setClusterContext] = useState<{
     ids: string[];
@@ -145,6 +158,57 @@ export function MapView() {
     setReservedChargers(mine);
     setHasActiveReservation(mine.size > 0);
   }, [chargers]);
+
+  // Restore active session / reservation on mount and when auth changes
+  useEffect(() => {
+    const restore = async () => {
+      if (!isLoggedIn()) {
+        setActiveSessionId(null);
+        setActiveReservationId(null);
+        setChargingStatus(null);
+        return;
+      }
+      try {
+        const data = await getActiveSession();
+
+        if (data.session) {
+          setActiveSessionId(data.session.sessionId);
+          setChargingStatus({
+            kWh: data.session.kWh,
+            costSoFar: data.session.costSoFar,
+            elapsedSeconds: data.session.elapsedSeconds,
+            maxKW: data.session.maxKW,
+            maxKWh: data.session.maxKWh,
+            pricePerKWh: data.session.pricePerKWh,
+            status: data.session.status,
+          });
+          // Auto-select the charger being charged
+          const charger = chargers.find((c) => String(c.id) === String(data.session.chargerId));
+          if (charger) setSelectedCharger(charger);
+        }
+
+        if (data.reservation && !data.session) {
+          setActiveReservationId(data.reservation.reservationId);
+          // Restore timer from reservation times
+          const expiresAt = new Date(data.reservation.expiresAt).getTime();
+          const startsAt = new Date(data.reservation.startsAt).getTime();
+          const totalDuration = Math.round((expiresAt - startsAt) / 1000);
+          setLastReservationDuration(totalDuration);
+          setLastReservationStartTime(startsAt);
+          // Auto-select the reserved charger
+          const charger = chargers.find((c) => String(c.id) === String(data.reservation.chargerId));
+          if (charger) setSelectedCharger(charger);
+        }
+      } catch (err) {
+        // Not logged in or network error — ignore
+        console.error("[restore] active session check failed:", err);
+      }
+    };
+
+    restore();
+    window.addEventListener(AUTH_CHANGED_EVENT, restore);
+    return () => window.removeEventListener(AUTH_CHANGED_EVENT, restore);
+  }, [chargers]); // re-run when chargers load so we can auto-select
 
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
 
@@ -234,7 +298,12 @@ export function MapView() {
     try {
       const mins = minutes ?? DEFAULT_RESERVE_MINUTES;
 
-      await reserveCharger(chargerId, mins);
+      const result = await reserveCharger(chargerId, mins);
+
+      // Store the reservation ID for starting charging later
+      if (result.reservationId) {
+        setActiveReservationId(result.reservationId);
+      }
 
       // ✅ start persistent countdown at the moment reserve succeeds
       setLastReservationDuration(mins * 60);
@@ -262,9 +331,10 @@ export function MapView() {
     try {
       await cancelReservation(chargerId);
 
-      // ✅ clear timer when cancel succeeds
+      // ✅ clear timer and reservation state when cancel succeeds
       setLastReservationDuration(0);
       setLastReservationStartTime(null);
+      setActiveReservationId(null);
 
       const newList = await reload();
       const updated = newList.find((c) => String(c.id) === String(chargerId)) ?? null;
@@ -279,6 +349,62 @@ export function MapView() {
       setReservationError(message);
     }
   };
+
+  const handleStartCharging = useCallback(async (reservationId: number, battery?: { batteryCapacityKWh: number; currentBatteryLevel: number }) => {
+    setReservationError(null);
+    try {
+      const result = await startCharging(reservationId, battery);
+      setActiveSessionId(result.sessionId);
+      setActiveReservationId(null);
+      // Clear reservation timer — charging has started
+      setLastReservationDuration(0);
+      setLastReservationStartTime(null);
+    } catch (err) {
+      setReservationError(err instanceof Error ? err.message : "Failed to start charging");
+    }
+  }, []);
+
+  const handleStopCharging = useCallback(async (sessionId: number) => {
+    setReservationError(null);
+    try {
+      await stopCharging(sessionId);
+      setActiveSessionId(null);
+      setChargingStatus(null);
+      await reload();
+    } catch (err) {
+      setReservationError(err instanceof Error ? err.message : "Failed to stop charging");
+    }
+  }, [reload]);
+
+  // Poll charging status every 3 seconds while a session is active
+  useEffect(() => {
+    if (!activeSessionId) return;
+
+    let cancelled = false;
+    const poll = async () => {
+      try {
+        const status = await getChargingStatus(activeSessionId);
+        if (cancelled) return;
+        setChargingStatus(status);
+
+        if (status.status !== "RUNNING") {
+          setActiveSessionId(null);
+          setChargingStatus(null);
+          await reload();
+        }
+      } catch (err) {
+        console.error("Charging status poll error:", err);
+      }
+    };
+
+    poll(); // initial fetch
+    const interval = setInterval(poll, 3000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [activeSessionId, reload]);
 
   useEffect(() => {
     if (!selectedCharger) return;
@@ -515,6 +641,11 @@ export function MapView() {
               onNextCharger={clusterContext ? goNextInCluster : undefined}
               lastReservationDuration={lastReservationDuration}
               lastReservationStartTime={lastReservationStartTime}
+              activeReservationId={activeReservationId}
+              activeSessionId={activeSessionId}
+              chargingStatus={chargingStatus}
+              onStartCharging={handleStartCharging}
+              onStopCharging={handleStopCharging}
             />
           )}
         </>

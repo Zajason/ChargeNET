@@ -166,8 +166,9 @@ model Reservation {
   chargerId Int
   startsAt  DateTime
   expiresAt DateTime
-  status    ReservationStatus @default(ACTIVE)
-  createdAt DateTime          @default(now())
+  status          ReservationStatus @default(ACTIVE)
+  paymentIntentId String?
+  createdAt       DateTime          @default(now())
 
   session Session?
   // Ensure only one ACTIVE per charger overlapping in time handled in app/Redis;
@@ -189,6 +190,7 @@ model Session {
   startedAt   DateTime
   endedAt     DateTime?
   kWh         Float         @default(0)
+  maxKWh      Float?        // battery capacity remaining — auto-stop when reached
   avgKW       Float?
   pricePerKWh Decimal?      @db.Decimal(8, 5)
   costEur     Decimal?      @db.Decimal(10, 2)
