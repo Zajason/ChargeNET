@@ -1,6 +1,7 @@
 // back-end/src/controllers/cars.controller.ts
 import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
+import { ensureCarCatalogSeeded } from '../data/carCatalogSeeder.ts'
 
 const prisma = new PrismaClient()
 
@@ -11,6 +12,8 @@ export async function searchCars(req: Request, res: Response) {
     if (!q) {
       return res.status(400).json({ error: 'Query parameter "q" is required' })
     }
+
+    await ensureCarCatalogSeeded(prisma)
 
     // Case-insensitive search by brand OR model
     const cars = await prisma.car.findMany({

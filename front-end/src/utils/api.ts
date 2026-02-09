@@ -1,4 +1,5 @@
 // utils/api.ts
+import type { CarApi } from "../types/ownership";
 
 function getBaseUrl() {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -246,6 +247,31 @@ export async function fetchCharger(id: string) {
 export async function fetchCarOwnerships() {
   // adjust if your backend is /api/v1/car-ownership etc.
   return fetchJson(`/car-ownership`, { auth: true });
+}
+
+export async function searchCars(query: string): Promise<CarApi[]> {
+  const trimmed = query.trim();
+  if (!trimmed) return [];
+
+  const params = new URLSearchParams({ q: trimmed });
+  const result = await fetchJson(`/cars/search?${params.toString()}`);
+  return result as CarApi[];
+}
+
+export async function createCarOwnership(carId: number, color: string) {
+  return fetchJson(`/car-ownership/${carId}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ color }),
+    auth: true,
+  });
+}
+
+export async function deleteCarOwnership(ownershipId: number) {
+  return fetchJson(`/car-ownership/${ownershipId}`, {
+    method: "DELETE",
+    auth: true,
+  });
 }
 
 export async function fetchUserProfile() {

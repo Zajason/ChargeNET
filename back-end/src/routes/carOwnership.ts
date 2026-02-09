@@ -110,7 +110,57 @@ const handleAddOwnership = async (req: Request, res: Response) => {
   }
 }
 
+const handleDeleteOwnership = async (req: Request, res: Response) => {
+  try {
+    const ownershipId = Number(req.params.ownershipId)
+    if (isNaN(ownershipId)) {
+      const err = makeErrorLog(
+        req,
+        400,
+        `Invalid ownership id '${req.params.ownershipId}'`
+      )
+      return res.status(400).json(err)
+    }
+
+    const userId = req.userId
+    if (!userId) {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: missing user ID in token" })
+    }
+
+    const ownership = await prisma.carOwnership.findUnique({
+      where: { id: ownershipId },
+      select: { id: true, userId: true },
+    })
+
+    if (!ownership || ownership.userId !== userId) {
+      const err = makeErrorLog(
+        req,
+        404,
+        `Vehicle ownership ${ownershipId} not found for this user`
+      )
+      return res.status(404).json(err)
+    }
+
+    await prisma.carOwnership.delete({ where: { id: ownershipId } })
+
+    return res
+      .status(200)
+      .json({ message: "Car ownership deleted successfully" })
+  } catch (err: any) {
+    const errorLog = makeErrorLog(
+      req,
+      500,
+      "Internal server error while deleting car ownership",
+      err.message
+    )
+    return res.status(500).json(errorLog)
+  }
+}
+
 router.post("/:carId", verifyToken, handleAddOwnership)
+router.delete("/:ownershipId", verifyToken, handleDeleteOwnership)
 router.get("/", verifyToken, handleGetOwnerships)
 
 export default router
