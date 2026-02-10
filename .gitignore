@@ -18,3 +18,10 @@ pnpm-debug.log*
 .env*.local
 
 front-end/.next/
+
+
+#database dumps
+*.sql
+*.sql.gz
+dump/
+back-end/src/dump/
