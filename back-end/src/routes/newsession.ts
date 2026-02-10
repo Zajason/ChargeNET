@@ -81,7 +81,7 @@ const handleNewSession = async (req: Request, res: Response) => {
             kWh: Number(totalkwh),
             pricePerKWh: Number(kwhprice),
             costEur: Number(amount),
-            status: SessionStatus.FINISHED, 
+            status: SessionStatus.COMPLETED, 
         }
     });
 
