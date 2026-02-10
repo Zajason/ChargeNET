@@ -992,7 +992,7 @@ function ChargerContent({
         </>
       )}
 
-      {isReserved && reservationEndTime && (
+      {isReserved && reservationEndTime && !activeSessionId && (
         <div className="text-sm text-gray-600">Reservation ends: {reservationEndTime}</div>
       )}
 

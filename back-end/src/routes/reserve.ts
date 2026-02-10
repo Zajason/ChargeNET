@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import prisma from "../prisma/client"; // removed .ts extension for standard import
+import prisma from "../prisma/client";
 import { makeErrorLog } from "../middleware/errorHandler";
 import { verifyToken } from "../middleware/verifyToken";
 import { ChargerStatus, ReservationStatus } from "@prisma/client";
@@ -37,7 +37,7 @@ const handleReserve = async (req: Request, res: Response) => {
     }
 
     // ---------------------------------------------------------
-    // FIXED LOGIC: Handle Active Reservations
+    // FIXED LOGIC: Handle Active Reservations & Ghost Redis Keys
     // ---------------------------------------------------------
     const now = new Date();
     const existingReservation = await prisma.reservation.findFirst({
@@ -49,30 +49,23 @@ const handleReserve = async (req: Request, res: Response) => {
     });
 
     if (existingReservation) {
-      // SCENARIO 1: User reserved THIS charger, but the charger status is 'available'.
-      // This happens in your Demo when you manually reset the point in Step 12.
-      // We should treat the old reservation as "stale", cancel it, and allow the new one.
+      // SCENARIO 1: User reserved THIS charger. Treat as stale/retry.
       if (existingReservation.chargerId === id) {
         console.log(`[reserve] Found stale reservation ${existingReservation.id} for same charger. Auto-canceling.`);
         
-        // 1. Mark old DB record as Cancelled/Expired
         await prisma.reservation.update({
           where: { id: existingReservation.id },
           data: { status: ReservationStatus.CANCELLED } 
         });
 
-        // 2. Clear Redis lock to be safe (though reserveAtomic handles overrides usually)
+        // Clear Redis lock
         await cancelReservationRedis({ userId, chargerId: id });
         
-        // 3. Release Pre-Auth if it exists
         if (existingReservation.paymentIntentId) {
             try { await cancelPreAuth(existingReservation.paymentIntentId); } catch {}
         }
-
-        // PROCEED TO NEW RESERVATION...
       } 
-      // SCENARIO 2: User has a reservation on a DIFFERENT charger.
-      // We block this to prevent hoarding multiple chargers.
+      // SCENARIO 2: User has reservation on DIFFERENT charger.
       else {
         const err = makeErrorLog(
           req,
@@ -80,6 +73,18 @@ const handleReserve = async (req: Request, res: Response) => {
           "User already has an active reservation on another charger."
         );
         return res.status(400).json(err);
+      }
+    } 
+    else {
+      // SCENARIO 3: DB says "No Reservation".
+      // CRITICAL FIX: Force clear Redis lock for this user.
+      // This handles cases where 'resetpoints' cleared DB but left keys in Redis,
+      // or 'updpoint' cleared the charger status but left the Redis lock.
+      try {
+          await cancelReservationRedis({ userId, chargerId: id });
+          console.log(`[reserve] Cleared potential ghost Redis locks for user ${userId}`);
+      } catch (e) {
+          // Ignore error if key didn't exist
       }
     }
     // ---------------------------------------------------------
@@ -89,11 +94,10 @@ const handleReserve = async (req: Request, res: Response) => {
     // Payment pre-auth
     let intent: any = null;
     if (!skipPaymentCheck) {
-      // UPDATE: Allow 'mock' provider in this check too, just in case
       const paymentMethod = await prisma.paymentMethod.findFirst({
         where: {
           userId,
-          provider: { in: ["stripe", "mock"] }, // Allow mock here too
+          provider: { in: ["stripe", "mock"] },
           status: "valid",
           stripePaymentMethodId: { not: null },
         },
@@ -126,6 +130,7 @@ const handleReserve = async (req: Request, res: Response) => {
       }
 
       if (locked.reason === "USER_ALREADY_HAS_RESERVATION") {
+        // This should rarely happen now because we cleared ghost keys above
         return res.status(400).json(makeErrorLog(req, 400, "User already has an active reservation."));
       }
       if (locked.reason === "CHARGER_ALREADY_RESERVED") {
@@ -137,7 +142,7 @@ const handleReserve = async (req: Request, res: Response) => {
     const startsAt = new Date();
     const expiresAt = new Date(locked.expiresAtMs);
 
-    // Create DB reservation + mark charger IN_USE in DB
+    // Create DB reservation + mark charger IN_USE in DB (Transactional)
     const [reservation] = await prisma.$transaction([
       prisma.reservation.create({
         data: {

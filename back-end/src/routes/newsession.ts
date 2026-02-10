@@ -1,8 +1,8 @@
 import express, { Request, Response } from "express";
-import prisma from "../prisma/client.ts";
-import { makeErrorLog } from "../middleware/errorHandler.ts";
-import { verifyToken } from "../middleware/verifyToken.ts";
-import { SessionStatus } from "@prisma/client";
+import prisma from "../prisma/client"; // removed .ts extension
+import { makeErrorLog } from "../middleware/errorHandler";
+import { verifyToken } from "../middleware/verifyToken";
+import { SessionStatus, ReservationStatus } from "@prisma/client"; // Added ReservationStatus
 
 const router = express.Router();
 
@@ -20,7 +20,7 @@ const handleNewSession = async (req: Request, res: Response) => {
         amount 
     } = req.body;
 
-    // 1. Έλεγχος πληρότητας πεδίων -> 400 Bad Request
+    // 1. Validation check
     if (!pointid || !starttime || !endtime || !totalkwh || kwhprice === undefined || amount === undefined) {
         const err = makeErrorLog(req, 400, "Missing required fields");
         return res.status(400).json(err);
@@ -31,16 +31,14 @@ const handleNewSession = async (req: Request, res: Response) => {
         return res.status(401).json({ error: "Unauthorized" });
     }
 
-    // 2. Έλεγχος ύπαρξης φορτιστή και έλεγχος κράτησης
-    // Αν δεν υπάρχει, επιστρέφουμε 400
+    // 2. Fetch Charger & Active Reservations
     const charger = await prisma.charger.findUnique({
         where: { id: Number(pointid) },
-        // Φέρνουμε και τις ενεργές κρατήσεις για αυτόν τον φορτιστή
         include: {
             reservations: {
                 where: {
-                    status: "ACTIVE",
-                    expiresAt: { gt: new Date() } // Που δεν έχουν λήξει
+                    status: ReservationStatus.ACTIVE, // Only look for active ones
+                    expiresAt: { gt: new Date() }     // That haven't expired
                 }
             }
         }
@@ -49,23 +47,24 @@ const handleNewSession = async (req: Request, res: Response) => {
     if (!charger) {
         return res.status(400).json(makeErrorLog(req, 400, "Invalid pointid: Charger not found"));
     }
-    // Αν ο φορτιστής δεν είναι AVAILABLE, πρέπει να δούμε αν είναι κρατημένος από εμάς
+
+    // --- CRITICAL LOGIC FIX START ---
+    // If the charger is NOT available, we must verify if the user has the right to use it.
     if (charger.status !== "AVAILABLE") {
         
-        // Ψάχνουμε αν υπάρχει κράτηση που ανήκει στον τρέχοντα χρήστη (req.userId)
+        // Check if ANY of the active reservations belong to THIS user
         const myReservation = charger.reservations.find(r => r.userId === userId);
 
         if (myReservation) {
-            // ✅ Ο φορτιστής είναι κρατημένος, αλλά από εμάς -> OK.
-            // Προαιρετικά: Μπορούμε να μαρκάρουμε την κράτηση ως 'EXPIRED' ή 'COMPLETED' 
-            // τώρα που ξεκίνησε η συνεδρία, για να μην φαίνεται εκκρεμής.
+            // ✅ Case A: Charger is reserved by ME. Allow access.
+            // Mark the reservation as COMPLETED so it doesn't block future actions.
             await prisma.reservation.update({
                 where: { id: myReservation.id },
-                data: { status: "EXPIRED" } // Ή κάποιο status ότι χρησιμοποιήθηκε
+                data: { status: ReservationStatus.COMPLETED } 
             });
+            // Proceed to session creation...
         } else {
-            // ❌ Ο φορτιστής είναι 'IN_USE' ή 'OUTAGE' και δεν έχουμε κράτηση -> BLOCK
-            // Αν είναι OUTAGE είναι χαλασμένος. Αν είναι IN_USE τον έχει άλλος.
+            // ❌ Case B: Charger is busy/outage/reserved by someone else. Block access.
             const msg = charger.status === "OUTAGE" 
                 ? "Charger is out of order" 
                 : "Charger is currently in use or reserved by another user";
@@ -73,8 +72,9 @@ const handleNewSession = async (req: Request, res: Response) => {
             return res.status(403).json(makeErrorLog(req, 403, msg));
         }
     }
+    // --- CRITICAL LOGIC FIX END ---
 
-    // 3. Έλεγχος ημερομηνιών -> 400 Bad Request
+    // 3. Date Validation
     const start = new Date(starttime);
     const end = new Date(endtime);
     
@@ -83,7 +83,7 @@ const handleNewSession = async (req: Request, res: Response) => {
         return res.status(400).json(err);
     }
 
-    // Δημιουργία Session με τις τιμές που έδωσε ο ΧΡΗΣΤΗΣ (Custom Values)
+    // 4. Create Session
     await prisma.session.create({
         data: {
             userId: userId,
@@ -91,13 +91,13 @@ const handleNewSession = async (req: Request, res: Response) => {
             startedAt: start,
             endedAt: end,
             kWh: Number(totalkwh),
-            pricePerKWh: Number(kwhprice), // Τιμή από το body
-            costEur: Number(amount),       // Τιμή από το body
+            pricePerKWh: Number(kwhprice),
+            costEur: Number(amount),
             status: SessionStatus.COMPLETED, 
         }
     });
 
-    // Success: Empty Body (200 OK)
+    // 5. Success
     return res.status(200).send();
 
   } catch (err: any) {
