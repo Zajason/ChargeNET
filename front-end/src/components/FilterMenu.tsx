@@ -4,9 +4,12 @@ import type { Charger } from "../types/charger";
 // ✅ Use the same status type as your backend model
 type ChargerStatus = Charger["status"];
 
+// ✅ Connector types (match your Prisma enum exactly)
+export type ConnectorType = "CCS" | "CHADEMO" | "TYPE2" | "TYPE1" | "SCHUKO";
+
 export type Filters = {
   status: Set<ChargerStatus>;
-  connectorType: Set<string>;
+  connectorType: Set<ConnectorType>;
   minPower: number | null;
 };
 
@@ -17,24 +20,34 @@ interface FilterMenuProps {
   onFiltersChange: (filters: Filters) => void;
 }
 
+const CONNECTOR_TYPES: ConnectorType[] = ["CCS", "CHADEMO", "TYPE2", "TYPE1", "SCHUKO"];
+
+function connectorLabel(t: ConnectorType) {
+  // optional: nicer display names (keep logic values unchanged)
+  switch (t) {
+    case "TYPE1":
+      return "Type 1";
+    case "TYPE2":
+      return "Type 2";
+    case "SCHUKO":
+      return "Schuko";
+    default:
+      return t; // CCS, CHADEMO
+  }
+}
+
 export function FilterMenu({ isOpen, onClose, filters, onFiltersChange }: FilterMenuProps) {
   const toggleStatus = (status: ChargerStatus) => {
     const newStatus = new Set(filters.status);
-    if (newStatus.has(status)) {
-      newStatus.delete(status);
-    } else {
-      newStatus.add(status);
-    }
+    if (newStatus.has(status)) newStatus.delete(status);
+    else newStatus.add(status);
     onFiltersChange({ ...filters, status: newStatus });
   };
 
-  const toggleConnectorType = (type: string) => {
+  const toggleConnectorType = (type: ConnectorType) => {
     const newTypes = new Set(filters.connectorType);
-    if (newTypes.has(type)) {
-      newTypes.delete(type);
-    } else {
-      newTypes.add(type);
-    }
+    if (newTypes.has(type)) newTypes.delete(type);
+    else newTypes.add(type);
     onFiltersChange({ ...filters, connectorType: newTypes });
   };
 
@@ -45,7 +58,7 @@ export function FilterMenu({ isOpen, onClose, filters, onFiltersChange }: Filter
   const clearFilters = () => {
     onFiltersChange({
       status: new Set<ChargerStatus>(["available", "in_use", "outage"]),
-      connectorType: new Set(),
+      connectorType: new Set<ConnectorType>(),
       minPower: null,
     });
   };
@@ -132,25 +145,17 @@ export function FilterMenu({ isOpen, onClose, filters, onFiltersChange }: Filter
           <div>
             <h4 className="text-sm font-medium mb-3">Connector Type</h4>
             <div className="space-y-2">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={filters.connectorType.has("DC Fast Charging")}
-                  onChange={() => toggleConnectorType("DC Fast Charging")}
-                  className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
-                />
-                <span className="text-sm">DC Fast Charging</span>
-              </label>
-
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={filters.connectorType.has("DC Ultra-Fast Charging")}
-                  onChange={() => toggleConnectorType("DC Ultra-Fast Charging")}
-                  className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
-                />
-                <span className="text-sm">DC Ultra-Fast Charging</span>
-              </label>
+              {CONNECTOR_TYPES.map((t) => (
+                <label key={t} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={filters.connectorType.has(t)}
+                    onChange={() => toggleConnectorType(t)}
+                    className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+                  />
+                  <span className="text-sm">{connectorLabel(t)}</span>
+                </label>
+              ))}
             </div>
           </div>
 
