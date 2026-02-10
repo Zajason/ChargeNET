@@ -1,9 +1,15 @@
 // utils/api.ts
+import type { CarApi } from "../types/ownership";
 
 function getBaseUrl() {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-  if (!baseUrl) throw new Error("NEXT_PUBLIC_API_URL is undefined in client bundle");
-  return baseUrl.replace(/\/$/, "");
+  const rawBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
+  const baseUrl = rawBaseUrl.replace(/\/$/, "");
+
+  if (baseUrl.startsWith("http://localhost:4000")) {
+    return "http://localhost:3000/api/v1";
+  }
+
+  return baseUrl;
 }
 
 async function parseJsonSafe(res: Response) {
@@ -161,7 +167,7 @@ export async function signIn(credentials: { email: string; password: string }) {
   return data; // { token }
 }
 
-export async function signUp(payload: { email: string; password: string }) {
+export async function signUp(payload: { email: string; password: string; firstName?: string; lastName?: string; phone?: string }) {
   const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/auth/signup`, {
     method: "POST",
@@ -246,4 +252,129 @@ export async function fetchCharger(id: string) {
 export async function fetchCarOwnerships() {
   // adjust if your backend is /api/v1/car-ownership etc.
   return fetchJson(`/car-ownership`, { auth: true });
+}
+
+export async function searchCars(query: string): Promise<CarApi[]> {
+  const trimmed = query.trim();
+  if (!trimmed) return [];
+
+  const params = new URLSearchParams({ q: trimmed });
+  const result = await fetchJson(`/cars/search?${params.toString()}`);
+  return result as CarApi[];
+}
+
+export async function createCarOwnership(carId: number, color: string) {
+  return fetchJson(`/car-ownership/${carId}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ color }),
+    auth: true,
+  });
+}
+
+export async function deleteCarOwnership(ownershipId: number) {
+  return fetchJson(`/car-ownership/${ownershipId}`, {
+    method: "DELETE",
+    auth: true,
+  });
+}
+
+export async function fetchPaymentMethods() {
+  return fetchJson(`/me/payment-methods`, { auth: true });
+}
+
+export async function deletePaymentMethod(methodId: number) {
+  return fetchJson(`/me/payment-methods/${methodId}`, {
+    method: "DELETE",
+    auth: true,
+  });
+}
+
+export async function fetchUserProfile() {
+  return fetchJson(`/me`, { auth: true });
+}
+
+export async function updateUserProfile(data: {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  preferences?: Record<string, unknown>;
+}) {
+  return fetchJson(`/me`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+    auth: true,
+  });
+}
+
+export async function fetchBillingHistory() {
+  return fetchJson(`/payments/history`, { auth: true });
+}
+
+export async function createPaymentSetupIntent() {
+  return fetchJson(`/payments/create-setup-intent`, {
+    method: "POST",
+    auth: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({}),
+  });
+}
+
+export async function savePaymentMethodToken(paymentMethodId: string) {
+  return fetchJson(`/payments/save-method`, {
+    method: "POST",
+    auth: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ paymentMethodId }),
+  });
+}
+
+export async function runMockCharge(payload?: {
+  chargerId?: number;
+  amountEur?: number;
+  kWh?: number;
+  durationMinutes?: number;
+}) {
+  return fetchJson(`/mock/session`, {
+    method: "POST",
+    auth: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload ?? {}),
+  });
+}
+
+/** ---------------------------
+ *  Charging session endpoints
+ *  --------------------------*/
+
+export async function startCharging(reservationId: number, battery?: { batteryCapacityKWh: number; currentBatteryLevel: number }) {
+  return fetchJson(`/charging/start`, {
+    method: "POST",
+    auth: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ reservationId, ...battery }),
+  });
+}
+
+export async function stopCharging(sessionId: number) {
+  return fetchJson(`/charging/stop`, {
+    method: "POST",
+    auth: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sessionId }),
+  });
+}
+
+export async function getChargingStatus(sessionId: number) {
+  return fetchJson(`/charging/status/${sessionId}`, { auth: true });
+}
+
+export async function getActiveSession() {
+  return fetchJson(`/charging/active`, { auth: true });
 }

@@ -4,6 +4,7 @@ import prisma from "../prisma/client.ts";
 import { makeErrorLog } from "../middleware/errorHandler.ts";
 import { verifyToken } from "../middleware/verifyToken.ts";
 import { ChargerStatus, ReservationStatus } from "@prisma/client";
+import { preAuthorize, cancelPreAuth } from "../controllers/paymentController.ts";
 
 const router = express.Router();
 
@@ -52,12 +53,30 @@ const handleReserve = async (req: Request, res: Response) => {
 
     if (existingReservation) {
         const err = makeErrorLog(
-            req, 
-            400, 
+            req,
+            400,
             "User already has an active reservation. You cannot reserve multiple points simultaneously."
         );
         return res.status(400).json(err);
     }
+
+    // Check user has a saved payment method
+    const paymentMethod = await prisma.paymentMethod.findFirst({
+      where: { userId, provider: 'stripe', status: 'valid', stripePaymentMethodId: { not: null } },
+    });
+    if (!paymentMethod) {
+      return res.status(400).json({ error: "You must add a payment method before reserving. Go to Billing to add a card." });
+    }
+
+    // Pre-authorize 3 EUR
+    let intent;
+    try {
+      intent = await preAuthorize(userId, 3);
+    } catch (preAuthErr: any) {
+      console.error("[reserve] pre-auth failed:", preAuthErr.message);
+      return res.status(402).json({ error: "Payment pre-authorization failed. Please check your card.", details: preAuthErr.message });
+    }
+
     const expiresAt = new Date(now.getTime() + minutes * 60_000);
 
     const [reservation, updatedCharger] = await prisma.$transaction([
@@ -68,6 +87,7 @@ const handleReserve = async (req: Request, res: Response) => {
           startsAt: now,
           expiresAt,
           status: ReservationStatus.ACTIVE,
+          paymentIntentId: intent.id,
         },
       }),
       prisma.charger.update({
@@ -80,6 +100,8 @@ const handleReserve = async (req: Request, res: Response) => {
       pointid: String(updatedCharger.id),
       status: "reserved",
       reservationendtime: reservation.expiresAt.toISOString().replace("T", " ").substring(0, 16),
+      reservationId: reservation.id,
+      preAuthSuccess: true,
     };
 
     return res.status(200).json(payload);
@@ -117,6 +139,15 @@ const handleCancel = async (req: Request, res: Response) => {
     if (!reservation) {
       const err = makeErrorLog(req, 404, `Active reservation not found for charger ${id} and user`);
       return res.status(404).json(err);
+    }
+
+    // Cancel the pre-auth hold if one exists
+    if (reservation.paymentIntentId) {
+      try {
+        await cancelPreAuth(reservation.paymentIntentId);
+      } catch (e) {
+        console.error("[cancel] failed to cancel pre-auth:", e);
+      }
     }
 
     const [updatedRes, updatedCharger] = await prisma.$transaction([

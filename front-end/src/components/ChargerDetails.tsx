@@ -10,18 +10,31 @@ import {
   CheckCircle,
   DollarSign,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { fetchCharger } from "../utils/api"; // Η δική σου προσθήκη
+import { fetchCharger, isLoggedIn } from "../utils/api";
 import type { Charger } from "../types/charger";
-import { CartoonCar } from "./ui/CartoonCar"; // Του συναδέλφου
+import { CartoonCar } from "./ui/CartoonCar";
 
-import { useUserVehicles } from "../hooks/useUserVehicles"; // Του συναδέλφου
+import { useUserVehicles } from "../hooks/useUserVehicles";
 import type { Vehicle } from "../utils/vehicleMapper";
+
+interface ChargingStatusData {
+  kWh: number;
+  costSoFar: number;
+  elapsedSeconds: number;
+  maxKW: number;
+  maxKWh?: number | null;
+  pricePerKWh: number;
+  status: string;
+}
 
 interface ChargerDetailsProps {
   charger: Charger;
   onClose: () => void;
+
   // reservation actions
   onReserve: (chargerId: string, minutes?: number) => void;
   onCancel: (chargerId: string) => void;
@@ -34,6 +47,23 @@ interface ChargerDetailsProps {
   // error state from parent
   error: string | null;
   onErrorClose: () => void;
+
+  // timer related (teammate version)
+  lastReservationDuration: number; // seconds
+  lastReservationStartTime: number | null; // ms epoch
+
+  // charging session state
+  activeReservationId?: number | null;
+  activeSessionId?: number | null;
+  chargingStatus?: ChargingStatusData | null;
+  onStartCharging?: (reservationId: number, battery?: { batteryCapacityKWh: number; currentBatteryLevel: number }) => void;
+  onStopCharging?: (sessionId: number) => void;
+
+  // cluster navigation
+  clusterIndex?: number | null;
+  clusterCount?: number | null;
+  onPrevCharger?: () => void;
+  onNextCharger?: () => void;
 }
 
 export function ChargerDetails({
@@ -46,12 +76,25 @@ export function ChargerDetails({
   hasActiveReservation,
   error,
   onErrorClose,
+  lastReservationDuration,
+  lastReservationStartTime,
+
+  // charging
+  activeReservationId = null,
+  activeSessionId = null,
+  chargingStatus = null,
+  onStartCharging,
+  onStopCharging,
+
+  // cluster nav
+  clusterIndex = null,
+  clusterCount = null,
+  onPrevCharger,
+  onNextCharger,
 }: ChargerDetailsProps) {
   const router = useRouter();
-
   const [timeRemaining, setTimeRemaining] = useState(0);
 
-  // Logic για τα οχήματα (από main)
   const {
     vehicles,
     loading: vehiclesLoading,
@@ -68,19 +111,27 @@ export function ChargerDetails({
     }
   }, [vehicles, selectedVehicle]);
 
-  // Timer logic (από main)
+  // Timer logic - calculate remaining time based on start time from parent
   useEffect(() => {
-    if (charger.status === "in_use" && timeRemaining > 0) {
+    if (isReserved && lastReservationStartTime !== null && lastReservationDuration > 0) {
       const interval = setInterval(() => {
-        setTimeRemaining((prev) => Math.max(0, prev - 1));
+        const elapsed = (Date.now() - lastReservationStartTime) / 1000;
+        const remaining = Math.max(0, lastReservationDuration - elapsed);
+        setTimeRemaining(remaining);
       }, 1000);
       return () => clearInterval(interval);
     }
-  }, [charger.status, timeRemaining]);
+  }, [isReserved, lastReservationStartTime, lastReservationDuration]);
+
+  // Reset timer when reservation is cancelled or charger changes
+  useEffect(() => {
+    if (!isReserved) setTimeRemaining(0);
+  }, [isReserved, charger.id]);
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
+    const rounded = Math.max(0, Math.round(seconds));
+    const mins = Math.floor(rounded / 60);
+    const secs = rounded % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
@@ -136,7 +187,6 @@ export function ChargerDetails({
     }
   };
 
-  // Εδώ συνδυάζουμε τα props για το Mobile και το Desktop view
   const contentProps = {
     charger,
     timeRemaining,
@@ -144,7 +194,7 @@ export function ChargerDetails({
     getStatusColor,
     getStatusIcon,
     getStatusText,
-    connectorLabel, // Περνάμε το label function που έφτιαξε ο συνάδελφος
+    connectorLabel,
     onReserve,
     onCancel,
     isReserved,
@@ -152,7 +202,6 @@ export function ChargerDetails({
     hasActiveReservation,
     error,
     onErrorClose,
-    // Props οχημάτων (από main)
     vehicles,
     vehiclesLoading,
     vehiclesError,
@@ -161,6 +210,12 @@ export function ChargerDetails({
     selectedVehicle,
     setSelectedVehicle,
     goToProfile: () => router.push("/profile"),
+    goToSignIn: () => router.push("/signin"),
+    activeReservationId,
+    activeSessionId,
+    chargingStatus,
+    onStartCharging,
+    onStopCharging,
   };
 
   return (
@@ -168,7 +223,14 @@ export function ChargerDetails({
       {/* Mobile */}
       <div className="md:hidden absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl z-[1000] max-h-[75vh] overflow-y-auto">
         <div className="p-4 sm:p-6">
-          <Header title={charger.name ?? "Charger"} onClose={onClose} />
+          <Header
+            title={charger.name ?? "Charger"}
+            onClose={onClose}
+            clusterIndex={clusterIndex}
+            clusterCount={clusterCount}
+            onPrev={onPrevCharger}
+            onNext={onNextCharger}
+          />
           <ChargerContent {...contentProps} />
         </div>
       </div>
@@ -176,7 +238,14 @@ export function ChargerDetails({
       {/* Desktop */}
       <div className="hidden md:block absolute top-4 left-4 bg-white rounded-lg shadow-2xl z-[1000] w-96 max-h-[calc(100vh-2rem)] overflow-y-auto">
         <div className="p-6">
-          <Header title={charger.name ?? "Charger"} onClose={onClose} />
+          <Header
+            title={charger.name ?? "Charger"}
+            onClose={onClose}
+            clusterIndex={clusterIndex}
+            clusterCount={clusterCount}
+            onPrev={onPrevCharger}
+            onNext={onNextCharger}
+          />
           <ChargerContent {...contentProps} />
         </div>
       </div>
@@ -184,17 +253,69 @@ export function ChargerDetails({
   );
 }
 
-function Header({ title, onClose }: { title: string; onClose: () => void }) {
+function Header({
+  title,
+  onClose,
+  clusterIndex,
+  clusterCount,
+  onPrev,
+  onNext,
+}: {
+  title: string;
+  onClose: () => void;
+  clusterIndex?: number | null;
+  clusterCount?: number | null;
+  onPrev?: () => void;
+  onNext?: () => void;
+}) {
+  const inCluster =
+    typeof clusterIndex === "number" && typeof clusterCount === "number" && clusterCount > 1;
+
   return (
-    <div className="flex justify-between items-start mb-4">
-      <h2 className="text-xl">{title}</h2>
-      <button
-        type="button"
-        onClick={onClose}
-        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-      >
-        <X className="w-5 h-5" />
-      </button>
+    <div className="flex justify-between items-start mb-4 gap-3">
+      <div className="min-w-0">
+        <h2 className="text-xl truncate">{title}</h2>
+
+        {inCluster && (
+          <div className="mt-1 flex items-center gap-2 text-sm text-gray-500">
+            <span>
+              Charger {clusterIndex! + 1} of {clusterCount}
+            </span>
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-center gap-1">
+        {inCluster && (
+          <>
+            <button
+              type="button"
+              onClick={onPrev}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              aria-label="Previous charger"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              type="button"
+              onClick={onNext}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              aria-label="Next charger"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </>
+        )}
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          aria-label="Close"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
     </div>
   );
 }
@@ -206,6 +327,7 @@ interface ChargerContentProps {
   getStatusColor: () => string;
   getStatusIcon: () => React.JSX.Element;
   getStatusText: () => string;
+  connectorLabel: (t?: Charger["connectorType"]) => string;
   onReserve: (chargerId: string, minutes?: number) => void;
   onCancel: (chargerId: string) => void;
   isReserved: boolean;
@@ -220,11 +342,15 @@ interface ChargerContentProps {
   vehiclesError: string | null;
   notLoggedIn: boolean;
   hasNoCars: boolean;
-
   selectedVehicle: Vehicle | null;
   setSelectedVehicle: (v: Vehicle | null) => void;
-
   goToProfile: () => void;
+  goToSignIn: () => void;
+  activeReservationId?: number | null;
+  activeSessionId?: number | null;
+  chargingStatus?: ChargingStatusData | null;
+  onStartCharging?: (reservationId: number, battery?: { batteryCapacityKWh: number; currentBatteryLevel: number }) => void;
+  onStopCharging?: (sessionId: number) => void;
 }
 
 function ChargerContent({
@@ -250,41 +376,42 @@ function ChargerContent({
   selectedVehicle,
   setSelectedVehicle,
   goToProfile,
+  goToSignIn,
+  activeReservationId,
+  activeSessionId,
+  chargingStatus,
+  onStartCharging,
+  onStopCharging,
 }: ChargerContentProps) {
-  // State για το μενού οχημάτων
   const [showVehicleMenu, setShowVehicleMenu] = useState(false);
 
   const price = typeof charger.kwhprice === "number" ? charger.kwhprice : 0;
 
-  // reservation UI state
   const [reservationEndTime, setReservationEndTime] = useState<string | null>(null);
   const [showDurationPicker, setShowDurationPicker] = useState(false);
   const [selectedMinutes, setSelectedMinutes] = useState<number>(30);
 
-// Close the dropdown if selection changes or vehicles refresh
+  const isGuest = notLoggedIn || !isLoggedIn();
+  const reserveDisabled = isGuest || isReserved || isReserving || hasActiveReservation;
+
   useEffect(() => {
     setShowVehicleMenu(false);
   }, [selectedVehicle?.id, vehicles.length]);
 
-  // Fetch reservation end time (non-fatal if it fails)
   useEffect(() => {
     let mounted = true;
 
     async function loadDetails() {
       try {
         const data = await fetchCharger(String(charger.id));
-        if (mounted && data?.reservationendtime) {
-          setReservationEndTime(String(data.reservationendtime));
-        } else if (mounted) {
-          setReservationEndTime(null);
-        }
+        if (mounted && data?.reservationendtime) setReservationEndTime(String(data.reservationendtime));
+        else if (mounted) setReservationEndTime(null);
       } catch {
-        // ignore - non-fatal
+        // ignore
       }
     }
 
     loadDetails();
-
     return () => {
       mounted = false;
     };
@@ -314,13 +441,11 @@ function ChargerContent({
 
   return (
     <div className="space-y-4">
-      {/* Status */}
       <div className={`inline-flex items-center gap-2 px-3 py-2 rounded-full ${getStatusColor()}`}>
         {getStatusIcon()}
         <span>{getStatusText()}</span>
       </div>
 
-      {/* Vehicle / Estimates */}
       {charger.status === "available" && (
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4 space-y-3">
           {vehiclesLoading && <p className="text-sm text-gray-600">Loading your cars…</p>}
@@ -330,7 +455,7 @@ function ChargerContent({
               <p className="text-sm text-gray-700">Sign in to see charging estimates.</p>
               <button
                 type="button"
-                onClick={goToProfile}
+                onClick={goToSignIn}
                 className="w-full py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
               >
                 Go to Profile / Sign in
@@ -361,7 +486,6 @@ function ChargerContent({
                 <p className="text-sm text-gray-700">Selecting your car…</p>
               ) : (
                 <>
-                  {/* Title row is dropdown trigger */}
                   <div className="relative">
                     <button
                       type="button"
@@ -443,21 +567,9 @@ function ChargerContent({
 
                   {estimates && (
                     <div className="space-y-2 pt-2 border-t">
-                      <Row
-                        icon={<Clock className="w-4 h-4" />}
-                        label="Estimated Time"
-                        value={`${estimates.timeMinutes} min`}
-                      />
-                      <Row
-                        icon={<DollarSign className="w-4 h-4" />}
-                        label="Estimated Cost"
-                        value={`€${estimates.cost}`}
-                      />
-                      <Row
-                        icon={<Zap className="w-4 h-4" />}
-                        label={`To ${estimates.target}%`}
-                        value={`${estimates.energyNeeded} kWh`}
-                      />
+                      <Row icon={<Clock className="w-4 h-4" />} label="Estimated Time" value={`${estimates.timeMinutes} min`} />
+                      <Row icon={<DollarSign className="w-4 h-4" />} label="Estimated Cost" value={`€${estimates.cost}`} />
+                      <Row icon={<Zap className="w-4 h-4" />} label={`To ${estimates.target}%`} value={`${estimates.energyNeeded} kWh`} />
                     </div>
                   )}
                 </>
@@ -467,28 +579,102 @@ function ChargerContent({
         </div>
       )}
 
-      {/* Address */}
-      <InfoRow
-        icon={<MapPin className="w-5 h-5 text-gray-400" />}
-        text={charger.address || "No address provided"}
-      />
+      <InfoRow icon={<MapPin className="w-5 h-5 text-gray-400" />} text={charger.address || "No address provided"} />
 
-      {/* Charger Details */}
       <InfoRow
         icon={<Zap className="w-5 h-5 text-gray-400" />}
         text={`${chargerPowerKW} kW • ${connectorLabel(charger.connectorType)}`}
       />
 
-      {/* Timer */}
-      {charger.status === "in_use" && (
-        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-          <p className="text-orange-900 mb-1">Estimated Time Remaining</p>
-          <p className="text-3xl text-orange-600">{formatTime(timeRemaining)}</p>
+      {/* Active charging session display */}
+      {activeSessionId && chargingStatus && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            {chargingStatus.status === "AUTO_STOPPED" ? (
+              <>
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <p className="text-green-900 font-medium">Battery Full — Charging Complete</p>
+              </>
+            ) : (
+              <>
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+                <p className="text-green-900 font-medium">Charging in Progress</p>
+              </>
+            )}
+          </div>
+
+          {/* Battery progress bar */}
+          {chargingStatus.maxKWh && chargingStatus.maxKWh > 0 && (
+            <div>
+              <div className="flex justify-between text-xs text-gray-500 mb-1">
+                <span>{chargingStatus.kWh.toFixed(1)} kWh</span>
+                <span>{chargingStatus.maxKWh.toFixed(1)} kWh</span>
+              </div>
+              <div className="w-full h-2.5 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-green-500 rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min(100, (chargingStatus.kWh / chargingStatus.maxKWh) * 100)}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <p className="text-sm text-gray-500">Energy</p>
+              <p className="text-2xl font-semibold text-gray-900">{chargingStatus.kWh.toFixed(2)} <span className="text-sm font-normal">kWh</span></p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Cost</p>
+              <p className="text-2xl font-semibold text-gray-900">&euro;{Math.max(chargingStatus.costSoFar, 3).toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Elapsed</p>
+              <p className="text-lg text-gray-900">{formatTime(chargingStatus.elapsedSeconds)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Power</p>
+              <p className="text-lg text-gray-900">{chargingStatus.maxKW} kW</p>
+            </div>
+          </div>
+          <p className="text-xs text-gray-500">Min. charge: &euro;3.00 &bull; &euro;{chargingStatus.pricePerKWh.toFixed(2)}/kWh</p>
+
+          {chargingStatus.status !== "AUTO_STOPPED" && (
+            <button
+              type="button"
+              onClick={() => onStopCharging?.(activeSessionId)}
+              className="w-full py-3 rounded-lg bg-red-600 text-white hover:bg-red-700 active:bg-red-800 transition-colors font-medium"
+            >
+              Stop Charging
+            </button>
+          )}
         </div>
       )}
 
-      {/* Active reservation warning */}
-      {hasActiveReservation && !isReserved && (
+      {/* Reserved state with timer and start button */}
+      {isReserved && !activeSessionId && (
+        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 space-y-3">
+          <div>
+            <p className="text-orange-900 mb-1">Reservation Time Remaining</p>
+            <p className="text-3xl text-orange-600">{formatTime(timeRemaining)}</p>
+          </div>
+          {activeReservationId && onStartCharging && (
+            <button
+              type="button"
+              onClick={() => onStartCharging(activeReservationId, selectedVehicle ? {
+                batteryCapacityKWh: selectedVehicle.batteryCapacity,
+                currentBatteryLevel: selectedVehicle.currentBatteryLevel,
+              } : undefined)}
+              className="w-full py-3 rounded-lg bg-green-600 text-white hover:bg-green-700 active:bg-green-800 transition-colors font-medium flex items-center justify-center gap-2"
+            >
+              <Zap className="w-5 h-5" />
+              Start Charging
+            </button>
+          )}
+        </div>
+      )}
+
+      {hasActiveReservation && !isReserved && !activeSessionId && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-5 h-5 text-yellow-600" />
@@ -497,7 +683,6 @@ function ChargerContent({
         </div>
       )}
 
-      {/* Error message */}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <div className="flex items-start justify-between">
@@ -517,46 +702,29 @@ function ChargerContent({
         </div>
       )}
 
-      {/* Active reservation warning */}
-      {hasActiveReservation && !isReserved && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-yellow-600" />
-            <span className="text-yellow-900">You already have an active reservation</span>
-          </div>
-        </div>
-      )}
-
-      {/* Error message */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex items-start justify-between">
-            <div className="flex items-start gap-2">
-              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <span className="text-red-900 text-sm">{error}</span>
-            </div>
-            <button
-              onClick={onErrorClose}
-              className="text-red-600 hover:text-red-800 ml-2"
-              aria-label="Close error"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Reserve + Navigate */}
-      {(charger.status === "available" || isReserved) && (
+      {(charger.status === "available" || isReserved) && !activeSessionId && (
         <div className="space-y-2">
+          {isGuest && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-900">
+              <p>Sign in to reserve chargers.</p>
+              <button
+                type="button"
+                onClick={goToSignIn}
+                className="mt-2 w-full py-2 rounded-md border border-blue-600 text-blue-700 hover:bg-blue-50"
+              >
+                Go to Sign in
+              </button>
+            </div>
+          )}
+
           <button
             type="button"
             onClick={() => setShowDurationPicker(true)}
-            disabled={isReserved || isReserving || hasActiveReservation}
+            disabled={reserveDisabled}
             className={`w-full py-3 rounded-lg transition-colors flex items-center justify-center gap-2 ${
               isReserved
                 ? "bg-green-500 text-white cursor-default"
-                : isReserving || hasActiveReservation
+                : reserveDisabled
                 ? "bg-gray-400 text-white cursor-not-allowed"
                 : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800"
             }`}
@@ -570,6 +738,8 @@ function ChargerContent({
               ? "Reserving..."
               : hasActiveReservation
               ? "Cannot Reserve"
+              : isGuest
+              ? "Sign in to reserve"
               : "Reserve Charger"}
           </button>
 
@@ -589,13 +759,12 @@ function ChargerContent({
         </div>
       )}
 
-      {/* Cancel button for user's reservation */}
-      {isReserved && (
+      {isReserved && !activeSessionId && (
         <div className="pt-2">
           <button
             type="button"
             onClick={() => {
-              if (!confirm("Cancel your reservation?")) return;
+              if (!confirm("Cancel your reservation? The €3 hold will be released.")) return;
               onCancel(charger.id);
             }}
             className="w-full py-2 rounded-md bg-red-600 text-white"
@@ -605,10 +774,9 @@ function ChargerContent({
         </div>
       )}
 
-      {/* Duration picker modal */}
       {showDurationPicker && (
         <>
-          {/* Mobile: centered modal */}
+          {/* Mobile */}
           <div className="md:hidden fixed inset-0 z-[1200] flex items-center justify-center">
             <div
               className="absolute inset-0 bg-black/40 backdrop-blur-sm"
@@ -650,7 +818,7 @@ function ChargerContent({
             </div>
           </div>
 
-          {/* Desktop: anchored */}
+          {/* Desktop */}
           <div className="hidden md:block absolute left-4 top-28 z-[1300]">
             <div className="bg-white rounded-xl p-4 w-80 shadow-2xl ring-1 ring-gray-100 border border-gray-200">
               <h3 className="text-lg font-medium mb-2">Select reservation duration</h3>
@@ -694,7 +862,6 @@ function ChargerContent({
         <div className="text-sm text-gray-600">Reservation ends: {reservationEndTime}</div>
       )}
 
-      {/* Pricing */}
       <div className="pt-4 border-t">
         <p className="text-sm text-gray-500">Pricing</p>
         <p className="text-gray-900">€{pricePerKwh.toFixed(2)}/kWh</p>

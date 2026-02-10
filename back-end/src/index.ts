@@ -16,6 +16,11 @@ import paymentRouter from "./routes/payment.ts";
 import { schedulePricingUpdates } from "./pricing/scheduler.ts";
 import carsRouter from './routes/cars.ts'
 import carOwnershipRouter from "./routes/carOwnership.ts"
+import mockRouter from "./routes/mock.ts";
+import chargingRouter from "./routes/charging.ts";
+import prisma from "./prisma/client.ts";
+import { cancelPreAuth } from "./controllers/paymentController.ts";
+import { ChargerStatus, ReservationStatus } from "@prisma/client";
 
 const app = express();
 
@@ -37,6 +42,8 @@ app.use("/api/v1/pointstatus", pointStatusRouter);
 app.use("/api/v1/payments", paymentRouter);
 app.use('/api/v1/cars', carsRouter)
 app.use("/api/v1/car-ownership", carOwnershipRouter)
+app.use("/api/v1/mock", mockRouter);
+app.use("/api/v1/charging", chargingRouter);
 
 // simple generic system health
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
@@ -48,5 +55,26 @@ if (process.env.NODE_ENV !== "test") {
 if (process.env.ENABLE_PRICING === "1") {
   schedulePricingUpdates();
 }
+
+// Expired reservation cleanup — cancel pre-auth holds and free chargers
+setInterval(async () => {
+  try {
+    const expired = await prisma.reservation.findMany({
+      where: { status: ReservationStatus.ACTIVE, expiresAt: { lt: new Date() } },
+    });
+    for (const r of expired) {
+      if (r.paymentIntentId) {
+        try { await cancelPreAuth(r.paymentIntentId); } catch (e) { console.error("[expiry] cancel pre-auth error:", e); }
+      }
+      await prisma.$transaction([
+        prisma.reservation.update({ where: { id: r.id }, data: { status: ReservationStatus.EXPIRED } }),
+        prisma.charger.update({ where: { id: r.chargerId }, data: { status: ChargerStatus.AVAILABLE } }),
+      ]);
+      console.log(`[expiry] Reservation ${r.id} expired, charger ${r.chargerId} freed`);
+    }
+  } catch (e) {
+    console.error("[expiry] cleanup error:", e);
+  }
+}, 60_000);
 
 export default app;

@@ -40,7 +40,13 @@ export function SignUpScreen() {
     setIsSubmitting(true);
 
     try {
-      await signUp({ email: formData.email, password: formData.password });
+      await signUp({ 
+        email: formData.email, 
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone,
+      });
 
       const { token } = await signIn({ email: formData.email, password: formData.password });
 

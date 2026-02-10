@@ -7,6 +7,7 @@ export type Vehicle = {
   model: string;
   year: number;
   color: string;                 // hex for CartoonCar
+  colorName: string;
   batteryCapacity: number;        // kWh
   maxChargingSpeed: number;       // kW
   currentBatteryLevel: number;    // %
@@ -19,6 +20,7 @@ const COLOR_MAP: Record<string, string> = {
   WHITE: "#f9fafb",
   SILVER: "#9ca3af",
   GRAY: "#6b7280",
+  GREY: "#6b7280",
   GREEN: "#22c55e",
   YELLOW: "#eab308",
   ORANGE: "#f97316",
@@ -35,6 +37,7 @@ export function ownershipToVehicle(o: CarOwnershipApi): Vehicle {
     model: car.model + (car.variant ? ` ${car.variant}` : ""),
     year: new Date(o.createdAt).getFullYear(), // fallback; or store year in DB later
     color: COLOR_MAP[o.color] ?? "#9ca3af",
+    colorName: o.color,
     batteryCapacity: car.usableBatteryKWh,
     maxChargingSpeed: car.dcMaxKW ?? car.acMaxKW ?? 50,
     currentBatteryLevel: 30, // TODO: replace when you store actual SoC
