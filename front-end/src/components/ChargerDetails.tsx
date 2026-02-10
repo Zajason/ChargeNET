@@ -335,8 +335,6 @@ interface ChargerContentProps {
   hasActiveReservation: boolean;
   error: string | null;
   onErrorClose: () => void;
-  connectorLabel: (t?: Charger["connectorType"]) => string;
-
   vehicles: Vehicle[];
   vehiclesLoading: boolean;
   vehiclesError: string | null;
