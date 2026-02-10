@@ -234,9 +234,14 @@ export function MapView() {
             pricePerKWh: data.session.pricePerKWh,
             status: data.session.status,
           });
+          // Mark charger as "mine" so pin stays purple during active session
+          setActiveReservedChargerId(String(data.session.chargerId));
           // Auto-select the charger being charged
           const charger = chargers.find((c) => String(c.id) === String(data.session.chargerId));
           if (charger) setSelectedCharger(charger);
+        } else {
+          setActiveSessionId(null);
+          setChargingStatus(null);
         }
 
         if (data.reservation && !data.session) {
@@ -716,7 +721,7 @@ export function MapView() {
               onReserve={handleReserve}
               onCancel={handleCancel}
               isReserved={
-                (selectedCharger as any).reserved_by_me ??
+                Boolean((selectedCharger as any).reserved_by_me) ||
                 reservedChargers.has(String(selectedCharger.id))
               }
               isReserving={isReserving}

@@ -1,9 +1,9 @@
 import express, { Request, Response } from "express";
 import prisma from "../prisma/client.ts";
 import { verifyToken } from "../middleware/verifyToken.ts";
-import { ReservationStatus, SessionStatus } from "@prisma/client";
+import { ChargerStatus, ReservationStatus, SessionStatus } from "@prisma/client";
 import { captureOrRecharge } from "../controllers/paymentController.ts";
-import { setChargerStatusRedis } from "../services/availabilityRedis.ts";
+import { setChargerStatusRedis, cancelReservationRedis } from "../services/availabilityRedis.ts";
 
 const router = express.Router();
 router.use(verifyToken);
@@ -52,10 +52,16 @@ router.post("/start", async (req: Request, res: Response) => {
         data: { status: ReservationStatus.EXPIRED },
       });
 
+      await tx.charger.update({
+        where: { id: reservation.chargerId },
+        data: { status: ChargerStatus.IN_USE },
+      });
+
       return s;
     });
 
-    // ✅ Redis: session means in_use (no TTL)
+    // ✅ Clear Redis reservation keys (reservation consumed) + set in_use (no TTL)
+    await cancelReservationRedis({ userId, chargerId: reservation.chargerId });
     await setChargerStatusRedis(reservation.chargerId, "in_use");
 
     return res.status(201).json({
@@ -98,10 +104,16 @@ router.post("/stop", async (req: Request, res: Response) => {
     const pricePerKWh = Number(session.pricePerKWh ?? session.charger.kwhprice);
     const costEur = parseFloat((finalKWh * pricePerKWh).toFixed(2));
 
-    await prisma.session.update({
-      where: { id: sessionId },
-      data: { endedAt: now, kWh: finalKWh, costEur, status: SessionStatus.USER_STOPPED },
-    });
+    await prisma.$transaction([
+      prisma.session.update({
+        where: { id: sessionId },
+        data: { endedAt: now, kWh: finalKWh, costEur, status: SessionStatus.USER_STOPPED },
+      }),
+      prisma.charger.update({
+        where: { id: session.chargerId },
+        data: { status: ChargerStatus.AVAILABLE },
+      }),
+    ]);
 
     // ✅ Redis: available again
     await setChargerStatusRedis(session.chargerId, "available");
@@ -164,10 +176,16 @@ router.get("/status/:sessionId", async (req: Request, res: Response) => {
 
       if (isFull) {
         const endedAt = new Date();
-        await prisma.session.update({
-          where: { id: sessionId },
-          data: { kWh, costEur: costSoFar, endedAt, status: SessionStatus.AUTO_STOPPED },
-        });
+        await prisma.$transaction([
+          prisma.session.update({
+            where: { id: sessionId },
+            data: { kWh, costEur: costSoFar, endedAt, status: SessionStatus.AUTO_STOPPED },
+          }),
+          prisma.charger.update({
+            where: { id: session.chargerId },
+            data: { status: ChargerStatus.AVAILABLE },
+          }),
+        ]);
 
         // ✅ Redis: available again
         await setChargerStatusRedis(session.chargerId, "available");
