@@ -12,9 +12,10 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  CreditCard,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { fetchCharger, isLoggedIn } from "../utils/api";
+import { fetchCharger, fetchPaymentMethods, isLoggedIn } from "../utils/api";
 import type { Charger } from "../types/charger";
 import { CartoonCar } from "./ui/CartoonCar";
 
@@ -382,6 +383,10 @@ function ChargerContent({
   onStopCharging,
 }: ChargerContentProps) {
   const [showVehicleMenu, setShowVehicleMenu] = useState(false);
+  const [showCardMenu, setShowCardMenu] = useState(false);
+  const [paymentCards, setPaymentCards] = useState<{ id: number; provider: string; tokenLast4: string; status: string }[]>([]);
+  const [selectedCard, setSelectedCard] = useState<{ id: number; provider: string; tokenLast4: string; status: string } | null>(null);
+  const [cardsLoading, setCardsLoading] = useState(false);
 
   const price = typeof charger.kwhprice === "number" ? charger.kwhprice : 0;
 
@@ -395,6 +400,23 @@ function ChargerContent({
   useEffect(() => {
     setShowVehicleMenu(false);
   }, [selectedVehicle?.id, vehicles.length]);
+
+  // Load payment cards when duration picker opens
+  useEffect(() => {
+    if (!showDurationPicker || isGuest) return;
+    let mounted = true;
+    setCardsLoading(true);
+    fetchPaymentMethods()
+      .then((methods: any[]) => {
+        if (!mounted) return;
+        const valid = methods.filter((m: any) => m.status === "valid");
+        setPaymentCards(valid);
+        if (valid.length > 0 && !selectedCard) setSelectedCard(valid[0]);
+      })
+      .catch(() => {})
+      .finally(() => { if (mounted) setCardsLoading(false); });
+    return () => { mounted = false; };
+  }, [showDurationPicker, isGuest]);
 
   useEffect(() => {
     let mounted = true;
@@ -781,8 +803,58 @@ function ChargerContent({
               onClick={() => setShowDurationPicker(false)}
             />
             <div className="relative bg-white rounded-xl p-4 w-[92%] max-w-md shadow-2xl ring-1 ring-gray-100 border border-gray-200">
-              <h3 className="text-lg font-medium mb-2">Select reservation duration</h3>
+              <h3 className="text-lg font-medium mb-3">Reserve & Pay</h3>
+
+              {/* Card selector */}
               <div className="mb-3">
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Payment card</label>
+                {cardsLoading ? (
+                  <div className="text-sm text-gray-500 py-2">Loading cards...</div>
+                ) : paymentCards.length === 0 ? (
+                  <div className="text-sm text-red-600 py-2">No saved cards. Add one in Billing first.</div>
+                ) : (
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => { if (paymentCards.length > 1) setShowCardMenu((v) => !v); }}
+                      className={`w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 px-3 py-2.5 ${paymentCards.length > 1 ? "hover:border-gray-400 cursor-pointer" : "cursor-default"} transition-colors`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <CreditCard className="w-5 h-5 text-gray-500 shrink-0" />
+                        <span className="text-sm text-gray-900 truncate">
+                          {selectedCard ? `${selectedCard.provider} •••• ${selectedCard.tokenLast4}` : "Select a card"}
+                        </span>
+                      </div>
+                      {paymentCards.length > 1 && (
+                        <ChevronDown className={`w-4 h-4 text-gray-500 shrink-0 transition-transform ${showCardMenu ? "rotate-180" : ""}`} />
+                      )}
+                    </button>
+
+                    {showCardMenu && paymentCards.length > 1 && (
+                      <>
+                        <button type="button" onClick={() => setShowCardMenu(false)} className="fixed inset-0 z-0 cursor-default" aria-label="Close" />
+                        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+                          {paymentCards.map((card) => (
+                            <button
+                              type="button"
+                              key={card.id}
+                              onClick={() => { setSelectedCard(card); setShowCardMenu(false); }}
+                              className={`w-full px-3 py-2.5 text-left text-sm flex items-center gap-2 transition-colors ${card.id === selectedCard?.id ? "bg-blue-50" : "hover:bg-gray-50"}`}
+                            >
+                              <CreditCard className="w-4 h-4 text-gray-500 shrink-0" />
+                              <span className="text-gray-900">{card.provider} •••• {card.tokenLast4}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Duration slider */}
+              <div className="mb-3">
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Duration</label>
                 <input
                   type="range"
                   min={10}
@@ -792,8 +864,14 @@ function ChargerContent({
                   onChange={(e) => setSelectedMinutes(Number(e.target.value))}
                   className="w-full"
                 />
-                <div className="text-sm text-gray-600 mt-2">{selectedMinutes} minutes</div>
+                <div className="text-sm text-gray-600 mt-1">{selectedMinutes} minutes</div>
               </div>
+
+              {/* Cost info */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-2.5 mb-3 text-sm text-blue-900">
+                A <strong>€3.00</strong> hold will be placed on your card. Final cost is based on usage.
+              </div>
+
               <div className="flex gap-2 justify-end">
                 <button
                   type="button"
@@ -804,13 +882,14 @@ function ChargerContent({
                 </button>
                 <button
                   type="button"
-                  className="px-3 py-2 rounded bg-blue-600 text-white"
+                  disabled={!selectedCard}
+                  className={`px-3 py-2 rounded text-white ${selectedCard ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"}`}
                   onClick={() => {
                     setShowDurationPicker(false);
                     onReserve(charger.id, selectedMinutes);
                   }}
                 >
-                  Confirm ({selectedMinutes}m)
+                  Reserve & Pay ({selectedMinutes}m)
                 </button>
               </div>
             </div>
@@ -819,8 +898,58 @@ function ChargerContent({
           {/* Desktop */}
           <div className="hidden md:block absolute left-4 top-28 z-[1300]">
             <div className="bg-white rounded-xl p-4 w-80 shadow-2xl ring-1 ring-gray-100 border border-gray-200">
-              <h3 className="text-lg font-medium mb-2">Select reservation duration</h3>
+              <h3 className="text-lg font-medium mb-3">Reserve & Pay</h3>
+
+              {/* Card selector */}
               <div className="mb-3">
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Payment card</label>
+                {cardsLoading ? (
+                  <div className="text-sm text-gray-500 py-2">Loading cards...</div>
+                ) : paymentCards.length === 0 ? (
+                  <div className="text-sm text-red-600 py-2">No saved cards. Add one in Billing first.</div>
+                ) : (
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => { if (paymentCards.length > 1) setShowCardMenu((v) => !v); }}
+                      className={`w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 px-3 py-2.5 ${paymentCards.length > 1 ? "hover:border-gray-400 cursor-pointer" : "cursor-default"} transition-colors`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <CreditCard className="w-5 h-5 text-gray-500 shrink-0" />
+                        <span className="text-sm text-gray-900 truncate">
+                          {selectedCard ? `${selectedCard.provider} •••• ${selectedCard.tokenLast4}` : "Select a card"}
+                        </span>
+                      </div>
+                      {paymentCards.length > 1 && (
+                        <ChevronDown className={`w-4 h-4 text-gray-500 shrink-0 transition-transform ${showCardMenu ? "rotate-180" : ""}`} />
+                      )}
+                    </button>
+
+                    {showCardMenu && paymentCards.length > 1 && (
+                      <>
+                        <button type="button" onClick={() => setShowCardMenu(false)} className="fixed inset-0 z-0 cursor-default" aria-label="Close" />
+                        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+                          {paymentCards.map((card) => (
+                            <button
+                              type="button"
+                              key={card.id}
+                              onClick={() => { setSelectedCard(card); setShowCardMenu(false); }}
+                              className={`w-full px-3 py-2.5 text-left text-sm flex items-center gap-2 transition-colors ${card.id === selectedCard?.id ? "bg-blue-50" : "hover:bg-gray-50"}`}
+                            >
+                              <CreditCard className="w-4 h-4 text-gray-500 shrink-0" />
+                              <span className="text-gray-900">{card.provider} •••• {card.tokenLast4}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Duration slider */}
+              <div className="mb-3">
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Duration</label>
                 <input
                   type="range"
                   min={10}
@@ -830,8 +959,14 @@ function ChargerContent({
                   onChange={(e) => setSelectedMinutes(Number(e.target.value))}
                   className="w-full"
                 />
-                <div className="text-sm text-gray-600 mt-2">{selectedMinutes} minutes</div>
+                <div className="text-sm text-gray-600 mt-1">{selectedMinutes} minutes</div>
               </div>
+
+              {/* Cost info */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-2.5 mb-3 text-sm text-blue-900">
+                A <strong>€3.00</strong> hold will be placed on your card. Final cost is based on usage.
+              </div>
+
               <div className="flex gap-2 justify-end">
                 <button
                   type="button"
@@ -842,13 +977,14 @@ function ChargerContent({
                 </button>
                 <button
                   type="button"
-                  className="px-3 py-2 rounded bg-blue-600 text-white"
+                  disabled={!selectedCard}
+                  className={`px-3 py-2 rounded text-white ${selectedCard ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"}`}
                   onClick={() => {
                     setShowDurationPicker(false);
                     onReserve(charger.id, selectedMinutes);
                   }}
                 >
-                  Confirm ({selectedMinutes}m)
+                  Reserve & Pay ({selectedMinutes}m)
                 </button>
               </div>
             </div>
