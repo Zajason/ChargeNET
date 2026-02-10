@@ -1,8 +1,8 @@
 import axios from "axios";
 import * as xml2js from "xml2js";
+import { ENTSOE_ZONES, ZoneKey } from "./zones.ts";
 
 const ENTSOE_API_URL = "https://web-api.tp.entsoe.eu/api";
-const ZONE_GR = "10YGR-HTSO-----Y";
 
 // ENTSO-E wants YYYYMMDDHHmm in UTC.
 function fmtUtc(dt: Date) {
@@ -21,23 +21,40 @@ function asArray<T>(x: T | T[] | undefined | null): T[] {
 
 type HourlyPrice = { tsUtc: Date; eurPerKWh: number };
 
-/**
- * Fetch hourly day-ahead prices and return a mapping of zone -> EUR/kWh (for "now" hour).
- * If "now" hour not found, falls back to daily average.
- */
-export async function fetchLatestWholesalePrice(): Promise<Record<string, number>> {
-  const token = process.env.ENTSOE_TOKEN;
-  if (!token) throw new Error("ENTSOE_TOKEN missing in environment");
+function clampWholesale(eurPerKWh: number) {
+  // Guardrails: wholesale can be negative sometimes; clamp to sane range for retail calcs.
+  return Math.max(-0.05, Math.min(eurPerKWh, 2.0));
+}
 
+function pickNowHourOrClosest(all: HourlyPrice[], now: Date): number {
+  if (all.length === 0) return 0.12;
+
+  const nowHour = new Date(now);
+  nowHour.setUTCMinutes(0, 0, 0);
+
+  const exact = all.find((x) => x.tsUtc.getTime() === nowHour.getTime());
+  const chosen =
+    exact ??
+    all.reduce((best, cur) =>
+      Math.abs(cur.tsUtc.getTime() - nowHour.getTime()) <
+      Math.abs(best.tsUtc.getTime() - nowHour.getTime())
+        ? cur
+        : best
+    );
+
+  return clampWholesale(chosen.eurPerKWh);
+}
+
+async function fetchZoneLatestWholesalePrice(zoneId: string, token: string): Promise<number> {
   // Pull a wide enough window to survive timezone/DST quirks and publication offsets.
   const now = new Date();
   const start = new Date(now.getTime() - 12 * 60 * 60 * 1000); // -12h
-  const end = new Date(now.getTime() + 36 * 60 * 60 * 1000);   // +36h
+  const end = new Date(now.getTime() + 36 * 60 * 60 * 1000); // +36h
 
   const url =
     `${ENTSOE_API_URL}?securityToken=${token}` +
     `&documentType=A44` +
-    `&in_Domain=${ZONE_GR}&out_Domain=${ZONE_GR}` +
+    `&in_Domain=${zoneId}&out_Domain=${zoneId}` +
     `&periodStart=${fmtUtc(start)}` +
     `&periodEnd=${fmtUtc(end)}`;
 
@@ -78,26 +95,39 @@ export async function fetchLatestWholesalePrice(): Promise<Record<string, number
     }
   }
 
-  // If we got nothing, fallback.
-  if (all.length === 0) return { [ZONE_GR]: 0.12 };
+  return pickNowHourOrClosest(all, now);
+}
 
-  // Find closest hour to "now" (rounded down to hour).
-  const nowHour = new Date(now);
-  nowHour.setUTCMinutes(0, 0, 0);
+/**
+ * Fetch hourly day-ahead prices and return a mapping of zoneKey -> EUR/kWh (for "now" hour).
+ * If a zone fails, it falls back to 0.12 for that zone (and logs the failure).
+ */
+export async function fetchLatestWholesalePrice(): Promise<Record<string, number>> {
+  const token = process.env.ENTSOE_TOKEN;
+  if (!token) throw new Error("ENTSOE_TOKEN missing in environment");
 
-  // Prefer exact hour match; else closest.
-  const exact = all.find((x) => x.tsUtc.getTime() === nowHour.getTime());
-  const chosen =
-    exact ??
-    all.reduce((best, cur) =>
-      Math.abs(cur.tsUtc.getTime() - nowHour.getTime()) <
-      Math.abs(best.tsUtc.getTime() - nowHour.getTime())
-        ? cur
-        : best
-    );
+  const zoneEntries = Object.entries(ENTSOE_ZONES) as Array<[ZoneKey, { id: string; name: string; center: [number, number] }]>;
 
-  // Guardrails: wholesale can be negative/very low sometimes; clamp to a sane range for retail calcs.
-  const wholesale = Math.max(-0.05, Math.min(chosen.eurPerKWh, 2.0));
+  // ENTSO-E can rate-limit; keep concurrency modest.
+  const CONCURRENCY = 8;
+  const result: Record<string, number> = {};
 
-  return { [ZONE_GR]: wholesale };
+  let idx = 0;
+
+  const workers = Array.from({ length: CONCURRENCY }, async () => {
+    while (idx < zoneEntries.length) {
+      const myIdx = idx++;
+      const [zoneKey, zone] = zoneEntries[myIdx];
+
+      try {
+        result[zoneKey] = await fetchZoneLatestWholesalePrice(zone.id, token);
+      } catch (err) {
+        console.error(`ENTSO-E fetch failed for ${zoneKey} (${zone.name})`, err);
+        result[zoneKey] = 0.12;
+      }
+    }
+  });
+
+  await Promise.all(workers);
+  return result;
 }
