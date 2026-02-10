@@ -108,6 +108,13 @@ const changePasswordSchema = z.object({
     newPassword: z.string().min(8),
 });
 
+import { CarColor } from '@prisma/client';
+
+const carOwnershipSchema = z.object({
+  carId: z.number().int().positive(),
+  color: z.enum(['RED', 'BLUE', 'YELLOW', 'WHITE', 'BLACK', 'SILVER', 'GREY', 'GREEN', 'ORANGE', 'PURPLE']),
+});
+
 const paymentMethodSchema = z.object({
     provider: z.string(),
     tokenLast4: z.string().length(4),
@@ -185,7 +192,7 @@ export const changePassword = async (req: Request, res: Response) => {
     }
 };
 
-// Vehicle Controllers
+// Vehicle Controllers (using CarOwnership model)
 export const listVehicles = async (req: Request, res: Response) => {
     const vehicles = await prisma.carOwnership.findMany({ 
         where: { userId: req.userId },

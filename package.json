@@ -19,6 +19,6 @@
     "ts-node": "^10.9.2"
   },
   "scripts": {
-    "test:cli": "mocha -r ts-node/register tests/cli.test.ts"
-  }
+    "test:cli": "npx mocha -r ts-node/register tests/cli.test.ts"
+}
 }

@@ -325,7 +325,7 @@ interface ChargerContentProps {
   timeRemaining: number;
   formatTime: (seconds: number) => string;
   getStatusColor: () => string;
-  getStatusIcon: () => React.ReactNode;
+  getStatusIcon: () => React.JSX.Element;
   getStatusText: () => string;
   connectorLabel: (t?: Charger["connectorType"]) => string;
   onReserve: (chargerId: string, minutes?: number) => void;

@@ -2,9 +2,14 @@
 import type { CarApi } from "../types/ownership";
 
 function getBaseUrl() {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-  if (!baseUrl) throw new Error("NEXT_PUBLIC_API_URL is undefined in client bundle");
-  return baseUrl.replace(/\/$/, "");
+  const rawBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
+  const baseUrl = rawBaseUrl.replace(/\/$/, "");
+
+  if (baseUrl.startsWith("http://localhost:4000")) {
+    return "http://localhost:3000/api/v1";
+  }
+
+  return baseUrl;
 }
 
 async function parseJsonSafe(res: Response) {
