@@ -13,7 +13,16 @@ import { ListView } from "./ListView";
 
 import { useUserLocation } from "../hooks/useUserLocation";
 import { useFetchChargers } from "../hooks/useFetchChargers";
-import { reserveCharger, cancelReservation, startCharging, stopCharging, getChargingStatus, getActiveSession, isLoggedIn, AUTH_CHANGED_EVENT } from "../utils/api";
+import {
+  reserveCharger,
+  cancelReservation,
+  startCharging,
+  stopCharging,
+  getChargingStatus,
+  getActiveSession,
+  isLoggedIn,
+  AUTH_CHANGED_EVENT,
+} from "../utils/api";
 import type { Charger } from "../types/charger";
 
 function cartoPositronProvider(x: number, y: number, z: number) {
@@ -104,6 +113,50 @@ function ClusterPin({
         </div>
       )}
     </button>
+  );
+}
+
+/** --- Legend (bottom-left) --- */
+function LegendItem({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <div className="shrink-0">{children}</div>
+      <div className="text-xs text-gray-700">{label}</div>
+    </div>
+  );
+}
+
+function ArrowMarker({ color }: { color: string }) {
+  // small "pin/arrow" to match your cluster pin shape-ish
+  return (
+    <svg width="16" height="16" viewBox="0 0 64 64" aria-hidden="true">
+      <path
+        d="M32 2C20.4 2 11 11.4 11 23c0 14.7 18.6 34.8 19.4 35.7.9 1 2.3 1 3.2 0C34.4 57.8 53 37.7 53 23 53 11.4 43.6 2 32 2z"
+        fill={color}
+      />
+      <circle cx="32" cy="23" r="10" fill="white" opacity="0.9" />
+    </svg>
+  );
+}
+
+function BlueDot() {
+  return (
+    <div
+      className="rounded-full"
+      style={{
+        width: 12,
+        height: 12,
+        background: "#3B82F6",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.25)",
+      }}
+      aria-hidden="true"
+    />
   );
 }
 
@@ -350,31 +403,40 @@ export function MapView() {
     }
   };
 
-  const handleStartCharging = useCallback(async (reservationId: number, battery?: { batteryCapacityKWh: number; currentBatteryLevel: number }) => {
-    setReservationError(null);
-    try {
-      const result = await startCharging(reservationId, battery);
-      setActiveSessionId(result.sessionId);
-      setActiveReservationId(null);
-      // Clear reservation timer — charging has started
-      setLastReservationDuration(0);
-      setLastReservationStartTime(null);
-    } catch (err) {
-      setReservationError(err instanceof Error ? err.message : "Failed to start charging");
-    }
-  }, []);
+  const handleStartCharging = useCallback(
+    async (
+      reservationId: number,
+      battery?: { batteryCapacityKWh: number; currentBatteryLevel: number }
+    ) => {
+      setReservationError(null);
+      try {
+        const result = await startCharging(reservationId, battery);
+        setActiveSessionId(result.sessionId);
+        setActiveReservationId(null);
+        // Clear reservation timer — charging has started
+        setLastReservationDuration(0);
+        setLastReservationStartTime(null);
+      } catch (err) {
+        setReservationError(err instanceof Error ? err.message : "Failed to start charging");
+      }
+    },
+    []
+  );
 
-  const handleStopCharging = useCallback(async (sessionId: number) => {
-    setReservationError(null);
-    try {
-      await stopCharging(sessionId);
-      setActiveSessionId(null);
-      setChargingStatus(null);
-      await reload();
-    } catch (err) {
-      setReservationError(err instanceof Error ? err.message : "Failed to stop charging");
-    }
-  }, [reload]);
+  const handleStopCharging = useCallback(
+    async (sessionId: number) => {
+      setReservationError(null);
+      try {
+        await stopCharging(sessionId);
+        setActiveSessionId(null);
+        setChargingStatus(null);
+        await reload();
+      } catch (err) {
+        setReservationError(err instanceof Error ? err.message : "Failed to stop charging");
+      }
+    },
+    [reload]
+  );
 
   // Poll charging status every 3 seconds while a session is active
   useEffect(() => {
@@ -561,6 +623,36 @@ export function MapView() {
           <LocateFixed className="w-4 h-4" />
           {followUser ? "Following" : "Recenter"}
         </button>
+      )}
+
+      {/* ✅ Legend box (bottom-left) */}
+      {viewMode === "map" && (
+        <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 lg:bottom-6 lg:left-6 bg-white rounded-xl shadow-lg z-[1000] px-3 py-2">
+          <div className="text-[11px] font-semibold text-gray-800 mb-2">Legend</div>
+
+          <div className="flex flex-col gap-1.5">
+            {/* Order requested: blue dot, purple arrow, blue, orange, red */}
+            <LegendItem label="You">
+              <BlueDot />
+            </LegendItem>
+
+            <LegendItem label="Reserved">
+              <ArrowMarker color="#A855F7" />
+            </LegendItem>
+
+            <LegendItem label="Available">
+              <ArrowMarker color="#3B82F6" />
+            </LegendItem>
+
+            <LegendItem label="In use">
+              <ArrowMarker color="#F97316" />
+            </LegendItem>
+
+            <LegendItem label="Out of order">
+              <ArrowMarker color="#EF4444" />
+            </LegendItem>
+          </div>
+        </div>
       )}
 
       {locationError && (
