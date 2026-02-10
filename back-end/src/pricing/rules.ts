@@ -1,4 +1,5 @@
 import { ConnectorType } from "@prisma/client";
+import { ENTSOE_ZONES, ZoneKey } from "./zones.ts";
 
 function roundToCents(x: number) {
   return Math.round(x * 100) / 100;
@@ -62,6 +63,38 @@ export function computeRetailPrice({
   return roundToCents(capped);
 }
 
-export function mapLatLngToZone(lat: number, lng: number): string {
-  return "10YGR-HTSO-----Y";
+/**
+ * Map lat/lng to the closest ENTSO-E zone center (simple nearest-center heuristic).
+ * Returns a zoneKey like "GR", "DE", "IT", "NO1", etc.
+ */
+export function mapLatLngToZone(lat: number, lng: number): ZoneKey {
+  // Haversine distance in km
+  const R = 6371;
+
+  const toRad = (d: number) => (d * Math.PI) / 180;
+
+  const haversineKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(a));
+  };
+
+  let bestKey: ZoneKey = "GR";
+  let bestDist = Number.POSITIVE_INFINITY;
+
+  const entries = Object.entries(ENTSOE_ZONES) as Array<[ZoneKey, { center: [number, number] }]>;
+
+  for (const [key, meta] of entries) {
+    const [cLat, cLng] = meta.center;
+    const d = haversineKm(lat, lng, cLat, cLng);
+    if (d < bestDist) {
+      bestDist = d;
+      bestKey = key;
+    }
+  }
+
+  return bestKey;
 }
