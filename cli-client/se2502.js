@@ -154,13 +154,17 @@ program.command('addpoints')
 // "points" command
 program.command('points')
   .description('Returns all charging points')
-  .option('--status <status>', 'Filter by status (available, charging, etc.)')
+  .option('--status <status>', 'Filter by status (available, charging, offline, etc.)')
   .option('--format <type>', 'Output format (json or csv)', 'csv')
   .action(async (options) => {
     try {
       let url = `${BASE_URL}/points`;
+      
       if (options.status) {
-        url += `?status=${options.status}`;
+        // --- CHANGE HERE: Map 'offline' to 'outage' ---
+        // The API expects 'outage', but the CLI user types 'offline'
+        const queryStatus = (options.status === 'offline') ? 'outage' : options.status;
+        url += `?status=${queryStatus}`;
       }
 
       const response = await axios.get(url, {
@@ -423,6 +427,31 @@ program.command('pointstatus')
       }
     } catch (error) {
       handleError(error);
+    }
+  });
+
+// "addcard" command
+program.command('addcard')
+  .description('Adds a mock payment method to the user')
+  .action(async () => {
+    try {
+      const url = `${BASE_URL}/payments/save-method`; 
+      
+      const payload = {
+        paymentMethodId: "mock_pm_" + Date.now(), // ΑΥΤΟ ΠΕΡΙΜΕΝΕΙ ΤΟ ZOD
+        provider: "mock",
+        tokenLast4: "4242"
+      };
+
+      const response = await axios.post(url, payload, {
+          headers: getAuthHeader()
+      });
+      
+      console.log("status");
+      console.log("OK");
+      
+    } catch (error) {
+       handleError(error);
     }
   });
 
