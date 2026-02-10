@@ -3,7 +3,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import type { Charger } from "../types/charger";
-import { fetchChargers } from "../utils/api";
+import { fetchChargers, AUTH_CHANGED_EVENT } from "../utils/api";
 
 type ApiPoint = {
   pointid: number | string;
@@ -107,6 +107,13 @@ export function useFetchChargers() {
 
   useEffect(() => {
     void load();
+  }, [load]);
+
+  // Re-fetch chargers when auth state changes (login/logout)
+  useEffect(() => {
+    const handler = () => { void load(); };
+    window.addEventListener(AUTH_CHANGED_EVENT, handler);
+    return () => window.removeEventListener(AUTH_CHANGED_EVENT, handler);
   }, [load]);
 
   return { chargers, loading, error, reload: load } as const;
