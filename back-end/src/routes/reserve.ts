@@ -1,11 +1,10 @@
 import express, { Request, Response } from "express";
-import prisma from "../prisma/client";
-import { makeErrorLog } from "../middleware/errorHandler";
-import { verifyToken } from "../middleware/verifyToken";
+import prisma from "../prisma/client.js"; 
+import { makeErrorLog } from "../middleware/errorHandler.js"; 
+import { verifyToken } from "../middleware/verifyToken.js"; 
 import { ChargerStatus, ReservationStatus } from "@prisma/client";
-import { preAuthorize, cancelPreAuth } from "../controllers/paymentController";
-import { cancelReservationRedis, reserveAtomic } from "../services/availabilityRedis";
-
+import { preAuthorize, cancelPreAuth } from "../controllers/paymentController.js"; 
+import { cancelReservationRedis, reserveAtomic } from "../services/availabilityRedis.js"; 
 const router = express.Router();
 
 const handleReserve = async (req: Request, res: Response) => {

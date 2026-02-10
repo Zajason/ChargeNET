@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { PaymentStatus } from '@prisma/client';
-import prisma from '../prisma/client'; // Βεβαιώσου ότι το path είναι σωστό
-import stripe from '../services/stripe'; // Βεβαιώσου ότι το path είναι σωστό
+import prisma from '../prisma/client.js';
+import stripe from '../services/stripe.js';
 import { z } from 'zod';
 
 // --- SCHEMAS ---

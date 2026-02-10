@@ -1,8 +1,8 @@
 import express, { Request, Response } from "express";
-import prisma from "../prisma/client"; // removed .ts extension
-import { makeErrorLog } from "../middleware/errorHandler";
-import { verifyToken } from "../middleware/verifyToken";
-import { SessionStatus, ReservationStatus } from "@prisma/client"; // Added ReservationStatus
+import prisma from "../prisma/client.js";
+import { makeErrorLog } from "../middleware/errorHandler.js";
+import { verifyToken } from "../middleware/verifyToken.js";
+import { SessionStatus, ReservationStatus } from "@prisma/client";
 
 const router = express.Router();
 
