@@ -52,8 +52,10 @@ function latLngToPixel(lat: number, lng: number, zoom: number) {
   return { x, y };
 }
 
-function pickClusterColor(members: Charger[]) {
-  const anyReserved = members.some((c: any) => Boolean((c as any).reserved_by_me));
+function pickClusterColor(members: Charger[], myReservedIds?: Set<string>) {
+  const anyReserved = members.some(
+    (c) => Boolean((c as any).reserved_by_me) || (myReservedIds?.has(String(c.id)) ?? false)
+  );
   if (anyReserved) return "#A855F7";
   const anyAvailable = members.some((c) => c.status === "available");
   if (anyAvailable) return "#3B82F6";
@@ -166,11 +168,10 @@ export function MapView() {
   const { chargers, loading, error, reload } = useFetchChargers();
 
   const [selectedCharger, setSelectedCharger] = useState<Charger | null>(null);
-  const [reservedChargers, setReservedChargers] = useState<Set<string>>(new Set());
+  const [activeReservedChargerId, setActiveReservedChargerId] = useState<string | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isReserving, setIsReserving] = useState(false);
-  const [hasActiveReservation, setHasActiveReservation] = useState(false);
   const [reservationError, setReservationError] = useState<string | null>(null);
 
   // ✅ Persisted timer state lives here (parent)
@@ -196,21 +197,18 @@ export function MapView() {
     index: number;
   } | null>(null);
 
-  useEffect(() => {
-    if (!chargers || chargers.length === 0) {
-      setReservedChargers(new Set());
-      setHasActiveReservation(false);
-      return;
-    }
-
-    const mine = new Set<string>();
+  // Derive reservedChargers from charger data + restore state (no race condition)
+  const reservedChargers = useMemo(() => {
+    const set = new Set<string>();
     for (const c of chargers) {
-      if ((c as any).reserved_by_me) mine.add(String(c.id));
+      if (c.reserved_by_me) set.add(String(c.id));
     }
+    // Include charger from restored reservation (covers gap before chargers re-fetch with auth)
+    if (activeReservedChargerId) set.add(activeReservedChargerId);
+    return set;
+  }, [chargers, activeReservedChargerId]);
 
-    setReservedChargers(mine);
-    setHasActiveReservation(mine.size > 0);
-  }, [chargers]);
+  const hasActiveReservation = reservedChargers.size > 0;
 
   // Restore active session / reservation on mount and when auth changes
   useEffect(() => {
@@ -218,6 +216,7 @@ export function MapView() {
       if (!isLoggedIn()) {
         setActiveSessionId(null);
         setActiveReservationId(null);
+        setActiveReservedChargerId(null);
         setChargingStatus(null);
         return;
       }
@@ -235,9 +234,14 @@ export function MapView() {
             pricePerKWh: data.session.pricePerKWh,
             status: data.session.status,
           });
+          // Mark charger as "mine" so pin stays purple during active session
+          setActiveReservedChargerId(String(data.session.chargerId));
           // Auto-select the charger being charged
           const charger = chargers.find((c) => String(c.id) === String(data.session.chargerId));
           if (charger) setSelectedCharger(charger);
+        } else {
+          setActiveSessionId(null);
+          setChargingStatus(null);
         }
 
         if (data.reservation && !data.session) {
@@ -248,8 +252,11 @@ export function MapView() {
           const totalDuration = Math.round((expiresAt - startsAt) / 1000);
           setLastReservationDuration(totalDuration);
           setLastReservationStartTime(startsAt);
+          // Mark charger as reserved so pin turns purple
+          const cid = String(data.reservation.chargerId);
+          setActiveReservedChargerId(cid);
           // Auto-select the reserved charger
-          const charger = chargers.find((c) => String(c.id) === String(data.reservation.chargerId));
+          const charger = chargers.find((c) => String(c.id) === cid);
           if (charger) setSelectedCharger(charger);
         }
       } catch (err) {
@@ -331,7 +338,7 @@ export function MapView() {
       const members = cl.members;
       const lat = members.reduce((s, m) => s + m.lat, 0) / members.length;
       const lng = members.reduce((s, m) => s + m.lng, 0) / members.length;
-      const color = pickClusterColor(members);
+      const color = pickClusterColor(members, reservedChargers);
 
       return {
         id: `cluster-${zoom}-${idx}-${members.length}`,
@@ -342,7 +349,7 @@ export function MapView() {
         color,
       };
     });
-  }, [filteredChargers, zoom]);
+  }, [filteredChargers, zoom, reservedChargers]);
 
   const handleReserve = async (chargerId: string, minutes?: number) => {
     setReservationError(null);
@@ -362,15 +369,12 @@ export function MapView() {
       setLastReservationDuration(mins * 60);
       setLastReservationStartTime(Date.now());
 
+      // Track locally so pin turns purple immediately
+      setActiveReservedChargerId(chargerId);
+
       const newList = await reload();
       const updated = newList.find((c) => String(c.id) === String(chargerId)) ?? null;
       setSelectedCharger(updated);
-
-      // update local reserved flags quickly
-      const mine = new Set<string>();
-      for (const c of newList) if ((c as any).reserved_by_me) mine.add(String(c.id));
-      setReservedChargers(mine);
-      setHasActiveReservation(mine.size > 0);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Reservation failed. Please try again.";
       setReservationError(message);
@@ -388,15 +392,11 @@ export function MapView() {
       setLastReservationDuration(0);
       setLastReservationStartTime(null);
       setActiveReservationId(null);
+      setActiveReservedChargerId(null);
 
       const newList = await reload();
       const updated = newList.find((c) => String(c.id) === String(chargerId)) ?? null;
       setSelectedCharger(updated);
-
-      const mine = new Set<string>();
-      for (const c of newList) if ((c as any).reserved_by_me) mine.add(String(c.id));
-      setReservedChargers(mine);
-      setHasActiveReservation(mine.size > 0);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Cancel failed";
       setReservationError(message);
@@ -429,6 +429,7 @@ export function MapView() {
       try {
         await stopCharging(sessionId);
         setActiveSessionId(null);
+        setActiveReservedChargerId(null);
         setChargingStatus(null);
         await reload();
       } catch (err) {
@@ -720,7 +721,7 @@ export function MapView() {
               onReserve={handleReserve}
               onCancel={handleCancel}
               isReserved={
-                (selectedCharger as any).reserved_by_me ??
+                Boolean((selectedCharger as any).reserved_by_me) ||
                 reservedChargers.has(String(selectedCharger.id))
               }
               isReserving={isReserving}

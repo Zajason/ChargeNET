@@ -3,14 +3,6 @@ import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
 
-dotenv.config();
-
-const DATABASE_URL = process.env.DATABASE_URL;
-if (!DATABASE_URL) {
-  console.error("❌ DATABASE_URL not found in .env");
-  process.exit(1);
-}
-
 /**
  * Find the back-end directory reliably.
  * - If script is run from inside back-end, cwd basename === "back-end"
@@ -18,18 +10,33 @@ if (!DATABASE_URL) {
  */
 function resolveBackendDir(): string {
   const cwd = process.cwd();
+
+  // Running from /back-end
   if (path.basename(cwd) === "back-end") return cwd;
 
+  // Running from repo root (has /back-end)
   const candidate = path.join(cwd, "back-end");
   if (fs.existsSync(candidate) && fs.statSync(candidate).isDirectory()) return candidate;
 
-  // Fallback: assume cwd is backend anyway
+  // Fallback: assume current dir is the backend anyway
   return cwd;
 }
 
 const backendDir = resolveBackendDir();
-const dumpDir = path.join(backendDir, "dump");
 
+// ✅ Explicitly load /back-end/.env (NOT cwd/.env)
+const envPath = path.join(backendDir, ".env");
+dotenv.config({ path: envPath });
+
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+  console.error("❌ DATABASE_URL not found in .env");
+  console.error(`Looked for: ${envPath}`);
+  console.error(`process.cwd(): ${process.cwd()}`);
+  process.exit(1);
+}
+
+const dumpDir = path.join(backendDir, "dump");
 if (!fs.existsSync(dumpDir)) {
   console.log("📁 Creating dump directory...");
   fs.mkdirSync(dumpDir, { recursive: true });
@@ -49,6 +56,7 @@ function getTimestamp() {
 const filename = `ev_app_dump_${getTimestamp()}.sql`;
 const filepath = path.join(dumpDir, filename);
 
+// pg_dump command
 const command = `pg_dump "${DATABASE_URL}" -F p -f "${filepath}"`;
 
 console.log("🚀 Starting database dump...");
@@ -58,6 +66,13 @@ exec(command, (error, stdout, stderr) => {
   if (error) {
     console.error("❌ Dump failed:");
     console.error(error.message);
+
+    // Helpful extra context (usually empty, but nice to have)
+    if (stderr?.trim()) {
+      console.error("stderr:");
+      console.error(stderr);
+    }
+
     process.exit(1);
   }
 
