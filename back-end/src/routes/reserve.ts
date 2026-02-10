@@ -106,17 +106,23 @@ const handleReserve = async (req: Request, res: Response) => {
     const startsAt = new Date();
     const expiresAt = new Date(locked.expiresAtMs);
 
-    // Create DB reservation for history / charging start validation
-    const reservation = await prisma.reservation.create({
-      data: {
-        userId,
-        chargerId: id,
-        startsAt,
-        expiresAt,
-        status: ReservationStatus.ACTIVE,
-        paymentIntentId: intent?.id ?? null,
-      },
-    });
+    // Create DB reservation + mark charger IN_USE in DB
+    const [reservation] = await prisma.$transaction([
+      prisma.reservation.create({
+        data: {
+          userId,
+          chargerId: id,
+          startsAt,
+          expiresAt,
+          status: ReservationStatus.ACTIVE,
+          paymentIntentId: intent?.id ?? null,
+        },
+      }),
+      prisma.charger.update({
+        where: { id },
+        data: { status: ChargerStatus.IN_USE },
+      }),
+    ]);
 
     return res.status(200).json({
       pointid: String(id),
@@ -167,10 +173,16 @@ const handleCancel = async (req: Request, res: Response) => {
       }
     }
 
-    await prisma.reservation.update({
-      where: { id: reservation.id },
-      data: { status: ReservationStatus.CANCELLED },
-    });
+    await prisma.$transaction([
+      prisma.reservation.update({
+        where: { id: reservation.id },
+        data: { status: ReservationStatus.CANCELLED },
+      }),
+      prisma.charger.update({
+        where: { id },
+        data: { status: ChargerStatus.AVAILABLE },
+      }),
+    ]);
 
     // ✅ clear redis lock + set status available
     await cancelReservationRedis({ userId, chargerId: id });
