@@ -1,9 +1,9 @@
-// src/routes/charging.ts
 import express, { Request, Response } from "express";
 import prisma from "../prisma/client.ts";
 import { verifyToken } from "../middleware/verifyToken.ts";
-import { ChargerStatus, ReservationStatus, SessionStatus } from "@prisma/client";
+import { ReservationStatus, SessionStatus } from "@prisma/client";
 import { captureOrRecharge } from "../controllers/paymentController.ts";
+import { setChargerStatusRedis } from "../services/availabilityRedis.ts";
 
 const router = express.Router();
 router.use(verifyToken);
@@ -18,7 +18,6 @@ router.post("/start", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "reservationId (number) is required" });
     }
 
-    // Calculate max kWh the car can accept (remaining capacity to 100%)
     let maxKWh: number | null = null;
     if (typeof batteryCapacityKWh === "number" && typeof currentBatteryLevel === "number") {
       maxKWh = parseFloat(((batteryCapacityKWh * (100 - currentBatteryLevel)) / 100).toFixed(3));
@@ -29,20 +28,11 @@ router.post("/start", async (req: Request, res: Response) => {
       include: { charger: true },
     });
 
-    if (!reservation) {
-      return res.status(404).json({ error: "Reservation not found" });
-    }
-    if (reservation.userId !== userId) {
-      return res.status(403).json({ error: "Reservation does not belong to you" });
-    }
-    if (reservation.status !== ReservationStatus.ACTIVE) {
-      return res.status(409).json({ error: "Reservation is no longer active" });
-    }
-    if (reservation.expiresAt < new Date()) {
-      return res.status(410).json({ error: "Reservation has expired" });
-    }
+    if (!reservation) return res.status(404).json({ error: "Reservation not found" });
+    if (reservation.userId !== userId) return res.status(403).json({ error: "Reservation does not belong to you" });
+    if (reservation.status !== ReservationStatus.ACTIVE) return res.status(409).json({ error: "Reservation is no longer active" });
+    if (reservation.expiresAt < new Date()) return res.status(410).json({ error: "Reservation has expired" });
 
-    // Create session and mark reservation as used
     const session = await prisma.$transaction(async (tx) => {
       const s = await tx.session.create({
         data: {
@@ -64,6 +54,9 @@ router.post("/start", async (req: Request, res: Response) => {
 
       return s;
     });
+
+    // ✅ Redis: session means in_use (no TTL)
+    await setChargerStatusRedis(reservation.chargerId, "in_use");
 
     return res.status(201).json({
       sessionId: session.id,
@@ -90,50 +83,29 @@ router.post("/stop", async (req: Request, res: Response) => {
 
     const session = await prisma.session.findUnique({
       where: { id: sessionId },
-      include: {
-        charger: true,
-        reservation: true,
-      },
+      include: { charger: true, reservation: true },
     });
 
-    if (!session) {
-      return res.status(404).json({ error: "Session not found" });
-    }
-    if (session.userId !== userId) {
-      return res.status(403).json({ error: "Session does not belong to you" });
-    }
-    if (session.status !== SessionStatus.RUNNING) {
-      return res.status(409).json({ error: "Session is not running" });
-    }
+    if (!session) return res.status(404).json({ error: "Session not found" });
+    if (session.userId !== userId) return res.status(403).json({ error: "Session does not belong to you" });
+    if (session.status !== SessionStatus.RUNNING) return res.status(409).json({ error: "Session is not running" });
 
-    // Calculate final kWh based on elapsed time, capped at battery capacity
     const now = new Date();
     const elapsedHours = (now.getTime() - session.startedAt.getTime()) / 3_600_000;
     let finalKWh = parseFloat((elapsedHours * session.charger.maxKW).toFixed(3));
-    if (session.maxKWh !== null && finalKWh > session.maxKWh) {
-      finalKWh = session.maxKWh;
-    }
+    if (session.maxKWh !== null && finalKWh > session.maxKWh) finalKWh = session.maxKWh;
+
     const pricePerKWh = Number(session.pricePerKWh ?? session.charger.kwhprice);
     const costEur = parseFloat((finalKWh * pricePerKWh).toFixed(2));
 
-    // Update session
     await prisma.session.update({
       where: { id: sessionId },
-      data: {
-        endedAt: now,
-        kWh: finalKWh,
-        costEur,
-        status: SessionStatus.USER_STOPPED,
-      },
+      data: { endedAt: now, kWh: finalKWh, costEur, status: SessionStatus.USER_STOPPED },
     });
 
-    // Set charger back to available
-    await prisma.charger.update({
-      where: { id: session.chargerId },
-      data: { status: ChargerStatus.AVAILABLE },
-    });
+    // ✅ Redis: available again
+    await setChargerStatusRedis(session.chargerId, "available");
 
-    // Process final payment
     const paymentIntentId = session.reservation?.paymentIntentId;
     let paymentStatus = "no_pre_auth";
 
@@ -147,12 +119,7 @@ router.post("/stop", async (req: Request, res: Response) => {
       }
     }
 
-    return res.json({
-      sessionId,
-      kWh: finalKWh,
-      costEur,
-      paymentStatus,
-    });
+    return res.json({ sessionId, kWh: finalKWh, costEur, paymentStatus });
   } catch (err: any) {
     console.error("[charging/stop] error:", err);
     return res.status(500).json({ error: "Failed to stop charging", details: err.message });
@@ -165,21 +132,15 @@ router.get("/status/:sessionId", async (req: Request, res: Response) => {
     const userId = req.userId!;
     const sessionId = Number(req.params.sessionId);
 
-    if (isNaN(sessionId)) {
-      return res.status(400).json({ error: "Invalid sessionId" });
-    }
+    if (isNaN(sessionId)) return res.status(400).json({ error: "Invalid sessionId" });
 
     const session = await prisma.session.findUnique({
       where: { id: sessionId },
       include: { charger: true },
     });
 
-    if (!session) {
-      return res.status(404).json({ error: "Session not found" });
-    }
-    if (session.userId !== userId) {
-      return res.status(403).json({ error: "Session does not belong to you" });
-    }
+    if (!session) return res.status(404).json({ error: "Session not found" });
+    if (session.userId !== userId) return res.status(403).json({ error: "Session does not belong to you" });
 
     const now = new Date();
     const elapsedSeconds = Math.floor((now.getTime() - session.startedAt.getTime()) / 1000);
@@ -191,7 +152,6 @@ router.get("/status/:sessionId", async (req: Request, res: Response) => {
     if (session.status === SessionStatus.RUNNING) {
       kWh = parseFloat((elapsedHours * session.charger.maxKW).toFixed(3));
 
-      // Cap at battery capacity if known
       const cap = session.maxKWh;
       let isFull = false;
       if (cap !== null && kWh >= cap) {
@@ -203,29 +163,14 @@ router.get("/status/:sessionId", async (req: Request, res: Response) => {
       costSoFar = parseFloat((kWh * pricePerKWh).toFixed(2));
 
       if (isFull) {
-        // Auto-stop: battery is full
         const endedAt = new Date();
         await prisma.session.update({
           where: { id: sessionId },
           data: { kWh, costEur: costSoFar, endedAt, status: SessionStatus.AUTO_STOPPED },
         });
 
-        await prisma.charger.update({
-          where: { id: session.chargerId },
-          data: { status: ChargerStatus.AVAILABLE },
-        });
-
-        // Process final payment
-        const reservation = await prisma.reservation.findUnique({
-          where: { id: session.reservationId ?? undefined },
-        });
-        if (reservation?.paymentIntentId) {
-          try {
-            await captureOrRecharge(reservation.paymentIntentId, costSoFar, sessionId, userId);
-          } catch (e) {
-            console.error("[charging/status] auto-stop payment error:", e);
-          }
-        }
+        // ✅ Redis: available again
+        await setChargerStatusRedis(session.chargerId, "available");
 
         return res.json({
           sessionId,
@@ -239,11 +184,7 @@ router.get("/status/:sessionId", async (req: Request, res: Response) => {
         });
       }
 
-      // Update DB with latest kWh
-      await prisma.session.update({
-        where: { id: sessionId },
-        data: { kWh },
-      });
+      await prisma.session.update({ where: { id: sessionId }, data: { kWh } });
     }
 
     return res.json({
@@ -263,33 +204,30 @@ router.get("/status/:sessionId", async (req: Request, res: Response) => {
 });
 
 /* ── GET /charging/active ── */
-/* Returns the user's running session + active reservation (if any) */
 router.get("/active", async (req: Request, res: Response) => {
   try {
     const userId = req.userId!;
 
-    // Find running session
     const session = await prisma.session.findFirst({
       where: { userId, status: SessionStatus.RUNNING },
       include: { charger: true },
     });
 
-    // Find active reservation
     const reservation = await prisma.reservation.findFirst({
       where: { userId, status: ReservationStatus.ACTIVE, expiresAt: { gt: new Date() } },
     });
 
-    if (!session && !reservation) {
-      return res.json({ session: null, reservation: null });
-    }
+    if (!session && !reservation) return res.json({ session: null, reservation: null });
 
     let sessionData = null;
     if (session) {
       const now = new Date();
       const elapsedSeconds = Math.floor((now.getTime() - session.startedAt.getTime()) / 1000);
       const elapsedHours = elapsedSeconds / 3600;
+
       let kWh = parseFloat((elapsedHours * session.charger.maxKW).toFixed(3));
       if (session.maxKWh !== null && kWh > session.maxKWh) kWh = session.maxKWh;
+
       const pricePerKWh = Number(session.pricePerKWh ?? session.charger.kwhprice);
       const costSoFar = parseFloat((kWh * pricePerKWh).toFixed(2));
 
