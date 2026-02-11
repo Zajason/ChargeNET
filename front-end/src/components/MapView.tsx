@@ -444,16 +444,15 @@ export function MapView() {
     if (!activeSessionId) return;
 
     let cancelled = false;
-    let interval: ReturnType<typeof setInterval>;
+    let stopped = false;
     const poll = async () => {
       try {
         const status = await getChargingStatus(activeSessionId);
         if (cancelled) return;
         setChargingStatus(status);
 
-        if (status.status !== "RUNNING") {
-          // Stop polling immediately
-          clearInterval(interval);
+        if (status.status !== "RUNNING" && !stopped) {
+          stopped = true;
           // Keep showing final stats for 5 seconds before clearing
           setTimeout(async () => {
             setActiveSessionId(null);
@@ -471,7 +470,7 @@ export function MapView() {
     };
 
     poll(); // initial fetch
-    interval = setInterval(poll, 3000);
+    const interval = setInterval(poll, 3000);
 
     return () => {
       cancelled = true;
