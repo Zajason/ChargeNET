@@ -444,6 +444,7 @@ export function MapView() {
     if (!activeSessionId) return;
 
     let cancelled = false;
+    let interval: ReturnType<typeof setInterval>;
     const poll = async () => {
       try {
         const status = await getChargingStatus(activeSessionId);
@@ -451,9 +452,18 @@ export function MapView() {
         setChargingStatus(status);
 
         if (status.status !== "RUNNING") {
-          setActiveSessionId(null);
-          setChargingStatus(null);
-          await reload();
+          // Stop polling immediately
+          clearInterval(interval);
+          // Keep showing final stats for 5 seconds before clearing
+          setTimeout(async () => {
+            setActiveSessionId(null);
+            setChargingStatus(null);
+            setActiveReservationId(null);
+            setActiveReservedChargerId(null);
+            setLastReservationDuration(0);
+            setLastReservationStartTime(null);
+            await reload();
+          }, 5000);
         }
       } catch (err) {
         console.error("Charging status poll error:", err);
@@ -461,7 +471,7 @@ export function MapView() {
     };
 
     poll(); // initial fetch
-    const interval = setInterval(poll, 3000);
+    interval = setInterval(poll, 3000);
 
     return () => {
       cancelled = true;

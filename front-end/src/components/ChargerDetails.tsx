@@ -783,7 +783,11 @@ function ChargerContent({
             Min. charge: &euro;3.00 &bull; &euro;{chargingStatus.pricePerKWh.toFixed(2)}/kWh
           </p>
 
-          {chargingStatus.status !== "AUTO_STOPPED" && (
+          {chargingStatus.status === "AUTO_STOPPED" ? (
+            <p className="text-center text-sm text-green-700 font-medium">
+              Charging complete — payment processed
+            </p>
+          ) : (
             <button
               type="button"
               onClick={() => onStopCharging?.(activeSessionId)}
