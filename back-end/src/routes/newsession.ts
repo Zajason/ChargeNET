@@ -1,14 +1,13 @@
 import express, { Request, Response } from "express";
-import prisma from "../prisma/client.ts";
-import { makeErrorLog } from "../middleware/errorHandler.ts";
-import { verifyToken } from "../middleware/verifyToken.ts";
-import { SessionStatus } from "@prisma/client";
+import prisma from "../prisma/client.js";
+import { makeErrorLog } from "../middleware/errorHandler.js";
+import { verifyToken } from "../middleware/verifyToken.js";
+import { SessionStatus, ReservationStatus } from "@prisma/client"; 
 
 const router = express.Router();
 
 const handleNewSession = async (req: Request, res: Response) => {
   try {
-    // Input Fields
     const { 
         pointid,
         starttime, 
@@ -20,7 +19,7 @@ const handleNewSession = async (req: Request, res: Response) => {
         amount 
     } = req.body;
 
-    if (!pointid || !starttime || !endtime || !totalkwh) {
+    if (!pointid || !starttime || !endtime || !totalkwh || kwhprice === undefined || amount === undefined) {
         const err = makeErrorLog(req, 400, "Missing required fields");
         return res.status(400).json(err);
     }
@@ -30,7 +29,48 @@ const handleNewSession = async (req: Request, res: Response) => {
         return res.status(401).json({ error: "Unauthorized" });
     }
 
-    // Parse Dates
+    const charger = await prisma.charger.findUnique({
+        where: { id: Number(pointid) },
+        include: {
+            reservations: {
+                where: {
+                    status: ReservationStatus.ACTIVE,
+                    expiresAt: { gt: new Date() }
+                }
+            }
+        }
+    });
+
+    if (!charger) {
+        return res.status(400).json(makeErrorLog(req, 400, "Invalid pointid: Charger not found"));
+    }
+
+    if (charger.status !== "AVAILABLE") {
+        // Find if any reservation belongs to user
+        const myReservation = charger.reservations.find((r: any) => r.userId === userId);
+
+        if (myReservation) {
+            await prisma.reservation.update({
+                where: { id: myReservation.id },
+                data: { status: ReservationStatus.EXPIRED } 
+            });
+        } else {
+            const latestSession = await prisma.session.findFirst({
+                where: { chargerId: Number(pointid) },
+                orderBy: { startedAt: "desc" },
+                select: { userId: true }
+            });
+
+            if (charger.status === "OUTAGE" || latestSession?.userId !== userId) {
+                const msg = charger.status === "OUTAGE" 
+                    ? "Charger is out of order" 
+                    : "Charger is currently in use or reserved by another user";
+                
+                return res.status(403).json(makeErrorLog(req, 403, msg));
+            }
+        }
+    }
+
     const start = new Date(starttime);
     const end = new Date(endtime);
     
@@ -46,13 +86,12 @@ const handleNewSession = async (req: Request, res: Response) => {
             startedAt: start,
             endedAt: end,
             kWh: Number(totalkwh),
-            pricePerKWh: Number(kwhprice || 0),
-            costEur: Number(amount || 0),
+            pricePerKWh: Number(kwhprice),
+            costEur: Number(amount),
             status: SessionStatus.COMPLETED, 
         }
     });
 
-    // Success: Empty Body
     return res.status(200).send();
 
   } catch (err: any) {

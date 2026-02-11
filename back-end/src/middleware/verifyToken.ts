@@ -26,6 +26,7 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
     }
 
     const payload = decoded as { userId: number; role: string };
+    console.log("verifyToken payload:", payload, "raw decoded:", decoded);
     req.userId = payload.userId;
     req.userRole = payload.role;
     next();
@@ -33,8 +34,9 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
 };
 
 export const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
-    if (req.userRole !== 'ADMIN') {
-        return res.status(403).json({ error: 'Forbidden: Admin role required' });
-    }
-    next();
+  console.log("requireAdmin sees userRole =", JSON.stringify(req.userRole));
+  if ((req.userRole || "").trim().toUpperCase() !== "ADMIN") {
+    return res.status(403).json({ error: "Forbidden: admin role required" });
+  }
+  next();
 };

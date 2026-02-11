@@ -6,7 +6,7 @@ const path = require('path');
 const FormData = require('form-data');
 const program = new Command();
 
-const BASE_URL = 'http://localhost:3000/api/v1';
+const BASE_URL = 'http://localhost:9876/api/v1';
 const TOKEN_FILE = path.join(__dirname, '.softeng_token');
 
 // --- ΒΟΗΘΗΤΙΚΗ ΣΥΝΑΡΤΗΣΗ ΓΙΑ ΤΟ TOKEN ---
@@ -154,13 +154,17 @@ program.command('addpoints')
 // "points" command
 program.command('points')
   .description('Returns all charging points')
-  .option('--status <status>', 'Filter by status (available, charging, etc.)')
+  .option('--status <status>', 'Filter by status (available, charging, offline, etc.)')
   .option('--format <type>', 'Output format (json or csv)', 'csv')
   .action(async (options) => {
     try {
       let url = `${BASE_URL}/points`;
+      
       if (options.status) {
-        url += `?status=${options.status}`;
+        // --- CHANGE HERE: Map 'offline' to 'outage' ---
+        // The API expects 'outage', but the CLI user types 'offline'
+        const queryStatus = (options.status === 'offline') ? 'outage' : options.status;
+        url += `?status=${queryStatus}`;
       }
 
       const response = await axios.get(url, {
@@ -426,6 +430,31 @@ program.command('pointstatus')
     }
   });
 
+// "addcard" command
+program.command('addcard')
+  .description('Adds a mock payment method to the user')
+  .action(async () => {
+    try {
+      const url = `${BASE_URL}/payments/save-method`; 
+      
+      const payload = {
+        paymentMethodId: "mock_pm_" + Date.now(), // ΑΥΤΟ ΠΕΡΙΜΕΝΕΙ ΤΟ ZOD
+        provider: "mock",
+        tokenLast4: "4242"
+      };
+
+      const response = await axios.post(url, payload, {
+          headers: getAuthHeader()
+      });
+      
+      console.log("status");
+      console.log("OK");
+      
+    } catch (error) {
+       handleError(error);
+    }
+  });
+
 // --- Generic Error Handler ---
 function handleError(error) {
     if (error.response) {
@@ -438,6 +467,8 @@ function handleError(error) {
     } else {
         console.error("Error:", error.message);
     }
+    // Τερματισμός με Error Code
+    process.exit(1);
 }
 
 program.parse(process.argv);

@@ -1,7 +1,18 @@
 import { Router } from "express";
 import prisma from "../prisma/client.ts";
+import { ChargerStatus } from "@prisma/client";
+import { getStatusOverlay, getUserReservedChargerId } from "../services/availabilityRedis.ts";
+import { verifyToken } from "../middleware/verifyToken.ts";
 
 const router = Router();
+
+/** Optional auth: if Authorization exists, verifyToken sets req.userId; otherwise let it pass */
+function optionalAuth(req: any, res: any, next: any) {
+  const auth = req.headers?.authorization;
+  if (!auth) return next();
+  return (verifyToken as any)(req, res, () => next());
+}
+router.use(optionalAuth);
 
 /** Helpers */
 function parseCommaList(v?: string) {
@@ -10,9 +21,8 @@ function parseCommaList(v?: string) {
     .map((s) => s.trim())
     .filter(Boolean);
 }
-const toNum = (v: unknown) =>
-  v === undefined ? undefined : Number(v);
-function deg2rad(d: number) { return d * Math.PI / 180; }
+const toNum = (v: unknown) => (v === undefined ? undefined : Number(v));
+function deg2rad(d: number) { return (d * Math.PI) / 180; }
 function haversineKm(aLat:number,aLng:number,bLat:number,bLng:number){
   const R=6371;
   const dLat=deg2rad(bLat-aLat);
@@ -21,21 +31,19 @@ function haversineKm(aLat:number,aLng:number,bLat:number,bLng:number){
   return 2*R*Math.asin(Math.sqrt(s));
 }
 
+const dbToApiStatus = (s: ChargerStatus): "available" | "in_use" | "outage" => {
+  switch (s) {
+    case ChargerStatus.AVAILABLE: return "available";
+    case ChargerStatus.IN_USE: return "in_use";
+    case ChargerStatus.OUTAGE: return "outage";
+  }
+};
+
 /**
  * GET /api/v1/chargers
- * Query params (all optional):
- * - q: string (search name/address)
- * - status: 'AVAILABLE' | 'IN_USE' | 'OUTAGE'
- * - connectorType: 'CCS,CHADEMO,TYPE2' (comma-separated)
- * - minKW, maxKW: numbers
- * - lat, lng, radiusKm: numbers (geo filter)
- * - sort: 'distance' | 'power' | 'name'
- * - order: 'asc' | 'desc' (default: asc)
- * - page, pageSize: numbers (default: 1, 20)
  */
-router.get("/", async (req, res) => {
+router.get("/", async (req: any, res) => {
   try {
-    // Parse query
     const q = (req.query.q as string | undefined) || undefined;
     const status = (req.query.status as "AVAILABLE" | "IN_USE" | "OUTAGE" | undefined);
     const connectorList = parseCommaList(req.query.connectorType as string | undefined);
@@ -49,7 +57,6 @@ router.get("/", async (req, res) => {
     const page = Math.max(1, toNum(req.query.page) ?? 1);
     const pageSize = Math.min(100, Math.max(1, toNum(req.query.pageSize) ?? 20));
 
-    // Build Prisma 'where'
     const where: any = {};
 
     if (q) {
@@ -59,14 +66,9 @@ router.get("/", async (req, res) => {
       ];
     }
 
-    if (status) {
-      where.status = status; // ChargerStatus enum
-    }
+    if (status) where.status = status;
 
-    if (connectorList.length) {
-      // ConnectorType enum list
-      where.connectorType = { in: connectorList };
-    }
+    if (connectorList.length) where.connectorType = { in: connectorList };
 
     if (minKW || maxKW) {
       where.maxKW = {};
@@ -74,59 +76,46 @@ router.get("/", async (req, res) => {
       if (maxKW !== undefined) where.maxKW.lte = maxKW;
     }
 
-    // Optional geo bounding box pre-filter (fast rough filter)
     let useGeo = false;
-    let bbox:
-      | { latMin: number; latMax: number; lngMin: number; lngMax: number }
-      | null = null;
-
-    if (
-      lat !== undefined &&
-      lng !== undefined &&
-      radiusKm !== undefined &&
-      radiusKm > 0
-    ) {
+    if (lat !== undefined && lng !== undefined && radiusKm !== undefined && radiusKm > 0) {
       useGeo = true;
-      const dLat = radiusKm / 111; // ~111 km per 1° latitude
+      const dLat = radiusKm / 111;
       const dLng = radiusKm / (111 * Math.cos(deg2rad(lat)));
-      bbox = {
-        latMin: lat - dLat,
-        latMax: lat + dLat,
-        lngMin: lng - dLng,
-        lngMax: lng + dLng,
-      };
       where.AND = [
         ...(where.AND ?? []),
-        { lat: { gte: bbox.latMin, lte: bbox.latMax } },
-        { lng: { gte: bbox.lngMin, lte: bbox.lngMax } },
+        { lat: { gte: lat - dLat, lte: lat + dLat } },
+        { lng: { gte: lng - dLng, lte: lng + dLng } },
       ];
     }
 
-    // Count for pagination (before fetching)
     const total = await prisma.charger.count({ where });
 
-    // DB ordering for simple sorts
     let orderBy: any = undefined;
     if (sort === "power") orderBy = { maxKW: order };
     if (sort === "name") orderBy = { name: order };
 
-    // Fetch page
     const rows = await prisma.charger.findMany({
       where,
       orderBy,
       skip: (page - 1) * pageSize,
       take: pageSize,
-      include: {
-        pricingProfile: true, // in case frontend needs name/id
-      },
+      include: { pricingProfile: true },
     });
 
-    // Enrich results: lat/lng are Decimal in Prisma; convert to Number
+    const ids = rows.map((c) => c.id);
+    const overlay = await getStatusOverlay(ids);
+
+    const userId = req.userId ? Number(req.userId) : null;
+    const myReservedChargerId = userId ? await getUserReservedChargerId(userId) : null;
+
     let items = rows.map((c) => {
       const latNum = Number(c.lat);
       const lngNum = Number(c.lng);
 
-      const base = {
+      const baseStatus = dbToApiStatus(c.status);
+      const live = overlay.get(c.id);
+
+      const base: any = {
         id: c.id,
         name: c.name,
         address: c.address,
@@ -134,20 +123,19 @@ router.get("/", async (req, res) => {
         lng: lngNum,
         connectorType: c.connectorType,
         maxKW: c.maxKW,
-        status: c.status,
+        status: live ?? baseStatus, // ✅ Redis overrides DB
         pricingProfileId: c.pricingProfileId ?? null,
+        providerName: c.providerName,
+        kwhprice: Number(c.kwhprice),
+        reserved_by_me: userId ? myReservedChargerId === c.id : false,
       };
 
       if (useGeo) {
-        return {
-          ...base,
-          distanceKm: haversineKm(lat!, lng!, latNum, lngNum),
-        };
+        base.distanceKm = haversineKm(lat!, lng!, latNum, lngNum);
       }
       return base;
     });
 
-    // In-memory sorting for distance (requires computed value)
     if (sort === "distance") {
       items.sort((a: any, b: any) => {
         const da = a.distanceKm ?? Number.POSITIVE_INFINITY;
@@ -156,45 +144,33 @@ router.get("/", async (req, res) => {
       });
     }
 
-    res.json({
-      items,
-      page,
-      pageSize,
-      total,
-    });
+    res.json({ items, page, pageSize, total });
   } catch (err) {
     console.error("GET /chargers error:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-// --- NEW: GET one charger by id ---
-router.get("/:id", async (req, res) => {
+router.get("/:id", async (req: any, res) => {
   try {
     const id = Number(req.params.id);
-    if (isNaN(id)) {
-      return res.status(400).json({
-        call: req.originalUrl,
-        timeref: new Date().toISOString(),
-        originator: req.ip,
-        return_code: 400,
-        error: "Invalid charger ID",
-        debuginfo: "",
-      });
-    }
+    if (isNaN(id)) return res.status(400).json({ error: "Invalid charger ID" });
 
     const charger = await prisma.charger.findUnique({
       where: { id },
       include: { pricingProfile: true },
     });
 
-    if (!charger) {
-      // 204 per your API spec (no content)
-      return res.status(204).send();
-    }
+    if (!charger) return res.status(204).send();
 
-    // Convert lat/lng from Prisma Decimal to numbers
-    const data = {
+    // overlay
+    const overlay = await getStatusOverlay([id]);
+    const live = overlay.get(id);
+
+    const userId = req.userId ? Number(req.userId) : null;
+    const myReservedChargerId = userId ? await getUserReservedChargerId(userId) : null;
+
+    res.json({
       id: charger.id,
       name: charger.name,
       address: charger.address,
@@ -202,21 +178,15 @@ router.get("/:id", async (req, res) => {
       lng: Number(charger.lng),
       connectorType: charger.connectorType,
       maxKW: charger.maxKW,
-      status: charger.status,
+      kwhprice: Number(charger.kwhprice),
+      providerName: charger.providerName,
+      status: live ?? dbToApiStatus(charger.status),
       pricingProfileId: charger.pricingProfileId ?? null,
-    };
-
-    res.json(data);
+      reserved_by_me: userId ? myReservedChargerId === charger.id : false,
+    });
   } catch (err) {
     console.error("GET /chargers/:id error:", err);
-    res.status(500).json({
-      call: req.originalUrl,
-      timeref: new Date().toISOString(),
-      originator: req.ip,
-      return_code: 500,
-      error: "Internal server error",
-      debuginfo: "",
-    });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
