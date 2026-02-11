@@ -2,11 +2,11 @@
 import type { CarApi } from "../types/ownership";
 
 function getBaseUrl() {
-  const rawBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
+  const rawBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:9876/api/v1";
   const baseUrl = rawBaseUrl.replace(/\/$/, "");
 
   if (baseUrl.startsWith("http://localhost:4000")) {
-    return "http://localhost:3000/api/v1";
+    return "http://localhost:9876/api/v1";
   }
 
   return baseUrl;
