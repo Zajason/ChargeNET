@@ -46,7 +46,6 @@ const handleNewSession = async (req: Request, res: Response) => {
     }
 
     if (charger.status !== "AVAILABLE") {
-        
         // Find if any reservation belongs to user
         const myReservation = charger.reservations.find((r: any) => r.userId === userId);
 
@@ -56,11 +55,19 @@ const handleNewSession = async (req: Request, res: Response) => {
                 data: { status: ReservationStatus.EXPIRED } 
             });
         } else {
-            const msg = charger.status === "OUTAGE" 
-                ? "Charger is out of order" 
-                : "Charger is currently in use or reserved by another user";
-            
-            return res.status(403).json(makeErrorLog(req, 403, msg));
+            const latestSession = await prisma.session.findFirst({
+                where: { chargerId: Number(pointid) },
+                orderBy: { startedAt: "desc" },
+                select: { userId: true }
+            });
+
+            if (charger.status === "OUTAGE" || latestSession?.userId !== userId) {
+                const msg = charger.status === "OUTAGE" 
+                    ? "Charger is out of order" 
+                    : "Charger is currently in use or reserved by another user";
+                
+                return res.status(403).json(makeErrorLog(req, 403, msg));
+            }
         }
     }
 
