@@ -8,6 +8,13 @@ import { setChargerStatusRedis, cancelReservationRedis } from "../services/avail
 const router = express.Router();
 router.use(verifyToken);
 
+// Date format helper - Format: YYYY-MM-DD hh:mm
+function formatDate(d: Date | null | undefined): string {
+  if (!d) return "";
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 /* ── POST /charging/start ── */
 router.post("/start", async (req: Request, res: Response) => {
   try {
@@ -67,7 +74,7 @@ router.post("/start", async (req: Request, res: Response) => {
     return res.status(201).json({
       sessionId: session.id,
       chargerId: reservation.chargerId,
-      startedAt: session.startedAt.toISOString(),
+      startedAt: formatDate(session.startedAt),
       pricePerKWh: Number(reservation.charger.kwhprice),
       maxKW: reservation.charger.maxKW,
     });
@@ -267,8 +274,8 @@ router.get("/active", async (req: Request, res: Response) => {
       reservationData = {
         reservationId: reservation.id,
         chargerId: reservation.chargerId,
-        expiresAt: reservation.expiresAt.toISOString(),
-        startsAt: reservation.startsAt.toISOString(),
+        expiresAt: formatDate(reservation.expiresAt),
+        startsAt: formatDate(reservation.startsAt),
       };
     }
 
