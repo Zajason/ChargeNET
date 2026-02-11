@@ -108,6 +108,12 @@ export default function BillingScreen() {
   const [mockEnergy, setMockEnergy] = useState('12.34');
   const [mockLoading, setMockLoading] = useState(false);
   const [mockMessage, setMockMessage] = useState<string | null>(null);
+  const [spendingView, setSpendingView] = useState<'monthly' | 'yearly' | 'stats' | null>(null);
+  const [statsFrom, setStatsFrom] = useState(() => {
+    const d = new Date(); d.setMonth(d.getMonth() - 1);
+    return d.toISOString().slice(0, 10);
+  });
+  const [statsTo, setStatsTo] = useState(() => new Date().toISOString().slice(0, 10));
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -135,15 +141,77 @@ export default function BillingScreen() {
     void loadData();
   }, [loadData]);
 
-  const totalThisMonth = useMemo(() => {
+  const monthlySummary = useMemo(() => {
     const now = new Date();
-    return history
-      .filter((entry) => {
-        const created = new Date(entry.createdAt);
-        return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
-      })
-      .reduce((sum, entry) => sum + (entry.amountEur ?? 0), 0);
+    const captured = history.filter((e) => e.status === 'CAPTURED');
+
+    // Build map of totals keyed by "YYYY-MM"
+    const totals = new Map<string, number>();
+    for (const entry of captured) {
+      const d = new Date(entry.createdAt);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      totals.set(key, (totals.get(key) ?? 0) + (entry.amountEur ?? 0));
+    }
+
+    // Last 6 calendar months (including current)
+    const months: { key: string; label: string; total: number }[] = [];
+    for (let i = 0; i < 6; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const label = d.toLocaleString('default', { month: 'long', year: 'numeric' });
+      months.push({ key, label, total: totals.get(key) ?? 0 });
+    }
+    return months;
   }, [history]);
+
+  const yearlySummary = useMemo(() => {
+    const captured = history.filter((e) => e.status === 'CAPTURED');
+    const totals = new Map<number, number>();
+    for (const entry of captured) {
+      const year = new Date(entry.createdAt).getFullYear();
+      totals.set(year, (totals.get(year) ?? 0) + (entry.amountEur ?? 0));
+    }
+    return Array.from(totals.entries())
+      .map(([year, total]) => ({ year, total }))
+      .sort((a, b) => b.year - a.year);
+  }, [history]);
+
+  const grandTotal = useMemo(() => {
+    return history
+      .filter((e) => e.status === 'CAPTURED')
+      .reduce((sum, e) => sum + (e.amountEur ?? 0), 0);
+  }, [history]);
+
+  const periodStats = useMemo(() => {
+    const from = new Date(statsFrom + 'T00:00:00');
+    const to = new Date(statsTo + 'T23:59:59');
+    const filtered = history.filter((e) => {
+      if (e.status !== 'CAPTURED') return false;
+      const d = new Date(e.createdAt);
+      return d >= from && d <= to;
+    });
+
+    const totalSpent = filtered.reduce((s, e) => s + (e.amountEur ?? 0), 0);
+    const totalKWh = filtered.reduce((s, e) => s + (e.session?.energyKWh ?? 0), 0);
+    const sessionCount = filtered.length;
+    const avgCost = sessionCount > 0 ? totalSpent / sessionCount : 0;
+    const avgKWh = sessionCount > 0 ? totalKWh / sessionCount : 0;
+
+    // Most used charger
+    const chargerCounts = new Map<string, { name: string; count: number }>();
+    for (const e of filtered) {
+      const name = e.session?.chargerName ?? `Session #${e.sessionId}`;
+      const entry = chargerCounts.get(name) ?? { name, count: 0 };
+      entry.count++;
+      chargerCounts.set(name, entry);
+    }
+    let topCharger: { name: string; count: number } | null = null;
+    for (const c of chargerCounts.values()) {
+      if (!topCharger || c.count > topCharger.count) topCharger = c;
+    }
+
+    return { totalSpent, totalKWh, sessionCount, avgCost, avgKWh, topCharger };
+  }, [history, statsFrom, statsTo]);
 
   const triggerMockCharge = useCallback(async () => {
     if (!demoEnabled) return;
@@ -368,11 +436,143 @@ export default function BillingScreen() {
             <div className="bg-white rounded-lg border border-gray-200 p-6 lg:col-span-2">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-medium text-gray-900">Billing History</h2>
-                <div className="text-right text-sm text-gray-600">
-                  <p>Total this month</p>
-                  <p className="text-lg font-semibold text-gray-900">{formatAmount(totalThisMonth)}</p>
+                <div className="flex items-center gap-1 rounded-lg border border-gray-200 p-0.5">
+                  <button
+                    onClick={() => setSpendingView((v) => v === 'monthly' ? null : 'monthly')}
+                    className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                      spendingView === 'monthly'
+                        ? 'bg-gray-900 text-white'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    Monthly
+                  </button>
+                  <button
+                    onClick={() => setSpendingView((v) => v === 'yearly' ? null : 'yearly')}
+                    className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                      spendingView === 'yearly'
+                        ? 'bg-gray-900 text-white'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    Yearly
+                  </button>
+                  <button
+                    onClick={() => setSpendingView((v) => v === 'stats' ? null : 'stats')}
+                    className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                      spendingView === 'stats'
+                        ? 'bg-gray-900 text-white'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    Stats
+                  </button>
                 </div>
               </div>
+
+              {!loading && history.length > 0 && spendingView !== null && (
+                <div className="mb-5 rounded-lg border border-gray-100 bg-gray-50 p-4">
+                  {spendingView === 'monthly' ? (
+                    <>
+                      <div className="space-y-2">
+                        {monthlySummary.map((m) => (
+                          <div key={m.key} className="flex items-center justify-between text-sm">
+                            <span className="text-gray-600">{m.label}</span>
+                            <span className={`font-medium ${m.total > 0 ? 'text-gray-900' : 'text-gray-400'}`}>
+                              {formatAmount(m.total)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="mt-3 pt-3 border-t border-gray-200 flex items-center justify-between text-sm">
+                        <span className="font-medium text-gray-700">6-Month Total</span>
+                        <span className="font-semibold text-gray-900">
+                          {formatAmount(monthlySummary.reduce((s, m) => s + m.total, 0))}
+                        </span>
+                      </div>
+                    </>
+                  ) : spendingView === 'yearly' ? (
+                    <>
+                      <div className="space-y-2">
+                        {yearlySummary.length === 0 ? (
+                          <p className="text-sm text-gray-400">No completed payments yet.</p>
+                        ) : (
+                          yearlySummary.map((y) => (
+                            <div key={y.year} className="flex items-center justify-between text-sm">
+                              <span className="text-gray-600">{y.year}</span>
+                              <span className="font-medium text-gray-900">{formatAmount(y.total)}</span>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                      <div className="mt-3 pt-3 border-t border-gray-200 flex items-center justify-between text-sm">
+                        <span className="font-medium text-gray-700">All-Time Total</span>
+                        <span className="font-semibold text-gray-900">{formatAmount(grandTotal)}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="flex items-center gap-2">
+                          <label htmlFor="stats-from" className="text-xs text-gray-500">From</label>
+                          <input
+                            id="stats-from"
+                            type="date"
+                            value={statsFrom}
+                            onChange={(e) => setStatsFrom(e.target.value)}
+                            className="border border-gray-200 rounded-md px-2 py-1 text-sm text-gray-900 bg-white"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <label htmlFor="stats-to" className="text-xs text-gray-500">To</label>
+                          <input
+                            id="stats-to"
+                            type="date"
+                            value={statsTo}
+                            onChange={(e) => setStatsTo(e.target.value)}
+                            className="border border-gray-200 rounded-md px-2 py-1 text-sm text-gray-900 bg-white"
+                          />
+                        </div>
+                      </div>
+                      {periodStats.sessionCount === 0 ? (
+                        <p className="text-sm text-gray-400">No completed sessions in this period.</p>
+                      ) : (
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="rounded-lg bg-white border border-gray-200 p-3">
+                            <p className="text-xs text-gray-500">Total Spent</p>
+                            <p className="text-lg font-semibold text-gray-900">{formatAmount(periodStats.totalSpent)}</p>
+                          </div>
+                          <div className="rounded-lg bg-white border border-gray-200 p-3">
+                            <p className="text-xs text-gray-500">Total Energy</p>
+                            <p className="text-lg font-semibold text-gray-900">{periodStats.totalKWh.toFixed(2)} kWh</p>
+                          </div>
+                          <div className="rounded-lg bg-white border border-gray-200 p-3">
+                            <p className="text-xs text-gray-500">Sessions</p>
+                            <p className="text-lg font-semibold text-gray-900">{periodStats.sessionCount}</p>
+                          </div>
+                          <div className="rounded-lg bg-white border border-gray-200 p-3">
+                            <p className="text-xs text-gray-500">Avg Cost / Session</p>
+                            <p className="text-lg font-semibold text-gray-900">{formatAmount(periodStats.avgCost)}</p>
+                          </div>
+                          <div className="rounded-lg bg-white border border-gray-200 p-3">
+                            <p className="text-xs text-gray-500">Avg Energy / Session</p>
+                            <p className="text-lg font-semibold text-gray-900">{periodStats.avgKWh.toFixed(2)} kWh</p>
+                          </div>
+                          <div className="rounded-lg bg-white border border-gray-200 p-3">
+                            <p className="text-xs text-gray-500">Most Used Charger</p>
+                            <p className="text-sm font-semibold text-gray-900 truncate">
+                              {periodStats.topCharger?.name ?? '—'}
+                            </p>
+                            {periodStats.topCharger && (
+                              <p className="text-xs text-gray-500">{periodStats.topCharger.count} session{periodStats.topCharger.count !== 1 ? 's' : ''}</p>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
 
               {loading ? (
                 <div className="flex items-center gap-2 text-sm text-gray-500">
