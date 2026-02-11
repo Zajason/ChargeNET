@@ -12,6 +12,7 @@ const apiToDbStatus: Record<string, ChargerStatus> = {
   charging: ChargerStatus.IN_USE,
   reserved: ChargerStatus.IN_USE,
   outage: ChargerStatus.OUTAGE,
+  offline: ChargerStatus.OUTAGE,
   outoforder: ChargerStatus.OUTAGE,
 };
 
