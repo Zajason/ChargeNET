@@ -57,7 +57,10 @@ interface ChargerDetailsProps {
   activeReservationId?: number | null;
   activeSessionId?: number | null;
   chargingStatus?: ChargingStatusData | null;
-  onStartCharging?: (reservationId: number, battery?: { batteryCapacityKWh: number; currentBatteryLevel: number }) => void;
+  onStartCharging?: (
+    reservationId: number,
+    battery?: { batteryCapacityKWh: number; currentBatteryLevel: number }
+  ) => void;
   onStopCharging?: (sessionId: number) => void;
 
   // cluster navigation
@@ -114,7 +117,11 @@ export function ChargerDetails({
 
   // Timer logic - calculate remaining time based on start time from parent
   useEffect(() => {
-    if (isReserved && lastReservationStartTime !== null && lastReservationDuration > 0) {
+    if (
+      isReserved &&
+      lastReservationStartTime !== null &&
+      lastReservationDuration > 0
+    ) {
       const interval = setInterval(() => {
         const elapsed = (Date.now() - lastReservationStartTime) / 1000;
         const remaining = Math.max(0, lastReservationDuration - elapsed);
@@ -270,7 +277,9 @@ function Header({
   onNext?: () => void;
 }) {
   const inCluster =
-    typeof clusterIndex === "number" && typeof clusterCount === "number" && clusterCount > 1;
+    typeof clusterIndex === "number" &&
+    typeof clusterCount === "number" &&
+    clusterCount > 1;
 
   return (
     <div className="flex justify-between items-start mb-4 gap-3">
@@ -348,7 +357,10 @@ interface ChargerContentProps {
   activeReservationId?: number | null;
   activeSessionId?: number | null;
   chargingStatus?: ChargingStatusData | null;
-  onStartCharging?: (reservationId: number, battery?: { batteryCapacityKWh: number; currentBatteryLevel: number }) => void;
+  onStartCharging?: (
+    reservationId: number,
+    battery?: { batteryCapacityKWh: number; currentBatteryLevel: number }
+  ) => void;
   onStopCharging?: (sessionId: number) => void;
 }
 
@@ -384,18 +396,94 @@ function ChargerContent({
 }: ChargerContentProps) {
   const [showVehicleMenu, setShowVehicleMenu] = useState(false);
   const [showCardMenu, setShowCardMenu] = useState(false);
-  const [paymentCards, setPaymentCards] = useState<{ id: number; provider: string; tokenLast4: string; status: string }[]>([]);
-  const [selectedCard, setSelectedCard] = useState<{ id: number; provider: string; tokenLast4: string; status: string } | null>(null);
+  const [paymentCards, setPaymentCards] = useState<
+    { id: number; provider: string; tokenLast4: string; status: string }[]
+  >([]);
+  const [selectedCard, setSelectedCard] = useState<{
+    id: number;
+    provider: string;
+    tokenLast4: string;
+    status: string;
+  } | null>(null);
   const [cardsLoading, setCardsLoading] = useState(false);
 
   const price = typeof charger.kwhprice === "number" ? charger.kwhprice : 0;
 
-  const [reservationEndTime, setReservationEndTime] = useState<string | null>(null);
+  const [reservationEndTime, setReservationEndTime] = useState<string | null>(
+    null
+  );
   const [showDurationPicker, setShowDurationPicker] = useState(false);
   const [selectedMinutes, setSelectedMinutes] = useState<number>(30);
 
   const isGuest = notLoggedIn || !isLoggedIn();
   const reserveDisabled = isGuest || isReserved || isReserving || hasActiveReservation;
+
+  // ---------------------------
+  // Distance / ETA additions
+  // ---------------------------
+  const [userLoc, setUserLoc] = useState<{ lat: number; lng: number } | null>(null);
+  const [routeInfo, setRouteInfo] = useState<{ distanceText: string; durationText: string } | null>(null);
+  const [routeLoading, setRouteLoading] = useState(false);
+
+  // Get current location if user allows it
+  useEffect(() => {
+    if (!("geolocation" in navigator)) return;
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      },
+      () => {
+        setUserLoc(null);
+      },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60_000 }
+    );
+  }, []);
+
+  // Fetch distance+ETA for this charger when we have user location
+  useEffect(() => {
+    if (!userLoc) {
+      setRouteInfo(null);
+      return;
+    }
+
+    let mounted = true;
+    setRouteLoading(true);
+
+    const qs = new URLSearchParams({
+      oLat: String(userLoc.lat),
+      oLng: String(userLoc.lng),
+      dLat: String(charger.lat),
+      dLng: String(charger.lng),
+    });
+
+    fetch(`/api/route-info?${qs.toString()}`, { cache: "no-store" })
+      .then(async (r) => {
+        if (!r.ok) throw new Error(`route-info failed (${r.status})`);
+        return r.json();
+      })
+      .then((data) => {
+        if (!mounted) return;
+        if (data?.distanceText && data?.durationText) {
+          setRouteInfo({ distanceText: data.distanceText, durationText: data.durationText });
+        } else {
+          setRouteInfo(null);
+        }
+      })
+      .catch(() => {
+        if (!mounted) return;
+        setRouteInfo(null);
+      })
+      .finally(() => {
+        if (!mounted) return;
+        setRouteLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [userLoc, charger.id, charger.lat, charger.lng]);
+  // ---------------------------
 
   useEffect(() => {
     setShowVehicleMenu(false);
@@ -414,8 +502,12 @@ function ChargerContent({
         if (valid.length > 0 && !selectedCard) setSelectedCard(valid[0]);
       })
       .catch(() => {})
-      .finally(() => { if (mounted) setCardsLoading(false); });
-    return () => { mounted = false; };
+      .finally(() => {
+        if (mounted) setCardsLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
   }, [showDurationPicker, isGuest]);
 
   useEffect(() => {
@@ -424,7 +516,8 @@ function ChargerContent({
     async function loadDetails() {
       try {
         const data = await fetchCharger(String(charger.id));
-        if (mounted && data?.reservationendtime) setReservationEndTime(String(data.reservationendtime));
+        if (mounted && data?.reservationendtime)
+          setReservationEndTime(String(data.reservationendtime));
         else if (mounted) setReservationEndTime(null);
       } catch {
         // ignore
@@ -445,7 +538,8 @@ function ChargerContent({
 
     const target = 80;
     const energyNeeded =
-      (selectedVehicle.batteryCapacity * (target - selectedVehicle.currentBatteryLevel)) / 100;
+      (selectedVehicle.batteryCapacity * (target - selectedVehicle.currentBatteryLevel)) /
+      100;
 
     const speed = Math.min(chargerPowerKW, selectedVehicle.maxChargingSpeed);
     const timeMinutes = Math.max(0, Math.round((energyNeeded / speed) * 60));
@@ -513,7 +607,9 @@ function ChargerContent({
                         if (vehicles.length > 1) setShowVehicleMenu((v) => !v);
                       }}
                       className={`w-full flex items-center justify-between gap-3 rounded-lg px-2.5 py-2 ${
-                        vehicles.length > 1 ? "hover:bg-white/60 cursor-pointer" : "cursor-default"
+                        vehicles.length > 1
+                          ? "hover:bg-white/60 cursor-pointer"
+                          : "cursor-default"
                       } transition-colors`}
                       aria-haspopup={vehicles.length > 1 ? "listbox" : undefined}
                       aria-expanded={vehicles.length > 1 ? showVehicleMenu : undefined}
@@ -606,6 +702,20 @@ function ChargerContent({
         text={`${chargerPowerKW} kW • ${connectorLabel(charger.connectorType)}`}
       />
 
+      {/* Distance + ETA (only if location is allowed) */}
+      {userLoc && (
+        <InfoRow
+          icon={<Clock className="w-5 h-5 text-gray-400" />}
+          text={
+            routeLoading
+              ? "Calculating distance & ETA…"
+              : routeInfo
+              ? `${routeInfo.distanceText} away • ~${routeInfo.durationText} drive`
+              : "Distance/ETA unavailable"
+          }
+        />
+      )}
+
       {/* Active charging session display */}
       {activeSessionId && chargingStatus && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-3">
@@ -623,7 +733,6 @@ function ChargerContent({
             )}
           </div>
 
-          {/* Battery progress bar */}
           {chargingStatus.maxKWh && chargingStatus.maxKWh > 0 && (
             <div>
               <div className="flex justify-between text-xs text-gray-500 mb-1">
@@ -633,7 +742,12 @@ function ChargerContent({
               <div className="w-full h-2.5 bg-gray-200 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-green-500 rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(100, (chargingStatus.kWh / chargingStatus.maxKWh) * 100)}%` }}
+                  style={{
+                    width: `${Math.min(
+                      100,
+                      (chargingStatus.kWh / chargingStatus.maxKWh) * 100
+                    )}%`,
+                  }}
                 />
               </div>
             </div>
@@ -642,22 +756,32 @@ function ChargerContent({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <p className="text-sm text-gray-500">Energy</p>
-              <p className="text-2xl font-semibold text-gray-900">{chargingStatus.kWh.toFixed(2)} <span className="text-sm font-normal">kWh</span></p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {chargingStatus.kWh.toFixed(2)}{" "}
+                <span className="text-sm font-normal">kWh</span>
+              </p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Cost</p>
-              <p className="text-2xl font-semibold text-gray-900">&euro;{Math.max(chargingStatus.costSoFar, 3).toFixed(2)}</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                &euro;{Math.max(chargingStatus.costSoFar, 3).toFixed(2)}
+              </p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Elapsed</p>
-              <p className="text-lg text-gray-900">{formatTime(chargingStatus.elapsedSeconds)}</p>
+              <p className="text-lg text-gray-900">
+                {formatTime(chargingStatus.elapsedSeconds)}
+              </p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Power</p>
               <p className="text-lg text-gray-900">{chargingStatus.maxKW} kW</p>
             </div>
           </div>
-          <p className="text-xs text-gray-500">Min. charge: &euro;3.00 &bull; &euro;{chargingStatus.pricePerKWh.toFixed(2)}/kWh</p>
+
+          <p className="text-xs text-gray-500">
+            Min. charge: &euro;3.00 &bull; &euro;{chargingStatus.pricePerKWh.toFixed(2)}/kWh
+          </p>
 
           {chargingStatus.status !== "AUTO_STOPPED" && (
             <button
@@ -681,10 +805,17 @@ function ChargerContent({
           {activeReservationId && onStartCharging && (
             <button
               type="button"
-              onClick={() => onStartCharging(activeReservationId, selectedVehicle ? {
-                batteryCapacityKWh: selectedVehicle.batteryCapacity,
-                currentBatteryLevel: selectedVehicle.currentBatteryLevel,
-              } : undefined)}
+              onClick={() =>
+                onStartCharging(
+                  activeReservationId,
+                  selectedVehicle
+                    ? {
+                        batteryCapacityKWh: selectedVehicle.batteryCapacity,
+                        currentBatteryLevel: selectedVehicle.currentBatteryLevel,
+                      }
+                    : undefined
+                )
+              }
               className="w-full py-3 rounded-lg bg-green-600 text-white hover:bg-green-700 active:bg-green-800 transition-colors font-medium flex items-center justify-center gap-2"
             >
               <Zap className="w-5 h-5" />
@@ -816,8 +947,12 @@ function ChargerContent({
                   <div className="relative">
                     <button
                       type="button"
-                      onClick={() => { if (paymentCards.length > 1) setShowCardMenu((v) => !v); }}
-                      className={`w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 px-3 py-2.5 ${paymentCards.length > 1 ? "hover:border-gray-400 cursor-pointer" : "cursor-default"} transition-colors`}
+                      onClick={() => {
+                        if (paymentCards.length > 1) setShowCardMenu((v) => !v);
+                      }}
+                      className={`w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 px-3 py-2.5 ${
+                        paymentCards.length > 1 ? "hover:border-gray-400 cursor-pointer" : "cursor-default"
+                      } transition-colors`}
                     >
                       <div className="flex items-center gap-2 min-w-0">
                         <CreditCard className="w-5 h-5 text-gray-500 shrink-0" />
@@ -826,23 +961,39 @@ function ChargerContent({
                         </span>
                       </div>
                       {paymentCards.length > 1 && (
-                        <ChevronDown className={`w-4 h-4 text-gray-500 shrink-0 transition-transform ${showCardMenu ? "rotate-180" : ""}`} />
+                        <ChevronDown
+                          className={`w-4 h-4 text-gray-500 shrink-0 transition-transform ${
+                            showCardMenu ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </button>
 
                     {showCardMenu && paymentCards.length > 1 && (
                       <>
-                        <button type="button" onClick={() => setShowCardMenu(false)} className="fixed inset-0 z-0 cursor-default" aria-label="Close" />
+                        <button
+                          type="button"
+                          onClick={() => setShowCardMenu(false)}
+                          className="fixed inset-0 z-0 cursor-default"
+                          aria-label="Close"
+                        />
                         <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
                           {paymentCards.map((card) => (
                             <button
                               type="button"
                               key={card.id}
-                              onClick={() => { setSelectedCard(card); setShowCardMenu(false); }}
-                              className={`w-full px-3 py-2.5 text-left text-sm flex items-center gap-2 transition-colors ${card.id === selectedCard?.id ? "bg-blue-50" : "hover:bg-gray-50"}`}
+                              onClick={() => {
+                                setSelectedCard(card);
+                                setShowCardMenu(false);
+                              }}
+                              className={`w-full px-3 py-2.5 text-left text-sm flex items-center gap-2 transition-colors ${
+                                card.id === selectedCard?.id ? "bg-blue-50" : "hover:bg-gray-50"
+                              }`}
                             >
                               <CreditCard className="w-4 h-4 text-gray-500 shrink-0" />
-                              <span className="text-gray-900">{card.provider} •••• {card.tokenLast4}</span>
+                              <span className="text-gray-900">
+                                {card.provider} •••• {card.tokenLast4}
+                              </span>
                             </button>
                           ))}
                         </div>
@@ -883,7 +1034,9 @@ function ChargerContent({
                 <button
                   type="button"
                   disabled={!selectedCard}
-                  className={`px-3 py-2 rounded text-white ${selectedCard ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"}`}
+                  className={`px-3 py-2 rounded text-white ${
+                    selectedCard ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"
+                  }`}
                   onClick={() => {
                     setShowDurationPicker(false);
                     onReserve(charger.id, selectedMinutes);
@@ -911,8 +1064,12 @@ function ChargerContent({
                   <div className="relative">
                     <button
                       type="button"
-                      onClick={() => { if (paymentCards.length > 1) setShowCardMenu((v) => !v); }}
-                      className={`w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 px-3 py-2.5 ${paymentCards.length > 1 ? "hover:border-gray-400 cursor-pointer" : "cursor-default"} transition-colors`}
+                      onClick={() => {
+                        if (paymentCards.length > 1) setShowCardMenu((v) => !v);
+                      }}
+                      className={`w-full flex items-center justify-between gap-2 rounded-lg border border-gray-300 px-3 py-2.5 ${
+                        paymentCards.length > 1 ? "hover:border-gray-400 cursor-pointer" : "cursor-default"
+                      } transition-colors`}
                     >
                       <div className="flex items-center gap-2 min-w-0">
                         <CreditCard className="w-5 h-5 text-gray-500 shrink-0" />
@@ -921,23 +1078,39 @@ function ChargerContent({
                         </span>
                       </div>
                       {paymentCards.length > 1 && (
-                        <ChevronDown className={`w-4 h-4 text-gray-500 shrink-0 transition-transform ${showCardMenu ? "rotate-180" : ""}`} />
+                        <ChevronDown
+                          className={`w-4 h-4 text-gray-500 shrink-0 transition-transform ${
+                            showCardMenu ? "rotate-180" : ""
+                          }`}
+                        />
                       )}
                     </button>
 
                     {showCardMenu && paymentCards.length > 1 && (
                       <>
-                        <button type="button" onClick={() => setShowCardMenu(false)} className="fixed inset-0 z-0 cursor-default" aria-label="Close" />
+                        <button
+                          type="button"
+                          onClick={() => setShowCardMenu(false)}
+                          className="fixed inset-0 z-0 cursor-default"
+                          aria-label="Close"
+                        />
                         <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
                           {paymentCards.map((card) => (
                             <button
                               type="button"
                               key={card.id}
-                              onClick={() => { setSelectedCard(card); setShowCardMenu(false); }}
-                              className={`w-full px-3 py-2.5 text-left text-sm flex items-center gap-2 transition-colors ${card.id === selectedCard?.id ? "bg-blue-50" : "hover:bg-gray-50"}`}
+                              onClick={() => {
+                                setSelectedCard(card);
+                                setShowCardMenu(false);
+                              }}
+                              className={`w-full px-3 py-2.5 text-left text-sm flex items-center gap-2 transition-colors ${
+                                card.id === selectedCard?.id ? "bg-blue-50" : "hover:bg-gray-50"
+                              }`}
                             >
                               <CreditCard className="w-4 h-4 text-gray-500 shrink-0" />
-                              <span className="text-gray-900">{card.provider} •••• {card.tokenLast4}</span>
+                              <span className="text-gray-900">
+                                {card.provider} •••• {card.tokenLast4}
+                              </span>
                             </button>
                           ))}
                         </div>
@@ -978,7 +1151,9 @@ function ChargerContent({
                 <button
                   type="button"
                   disabled={!selectedCard}
-                  className={`px-3 py-2 rounded text-white ${selectedCard ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"}`}
+                  className={`px-3 py-2 rounded text-white ${
+                    selectedCard ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"
+                  }`}
                   onClick={() => {
                     setShowDurationPicker(false);
                     onReserve(charger.id, selectedMinutes);
