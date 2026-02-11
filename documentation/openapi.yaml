@@ -1194,6 +1194,80 @@ paths:
         '400':
           description: Μη έγκυρα δεδομένα
 
+  /api/v1/payments/history:
+    get:
+      tags: [Payments]
+      summary: Ιστορικό πληρωμών χρήστη
+      description: Επιστρέφει όλες τις πληρωμές του χρήστη με πληροφορίες για τις συνεδρίες φόρτισης και τα τιμολόγια.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Λίστα πληρωμών
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  history:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        sessionId:
+                          type: integer
+                        status:
+                          type: string
+                        amountEur:
+                          type: number
+                        providerRef:
+                          type: string
+                          nullable: true
+                        createdAt:
+                          type: string
+                          format: date-time
+                        session:
+                          type: object
+                          nullable: true
+                          properties:
+                            startedAt:
+                              type: string
+                              format: date-time
+                            endedAt:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            energyKWh:
+                              type: number
+                            costEur:
+                              type: number
+                              nullable: true
+                            chargerName:
+                              type: string
+                              nullable: true
+                            chargerAddress:
+                              type: string
+                              nullable: true
+                            invoice:
+                              type: object
+                              nullable: true
+                              properties:
+                                id:
+                                  type: integer
+                                pdfUrl:
+                                  type: string
+                                totalEur:
+                                  type: number
+                                createdAt:
+                                  type: string
+                                  format: date-time
+        '401':
+          description: Μη εξουσιοδοτημένος
+        '500':
+          description: Αποτυχία φόρτωσης ιστορικού
+
   # ==================== ADMIN ====================
   /api/v1/admin/healthcheck:
     get:

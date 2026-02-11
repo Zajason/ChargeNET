@@ -321,3 +321,10 @@ se2502 pointstatus --point 3
 ## Team
 
 NTUA School of Electrical and Computer Engineering — Software Engineering 2025-2026, Team 02
+
+       Zakynthinos Iasonas         el23408
+       Ntontos Stergios            el23406
+       Mantzaris Konstantinos      el22406
+       Pallis Georgios             el22144
+       Stamatopoulos Grigorios     el22039
+       Fragkos Nikolas-Dionysios   el22028
