@@ -248,7 +248,7 @@ se2502 login --username admin@ev.local --passw admin123
 se2502 resetpoints
 
 # View charger status
-se2502 pointstatus --point 3
+se2502 pointstatus --id 3 --from 20260211 --to 20260212
 ```
 
 ---
