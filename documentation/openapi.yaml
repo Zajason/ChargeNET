@@ -64,25 +64,6 @@ components:
       example:
         error: "Invalid credentials"
 
-    ErrorLog:
-      type: object
-      properties:
-        call:
-          type: string
-          description: Το endpoint που κλήθηκε
-        timeref:
-          type: string
-          format: date-time
-        originator:
-          type: string
-          description: IP του αιτούντος
-        return_code:
-          type: integer
-        error:
-          type: string
-        debuginfo:
-          type: string
-
     User:
       type: object
       properties:
@@ -268,19 +249,6 @@ components:
           format: date-time
         car:
           $ref: '#/components/schemas/Car'
-
-    PaginatedResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items: {}
-        page:
-          type: integer
-        pageSize:
-          type: integer
-        total:
-          type: integer
 
 paths:
   # ==================== AUTHENTICATION ====================
