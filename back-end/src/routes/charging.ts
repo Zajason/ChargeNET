@@ -155,7 +155,7 @@ router.get("/status/:sessionId", async (req: Request, res: Response) => {
 
     const session = await prisma.session.findUnique({
       where: { id: sessionId },
-      include: { charger: true },
+      include: { charger: true, reservation: true },
     });
 
     if (!session) return res.status(404).json({ error: "Session not found" });
@@ -197,6 +197,19 @@ router.get("/status/:sessionId", async (req: Request, res: Response) => {
         // ✅ Redis: available again
         await setChargerStatusRedis(session.chargerId, "available");
 
+        // Capture payment on auto-stop
+        const autoPaymentIntentId = session.reservation?.paymentIntentId;
+        let autoPaymentStatus = "no_pre_auth";
+        if (autoPaymentIntentId) {
+          try {
+            const intent = await captureOrRecharge(autoPaymentIntentId, costSoFar, sessionId, userId);
+            autoPaymentStatus = intent.status;
+          } catch (payErr: any) {
+            console.error("[charging/status] auto-stop payment failed:", payErr.message);
+            autoPaymentStatus = "failed";
+          }
+        }
+
         return res.json({
           sessionId,
           status: SessionStatus.AUTO_STOPPED,
@@ -206,6 +219,7 @@ router.get("/status/:sessionId", async (req: Request, res: Response) => {
           maxKW: session.charger.maxKW,
           maxKWh: cap,
           pricePerKWh,
+          paymentStatus: autoPaymentStatus,
         });
       }
 
