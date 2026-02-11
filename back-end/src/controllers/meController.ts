@@ -11,6 +11,7 @@ const PROFILE_SELECT = {
     phone: true,
     role: true,
     preferences: true,
+    outstandingBalanceEur: true,
     createdAt: true,
     updatedAt: true,
 } as const;

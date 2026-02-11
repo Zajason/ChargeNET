@@ -108,6 +108,15 @@ const handleReserve = async (req: Request, res: Response) => {
           .json({ error: "You must add a payment method before reserving. Go to Billing to add a card." });
       }
 
+      // Block reservation if user has outstanding balance
+      const user = await prisma.user.findUnique({ where: { id: userId }, select: { outstandingBalanceEur: true } });
+      if (user && Number(user.outstandingBalanceEur) > 0) {
+        return res.status(402).json({
+          error: `You have an outstanding balance of ${Number(user.outstandingBalanceEur).toFixed(2)} EUR. Please pay it before reserving.`,
+          outstandingBalanceEur: Number(user.outstandingBalanceEur),
+        });
+      }
+
       try {
         intent = await preAuthorize(userId, 3);
       } catch (preAuthErr: any) {

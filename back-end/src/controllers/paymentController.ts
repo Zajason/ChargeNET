@@ -255,8 +255,48 @@ export const captureOrRecharge = async (
     return intent;
   }
 
-  await cancelPreAuth(paymentIntentId);
-  return chargeSession(sessionId, chargeAmount, userId);
+  // Amount exceeds pre-auth: capture the 3 EUR first, then charge the remainder
+  const capturedIntent = await stripe.paymentIntents.capture(paymentIntentId, {
+    amount_to_capture: Math.round(PRE_AUTH_AMOUNT * 100),
+  });
+
+  await prisma.paymentAuth.upsert({
+    where: { sessionId },
+    update: { userId, amountEur: PRE_AUTH_AMOUNT, providerRef: capturedIntent.id, status: PaymentStatus.CAPTURED },
+    create: { userId, sessionId, amountEur: PRE_AUTH_AMOUNT, providerRef: capturedIntent.id, status: PaymentStatus.CAPTURED },
+  });
+
+  const remainderEur = parseFloat((chargeAmount - PRE_AUTH_AMOUNT).toFixed(2));
+
+  try {
+    const remainderIntent = await chargeSession(sessionId, remainderEur, userId);
+
+    // Both succeeded — create invoice for total
+    await prisma.invoice.upsert({
+      where: { sessionId },
+      update: { totalEur: chargeAmount },
+      create: { userId, sessionId, pdfUrl: 'pending', totalEur: chargeAmount },
+    });
+
+    return remainderIntent;
+  } catch (remainderErr) {
+    // Remainder charge failed — store as outstanding balance
+    console.error('[captureOrRecharge] remainder charge failed, storing outstanding balance:', remainderErr);
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { outstandingBalanceEur: { increment: remainderEur } },
+    });
+
+    // Invoice only for the captured portion
+    await prisma.invoice.upsert({
+      where: { sessionId },
+      update: { totalEur: PRE_AUTH_AMOUNT },
+      create: { userId, sessionId, pdfUrl: 'pending', totalEur: PRE_AUTH_AMOUNT },
+    });
+
+    return { status: 'partial', id: capturedIntent.id, outstandingBalanceEur: remainderEur } as any;
+  }
 };
 
 export const chargeSession = async (sessionId: number, amountEur: number, expectedUserId?: number) => {
@@ -500,5 +540,62 @@ export const listBillingHistory = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('listBillingHistory error:', error);
     return res.status(500).json({ error: 'Failed to load billing history' });
+  }
+};
+
+export const payOutstandingBalance = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId!;
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const balance = Number(user.outstandingBalanceEur);
+    if (balance <= 0) {
+      return res.status(400).json({ error: 'No outstanding balance' });
+    }
+
+    const customerId = await ensureStripeCustomer(userId);
+
+    const methods = await prisma.paymentMethod.findMany({
+      where: { userId, status: 'valid', provider: 'stripe', stripePaymentMethodId: { not: null } },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const defaultMethod = methods[0];
+    if (!defaultMethod?.stripePaymentMethodId) {
+      return res.status(400).json({ error: 'No valid payment method found. Please add a card first.' });
+    }
+
+    // Mock payment method support
+    if (defaultMethod.stripePaymentMethodId.startsWith('mock_')) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { outstandingBalanceEur: 0 },
+      });
+      return res.json({ status: 'succeeded', amountEur: balance, outstandingBalanceEur: 0 });
+    }
+
+    const intent = await stripe.paymentIntents.create({
+      customer: customerId,
+      payment_method: defaultMethod.stripePaymentMethodId,
+      amount: Math.round(balance * 100),
+      currency: 'eur',
+      confirm: true,
+      off_session: true,
+    });
+
+    if (intent.status === 'succeeded') {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { outstandingBalanceEur: 0 },
+      });
+      return res.json({ status: 'succeeded', amountEur: balance, outstandingBalanceEur: 0 });
+    }
+
+    return res.status(402).json({ error: 'Payment failed', stripeStatus: intent.status });
+  } catch (error: any) {
+    console.error('payOutstandingBalance error:', error);
+    return res.status(502).json({ error: 'Payment failed', details: error?.message });
   }
 };
