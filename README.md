@@ -2,8 +2,38 @@
 
 > Find and reserve EV charging points around you.
 
-A full-stack EV charging station management platform built for the NTUA Software Engineering course (2025-2026). Users can locate chargers on an interactive map, reserve time slots, start charging sessions, and pay seamlessly via Stripe. The project was rated a 10/10 by the professor and was saved as one of the best in the class to show to future classes as an example of how a team should handle the project.
+A full-stack EV charging station management platform built for the NTUA Software Engineering course (2025-2026). Users can locate chargers on an interactive map, reserve time slots, start charging sessions, and pay seamlessly via Stripe. While the professor provided a high-level specification outlining core functional requirements and example API endpoints for grading purposes, the team was fully responsible for:
 
+- Requirements analysis and refinement
+
+- UML modeling (use case, sequence, component, deployment diagrams)
+
+- Architectural design decisions
+
+- Technology stack selection
+
+- Infrastructure setup
+
+- Concurrency and state management strategy
+
+- External API integrations
+
+- Payment flow design
+
+- DevOps setup and environment automation
+
+Key architectural decisions — such as introducing Redis with Lua scripts for atomic reservations, integrating the ENTSO-E wholesale energy pricing API, implementing Stripe pre-authorization capture flows, and designing a dynamic pricing engine — were independently researched, justified, and implemented by the team.
+
+Additionally, we implemented several advanced features beyond the original assignment scope, including:
+
+- Personalized charging statistics per vehicle
+
+- Live charging session feed with real-time kWh and cost tracking
+
+- Dynamic time-of-day pricing adjustments
+
+
+The project was rated 10/10 by the professor and was selected as one of the best submissions of the year to serve as a reference example for future classes.
 ---
 
 ## Table of Contents
