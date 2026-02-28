@@ -2,7 +2,7 @@
 
 > Find and reserve EV charging points around you.
 
-A full-stack EV charging station management platform built for the NTUA Software Engineering course (2025-2026). Users can locate chargers on an interactive map, reserve time slots, start charging sessions, and pay seamlessly via Stripe.
+A full-stack EV charging station management platform built for the NTUA Software Engineering course (2025-2026). Users can locate chargers on an interactive map, reserve time slots, start charging sessions, and pay seamlessly via Stripe. The project was rated a 10/10 by the professor and was saved as one of the best in the class to show to future classes as an example of how a team should handle the project.
 
 ---
 
