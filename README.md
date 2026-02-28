@@ -352,7 +352,7 @@ se2502 pointstatus --id 3 --from 20260211 --to 20260212
 
 NTUA School of Electrical and Computer Engineering — Software Engineering 2025-2026, Team 02
 
-       Zakynthinos Iasonas         el23408
+       Zakynthinos Iason         el23408
        Ntontos Stergios            el23406
        Mantzaris Konstantinos      el22406
        Pallis Georgios             el22144
